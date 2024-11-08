@@ -8,15 +8,18 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarRail,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import React from "react";
 import { useAtom } from "jotai";
 import { TabLink, tabsAtom, useCreateNewTab } from "@/providers/TabProvider";
 import { Button } from "./ui/button";
+import { isNewTabDialogOpen } from "./NewTab";
 
-export function AppSidebar() {
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [tabs, setTabs] = useAtom(tabsAtom);
+  const [tabDialogOpen, setTabDialogOpen] = useAtom(isNewTabDialogOpen);
   const createNewTab = useCreateNewTab();
 
 
@@ -36,13 +39,13 @@ export function AppSidebar() {
   // };
 
   return (
-    <Sidebar >
-      <SidebarContent className="mt-6">
-        <SidebarGroup>
+    <Sidebar {...props} >
+      <SidebarContent className="mt-6 draglayer">
+        <SidebarGroup className="nodraglayer">
           <SidebarGroupLabel>
             Tabs
             <Button onClick={() => {
-              return createNewTab({ url: "https://www.google.com" })
+              return setTabDialogOpen(true)
             }} className="ml-2 h-7 w-7 group/addtab" size="icon" variant="ghost">
               <Plus className="group-hover/addtab:scale-110 ease-in-out transition-transform duration-200" size={16} /> {/* Icon for adding new tab */}
             </Button>
@@ -88,6 +91,7 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarRail />
     </Sidebar>
   );
 }

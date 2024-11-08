@@ -1,14 +1,18 @@
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, ipcMain, Menu, MenuItem } from "electron";
 import registerListeners from "./helpers/ipc/listeners-register";
 // "electron-squirrel-startup" seems broken when packaging with vite
 //import started from "electron-squirrel-startup";
 import path from "path";
+import fetch from 'cross-fetch'; // required 'fetch'
+import { readFileSync, writeFileSync } from "fs";
 
 const inDevelopment = process.env.NODE_ENV === "development";
 
-function createWindow() {
+
+async function createWindow() {
   const preload = path.join(__dirname, "preload.js");
   const mainWindow = new BrowserWindow({
+    title: "Formal Surf",
     width: 800,
     height: 600,
     webPreferences: {
@@ -33,6 +37,19 @@ function createWindow() {
     })
   })
 
+  // const blocker = await ElectronBlocker.fromLists(
+  //   fetch,
+  //   fullLists,
+  //   {
+  //     enableCompression: true,
+  //   },
+  //   {
+  //     path: 'engine.bin',
+  //     read: async (...args) => readFileSync(...args),
+  //     write: async (...args) => writeFileSync(...args),
+  //   },
+  // );
+
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
     mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
   } else {
@@ -44,10 +61,12 @@ function createWindow() {
 
 app.whenReady().then(createWindow);
 // app.userAgentFallback = app.userAgentFallback.replace('Electron/' + process.versions.electron, 'Electron');
-// app.userAgentFallback = app.userAgentFallback.replace('Chrome/' + process.versions.chrome, 'Chrome');
+app.userAgentFallback = app.userAgentFallback.replace('Chrome/' + process.versions.chrome, 'Chrome');
 // app.userAgentFallback = app.userAgentFallback.replace('Electron/' + process.versions.electron, '');
 
-app.userAgentFallback = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
+// app.userAgentFallback = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
+
+
 
 //osX only
 app.on("window-all-closed", () => {

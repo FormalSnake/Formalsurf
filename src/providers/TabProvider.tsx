@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { ipcRenderer } from "electron";
 import { atom, useAtom } from "jotai";
 import { X } from "lucide-react";
 import React, { useEffect } from "react";
@@ -6,14 +7,19 @@ import React, { useEffect } from "react";
 // Define the tabsAtom with webviewRefs
 export const tabsAtom = atom([
   {
-    url: "https://www.formalsnake.dev",
-    title: "Kyan / @formalsnake",
+    url: "https://www.google.com",
+    title: "Google",
     webviewRef: null,
     isActive: true,
   },
 ]);
 
+
 export const TabProvider = ({ children }: { children: any }) => {
+  const [tabs, setTabs] = useAtom(tabsAtom);
+  useEffect(() => {
+    // console.log(JSON.stringify(tabs));
+  }, [tabs, setTabs]);
   return <>{children}</>;
 };
 
