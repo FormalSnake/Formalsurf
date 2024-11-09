@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, Menu, MenuItem } from "electron";
+import { app, BrowserWindow, ipcMain, Menu, MenuItem, session } from "electron";
 import registerListeners from "./helpers/ipc/listeners-register";
 // "electron-squirrel-startup" seems broken when packaging with vite
 //import started from "electron-squirrel-startup";
@@ -24,6 +24,7 @@ async function createWindow() {
       sandbox: false,
       preload: preload,
       spellcheck: true,
+      // partition: 'persist:webview'
     },
     titleBarStyle: "hidden",
     trafficLightPosition: { x: 12, y: 15 }

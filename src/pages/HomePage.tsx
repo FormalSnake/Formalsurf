@@ -19,7 +19,7 @@ export default function HomePage() {
 
   useEffect(() => {
     // Initialize each tab's webviewRef if null and add navigation listeners
-    tabs.forEach((tab, index) => {
+    tabs.forEach((tab: any, index: number) => {
       if (!tab.webviewRef) {
         // @ts-ignore
         tab.webviewRef = React.createRef();
@@ -31,8 +31,8 @@ export default function HomePage() {
       if (webview && !webview.hasListeners) {
         // Listen for URL changes
         webview.addEventListener("did-navigate", (event: { url: any; }) => {
-          setTabs((prevTabs) =>
-            prevTabs.map((prevTab, idx) =>
+          setTabs((prevTabs: any) =>
+            prevTabs.map((prevTab: any, idx: any) =>
               idx === index ? { ...prevTab, url: event.url } : prevTab
             )
           );
@@ -40,9 +40,17 @@ export default function HomePage() {
 
         // Listen for title changes
         webview.addEventListener("page-title-updated", (event: { title: any; }) => {
-          setTabs((prevTabs) =>
-            prevTabs.map((prevTab, idx) =>
+          setTabs((prevTabs: any) =>
+            prevTabs.map((prevTab: any, idx: any) =>
               idx === index ? { ...prevTab, title: event.title } : prevTab
+            )
+          );
+        });
+        // set favicon in tab when page-favicon-updated
+        webview.addEventListener("page-favicon-updated", (event: { favicons: any; }) => {
+          setTabs((prevTabs: any) =>
+            prevTabs.map((prevTab: any, idx: any) =>
+              idx === index ? { ...prevTab, favicon: event.favicons[0] } : prevTab
             )
           );
         });
@@ -54,12 +62,12 @@ export default function HomePage() {
 
   return (
     <div className="w-full h-full">
-      {tabs.map((tab, index) => (
+      {tabs.map((tab: any, index: number) => (
         <webview
           key={index}
           ref={tab.webviewRef}
           src={tab.url}
-          className={`w-full h-full ${tab.isActive ? "" : "hidden"}`} // Hide inactive webviews
+          className={`w-full h-full bg-foreground ${tab.isActive ? "" : "hidden"}`} // Hide inactive webviews
           // @ts-ignore
           allowpopups="true"
           webpreferences="allowRunningInsecureContent"
@@ -67,6 +75,9 @@ export default function HomePage() {
           disablewebsecurity="true"
           // @ts-ignore
           nodeintegration="true"
+          // @ts-ignore
+          plugins="true"
+        // partition="persist:webview"
         />
       ))}
       {tabs.length == 0 ? (
