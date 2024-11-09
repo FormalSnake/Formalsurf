@@ -77,7 +77,7 @@ export default function HomePage() {
           nodeintegration="true"
           // @ts-ignore
           plugins="true"
-        // partition="persist:webview"
+          partition="persist:webview"
         />
       ))}
       {tabs.length == 0 ? (

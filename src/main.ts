@@ -24,7 +24,7 @@ async function createWindow() {
       sandbox: false,
       preload: preload,
       spellcheck: true,
-      // partition: 'persist:webview'
+      partition: 'persist:webview'
     },
     titleBarStyle: "hidden",
     trafficLightPosition: { x: 12, y: 15 }
