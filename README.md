@@ -14,8 +14,6 @@ If this repository gets enough attention, this _might_ become a full-fledged bro
 git clone https://github.com/FormalSnake/Formalsurf.git 
 ```
 
-Or use it as a template on GitHub
-
 2. Install dependencies
 
 ```bash
