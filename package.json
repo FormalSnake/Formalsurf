@@ -2,23 +2,16 @@
     "name": "formal-surf",
     "productName": "Formal Surf",
     "version": "1.0.0",
-    "description": "Electron Forge with shadcn-ui (Vite + Typescript)",
+    "description": "A web browser made in Shadcn and electron",
     "main": ".vite/build/main.js",
     "scripts": {
         "start": "electron-forge start",
         "package": "electron-forge package",
         "make": "electron-forge make",
         "publish": "electron-forge publish",
-        "prett": "prettier . --write",
-        "storybook": "storybook dev -p 6006",
-        "build-storybook": "storybook build",
-        "test": "jest",
-        "test:watch": "jest --watch",
-        "test:unit": "jest",
-        "test:e2e": "playwright test",
-        "test:all": "jest && playwright test"
+        "prett": "prettier . --write"
     },
-    "author": "ROG <luan.roger.2003@gmail.com>",
+    "author": "Kyan De Sutter",
     "license": "MIT",
     "devDependencies": {
         "@electron-forge/cli": "^7.5.0",
