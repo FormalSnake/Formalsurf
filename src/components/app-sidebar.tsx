@@ -22,6 +22,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [tabDialogOpen, setTabDialogOpen] = useAtom(isNewTabDialogOpen);
   const createNewTab = useCreateNewTab();
 
+  const isMacOS = typeof navigator !== "undefined" && /Mac/i.test(navigator.platform);
+
 
   // const createNewTab = () => {
   //   const newTab = {
@@ -40,7 +42,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar {...props} >
-      <SidebarContent className="mt-6 draglayer">
+      <SidebarContent className={`${isMacOS ? "mt-6" : ""} draglayer`}>
         <SidebarGroup className="nodraglayer">
           <SidebarGroupLabel>
             Tabs
