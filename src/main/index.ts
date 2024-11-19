@@ -18,6 +18,7 @@ function createWindow(): void {
       sandbox: false,
       contextIsolation: true,
       webviewTag: true,
+      // webSecurity: false,
     }
   })
 

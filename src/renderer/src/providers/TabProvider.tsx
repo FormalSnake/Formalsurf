@@ -101,7 +101,7 @@ export const TabLink = ({ tab }: { tab: any }) => {
 
   return (
     <Button onClick={setActiveTab} className="flex-grow text-left w-full" variant={tab.isActive ? "secondary" : "ghost"}>
-      {tab.favicon ? <img src={tab.favicon} className="h-4 w-4 mr-2 " /> : <Globe className="h-4 w-4 mr-2" />}
+      {tab.favicon ? <img src={"https://corsproxy.io/?" + tab.favicon} className="h-4 w-4 mr-2 " /> : <Globe className="h-4 w-4 mr-2" />}
       <span className="w-full truncate">{tab.title}</span>
       <Button onClick={closeTab} className="h-7 w-7" size="icon" variant="link">
         <X size={16} />

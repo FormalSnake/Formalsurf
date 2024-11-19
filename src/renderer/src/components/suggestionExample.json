@@ -1,0 +1,324 @@
+{
+  "Abstract": "DuckDuckGo is an American software company with a focus on online privacy. The flagship product is a search engine that has been praised by privacy advocates. Subsequent products include browser extensions and a custom DuckDuckGo web browser. Headquartered in Paoli, Pennsylvania, DuckDuckGo is a privately held company with about 200 employees. The company's name is a reference to the children's game duck, duck, goose.",
+  "AbstractSource": "Wikipedia",
+  "AbstractText": "DuckDuckGo is an American software company with a focus on online privacy. The flagship product is a search engine that has been praised by privacy advocates. Subsequent products include browser extensions and a custom DuckDuckGo web browser. Headquartered in Paoli, Pennsylvania, DuckDuckGo is a privately held company with about 200 employees. The company's name is a reference to the children's game duck, duck, goose.",
+  "AbstractURL": "https://en.wikipedia.org/wiki/DuckDuckGo",
+  "Answer": "",
+  "AnswerType": "",
+  "Definition": "",
+  "DefinitionSource": "",
+  "DefinitionURL": "",
+  "Entity": "infobox",
+  "Heading": "DuckDuckGo",
+  "Image": "/i/f96d4798.png",
+  "ImageHeight": 270,
+  "ImageIsLogo": 1,
+  "ImageWidth": 342,
+  "Infobox": {
+    "content": [
+      {
+        "data_type": "string",
+        "label": "Available in",
+        "value": "Multilingual",
+        "wiki_order": 0
+      },
+      {
+        "data_type": "string",
+        "label": "Area served",
+        "value": "Worldwide, except for Indonesia",
+        "wiki_order": 1
+      },
+      {
+        "data_type": "string",
+        "label": "Owner",
+        "value": "Duck Duck Go, Inc.",
+        "wiki_order": 2
+      },
+      {
+        "data_type": "string",
+        "label": "Founder(s)",
+        "value": "Gabriel Weinberg",
+        "wiki_order": 3
+      },
+      {
+        "data_type": "string",
+        "label": "CEO",
+        "value": "Gabriel Weinberg",
+        "wiki_order": 4
+      },
+      {
+        "data_type": "string",
+        "label": "Key people",
+        "value": "Steve Fishcher (CBO)",
+        "wiki_order": 5
+      },
+      {
+        "data_type": "string",
+        "label": "Commercial",
+        "value": "Yes",
+        "wiki_order": 6
+      },
+      {
+        "data_type": "string",
+        "label": "Registration",
+        "value": "None",
+        "wiki_order": 7
+      },
+      {
+        "data_type": "string",
+        "label": "Launched",
+        "value": "September 25, 2008",
+        "wiki_order": 8
+      },
+      {
+        "data_type": "string",
+        "label": "Current status",
+        "value": "Active",
+        "wiki_order": 9
+      },
+      {
+        "data_type": "string",
+        "label": "Written in",
+        "value": "Perl, JavaScript, Python",
+        "wiki_order": 10
+      },
+      {
+        "data_type": "instagram_profile",
+        "label": "Instagram profile",
+        "value": "duckduckgo",
+        "wiki_order": "103"
+      },
+      {
+        "data_type": "facebook_profile",
+        "label": "Facebook profile",
+        "value": "duckduckgo",
+        "wiki_order": "104"
+      },
+      {
+        "data_type": "instance",
+        "label": "Instance of",
+        "value": {
+          "entity-type": "item",
+          "id": "Q4182287",
+          "numeric-id": 4182287
+        },
+        "wiki_order": "207"
+      },
+      {
+        "data_type": "instance_2",
+        "label": "Instance of",
+        "value": {
+          "entity-type": "item",
+          "id": "Q19778981",
+          "numeric-id": 19778981
+        },
+        "wiki_order": "207"
+      },
+      {
+        "data_type": "instance_3",
+        "label": "Instance of",
+        "value": {
+          "entity-type": "item",
+          "id": "Q341",
+          "numeric-id": 341
+        },
+        "wiki_order": "207"
+      },
+      {
+        "data_type": "instance_4",
+        "label": "Instance of",
+        "value": {
+          "entity-type": "item",
+          "id": "Q35127",
+          "numeric-id": 35127
+        },
+        "wiki_order": "207"
+      },
+      {
+        "data_type": "wd_description",
+        "label": "Wikidata description",
+        "value": "web search engine",
+        "wiki_order": "210"
+      },
+      {
+        "data_type": "wikidata_id",
+        "label": "Wikidata id",
+        "value": "Q12805",
+        "wiki_order": "211"
+      },
+      {
+        "data_type": "wikidata_label",
+        "label": "Wikidata label",
+        "value": "DuckDuckGo",
+        "wiki_order": "212"
+      },
+      {
+        "data_type": "wikidata_aliases",
+        "label": "Wikidata aliases",
+        "value": [
+          "DuckDuckGo",
+          "DDG",
+          "Duck Duck Go",
+          "duckduckgo.com"
+        ],
+        "wiki_order": "213"
+      }
+    ],
+    "meta": [
+      {
+        "data_type": "string",
+        "label": "article_title",
+        "value": "DuckDuckGo"
+      },
+      {
+        "data_type": "string",
+        "label": "template_name",
+        "value": "infobox"
+      }
+    ]
+  },
+  "OfficialDomain": "duckduckgo.com",
+  "OfficialWebsite": "https://duckduckgo.com",
+  "Redirect": "",
+  "RelatedTopics": [
+    {
+      "FirstURL": "https://duckduckgo.com/Names_Database",
+      "Icon": {
+        "Height": "",
+        "URL": "",
+        "Width": ""
+      },
+      "Result": "<a href=\"https://duckduckgo.com/Names_Database\">Names Database</a> - The Names Database was a social network, owned and operated by Classmates.com, a wholly owned subsidiary of United Online. The site does not appear to be significantly updated since 2008, and has many broken links and display issues.",
+      "Text": "Names Database - The Names Database was a social network, owned and operated by Classmates.com, a wholly owned subsidiary of United Online. The site does not appear to be significantly updated since 2008, and has many broken links and display issues."
+    },
+    {
+      "FirstURL": "https://duckduckgo.com/Timeline_of_web_search_engines",
+      "Icon": {
+        "Height": "",
+        "URL": "",
+        "Width": ""
+      },
+      "Result": "<a href=\"https://duckduckgo.com/Timeline_of_web_search_engines\">Timeline of web search engines</a> - This page provides a full timeline of web search engines, starting from the WHOis in 1982, the Archie search engine in 1990, and subsequent developments in the field. It is complementary to the history of web search engines page that provides more qualitative detail on the history.",
+      "Text": "Timeline of web search engines - This page provides a full timeline of web search engines, starting from the WHOis in 1982, the Archie search engine in 1990, and subsequent developments in the field. It is complementary to the history of web search engines page that provides more qualitative detail on the history."
+    },
+    {
+      "FirstURL": "https://duckduckgo.com/c/Companies_based_in_Chester_County%2C_Pennsylvania",
+      "Icon": {
+        "Height": "",
+        "URL": "",
+        "Width": ""
+      },
+      "Result": "<a href=\"https://duckduckgo.com/c/Companies_based_in_Chester_County%2C_Pennsylvania\">Companies based in Chester County, Pennsylvania</a>",
+      "Text": "Companies based in Chester County, Pennsylvania"
+    },
+    {
+      "FirstURL": "https://duckduckgo.com/c/Perl_software",
+      "Icon": {
+        "Height": "",
+        "URL": "",
+        "Width": ""
+      },
+      "Result": "<a href=\"https://duckduckgo.com/c/Perl_software\">Perl software</a>",
+      "Text": "Perl software"
+    },
+    {
+      "FirstURL": "https://duckduckgo.com/c/Internet_privacy_software",
+      "Icon": {
+        "Height": "",
+        "URL": "",
+        "Width": ""
+      },
+      "Result": "<a href=\"https://duckduckgo.com/c/Internet_privacy_software\">Internet privacy software</a>",
+      "Text": "Internet privacy software"
+    },
+    {
+      "FirstURL": "https://duckduckgo.com/c/Proprietary_cross-platform_software",
+      "Icon": {
+        "Height": "",
+        "URL": "",
+        "Width": ""
+      },
+      "Result": "<a href=\"https://duckduckgo.com/c/Proprietary_cross-platform_software\">Proprietary cross-platform software</a>",
+      "Text": "Proprietary cross-platform software"
+    },
+    {
+      "FirstURL": "https://duckduckgo.com/c/Internet_search_engines",
+      "Icon": {
+        "Height": "",
+        "URL": "",
+        "Width": ""
+      },
+      "Result": "<a href=\"https://duckduckgo.com/c/Internet_search_engines\">Internet search engines</a>",
+      "Text": "Internet search engines"
+    }
+  ],
+  "Results": [
+    {
+      "FirstURL": "https://duckduckgo.com",
+      "Icon": {
+        "Height": 16,
+        "URL": "/i/duckduckgo.com.ico",
+        "Width": 16
+      },
+      "Result": "<a href=\"https://duckduckgo.com\"><b>Official site</b></a><a href=\"https://duckduckgo.com\"></a>",
+      "Text": "Official site"
+    }
+  ],
+  "Type": "A",
+  "meta": {
+    "attribution": null,
+    "blockgroup": null,
+    "created_date": null,
+    "description": "Wikipedia",
+    "designer": null,
+    "dev_date": null,
+    "dev_milestone": "live",
+    "developer": [
+      {
+        "name": "DDG Team",
+        "type": "ddg",
+        "url": "http://www.duckduckhack.com"
+      }
+    ],
+    "example_query": "nikola tesla",
+    "id": "wikipedia_fathead",
+    "is_stackexchange": null,
+    "js_callback_name": "wikipedia",
+    "live_date": null,
+    "maintainer": {
+      "github": "duckduckgo"
+    },
+    "name": "Wikipedia",
+    "perl_module": "DDG::Fathead::Wikipedia",
+    "producer": null,
+    "production_state": "online",
+    "repo": "fathead",
+    "signal_from": "wikipedia_fathead",
+    "src_domain": "en.wikipedia.org",
+    "src_id": 1,
+    "src_name": "Wikipedia",
+    "src_options": {
+      "directory": "",
+      "is_fanon": 0,
+      "is_mediawiki": 1,
+      "is_wikipedia": 1,
+      "language": "en",
+      "min_abstract_length": "20",
+      "skip_abstract": 0,
+      "skip_abstract_paren": 0,
+      "skip_end": "0",
+      "skip_icon": 0,
+      "skip_image_name": 0,
+      "skip_qr": "",
+      "source_skip": "",
+      "src_info": ""
+    },
+    "src_url": null,
+    "status": "live",
+    "tab": "About",
+    "topic": [
+      "productivity"
+    ],
+    "unsafe": 0
+  }
+}
