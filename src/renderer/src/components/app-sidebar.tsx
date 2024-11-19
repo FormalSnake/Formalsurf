@@ -13,7 +13,7 @@ import {
 import { Button } from "./ui/button";
 import { Plus, RefreshCcw, ArrowLeft, ArrowRight } from "lucide-react";
 import { useAtom } from "jotai";
-import { TabLink, tabsAtom, useCreateNewTab } from "@/providers/TabProvider";
+import { activeTabRefAtom, TabLink, tabsAtom, useCreateNewTab } from "@/providers/TabProvider";
 import { isNewTabDialogOpen } from "./NewTab";
 
 const AddTabButton = React.memo(({ onClick }: { onClick: () => void }) => (
@@ -42,8 +42,8 @@ const ActionButton = React.memo(
 
 const TabList = React.memo(({ tabs }: { tabs: any[] }) => (
   <SidebarMenu>
-    {tabs.map((item) => (
-      <SidebarMenuItem key={item.title}>
+    {tabs.map((item, index) => (
+      <SidebarMenuItem key={index}>
         <SidebarMenuButton asChild>
           <TabLink tab={item} />
         </SidebarMenuButton>
@@ -56,6 +56,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [tabs, setTabs] = useAtom(tabsAtom);
   const [tabDialogOpen, setTabDialogOpen] = useAtom(isNewTabDialogOpen);
   const createNewTab = useCreateNewTab();
+  const [activeTab, setActiveTab] = useAtom(activeTabRefAtom);
 
   const isMacOS = useMemo(
     () => typeof navigator !== "undefined" && /Mac/i.test(navigator.platform),
@@ -64,17 +65,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const handleAddTab = useCallback(() => setTabDialogOpen(true), [setTabDialogOpen]);
 
-  const handleAction = useCallback(
-    (action: "reload" | "goBack" | "goForward") => {
-      const activeTab = tabs.find((tab) => tab.isActive);
-      if (activeTab && activeTab.webviewRef?.current) {
-        if (action === "reload") activeTab.webviewRef.current.reload();
-        if (action === "goBack") activeTab.webviewRef.current.goBack();
-        if (action === "goForward") activeTab.webviewRef.current.goForward();
-      }
-    },
-    [tabs]
-  );
+  // handleAction but every time it is called it looks for the tab with the activeTab being true
+  const handleAction = useCallback((action: "reload" | "goBack" | "goForward") => {
+    // const activeTab = tabs.find((tab) => tab.isActive);
+    // console.log("Active tab", activeTab)
+    if (activeTab) {
+      if (action === "reload") activeTab.reload();
+      if (action === "goBack") activeTab.goBack();
+      if (action === "goForward") activeTab.goForward();
+    }
+  }, [tabs]);
 
   return (
     <Sidebar {...props} className="draglayer" >

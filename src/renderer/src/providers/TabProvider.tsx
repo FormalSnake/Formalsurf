@@ -45,6 +45,8 @@ export const tabsAtom = atomWithLocalStorage("FormalTabs", [
   },
 ]);
 
+export const activeTabRefAtom = atom<any>(null);
+
 export const TabProvider = ({ children }: { children: any }) => {
   return <>{children}</>;
 };
