@@ -6,16 +6,16 @@ import { NewTabDialog } from "@/components/NewTab";
 
 export default function BaseLayout({ children }: { children: React.ReactNode }) {
   return (
-    <TabProvider>
-      <SidebarProvider>
-        <AppSidebar />
-        <NewTabDialog />
-        <SidebarInset>
+    <SidebarProvider>
+      <AppSidebar />
+      <NewTabDialog />
+      <SidebarInset className="overflow-hidden">
+        <TabProvider>
           <main className="h-full w-full flex-1">
             {children}
           </main>
-        </SidebarInset>
-      </SidebarProvider>
-    </TabProvider>
+        </TabProvider>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }

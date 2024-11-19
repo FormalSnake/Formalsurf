@@ -31,7 +31,7 @@ const ActionButton = React.memo(
   }: {
     className: string;
     onClick: () => void;
-    Icon: React.ComponentType<{ size: number }>;
+    Icon: any;
     hoverClass: string;
   }) => (
     <Button className={`ml-2 h-7 w-7 ${className}`} size="icon" variant="ghost" onClick={onClick}>
@@ -77,7 +77,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   );
 
   return (
-    <Sidebar {...props} className="draglayer">
+    <Sidebar {...props} className="draglayer" >
       <SidebarContent className={`${isMacOS ? "mt-6" : ""} draglayer`}>
         <SidebarGroup className="nodraglayer">
           <div className="flex h-full w-full flex-row gap-1 p-1 justify-evenly">

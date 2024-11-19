@@ -46,10 +46,6 @@ export const tabsAtom = atomWithLocalStorage("FormalTabs", [
 ]);
 
 export const TabProvider = ({ children }: { children: any }) => {
-  const [tabs, setTabs] = useAtom(tabsAtom);
-  useEffect(() => {
-    // console.log(JSON.stringify(tabs));
-  }, [tabs, setTabs]);
   return <>{children}</>;
 };
 
@@ -75,8 +71,39 @@ export function useCreateNewTab() {
   return createNewTab;
 }
 
+export function useCloseTab() {
+  const [tabs, setTabs] = useAtom(tabsAtom)
+
+  function closeTab() {
+    setTabs((prevTabs) => {
+      // Find the index of the active tab
+      const activeIndex = prevTabs.findIndex((tab) => tab.isActive);
+
+      if (activeIndex === -1) {
+        // If no active tab is found, return the current tabs (shouldn't happen in a valid state)
+        return prevTabs;
+      }
+
+      // Remove the active tab from the array
+      const updatedTabs = prevTabs.filter((_, index) => index !== activeIndex);
+
+      // If there are still tabs left, set the next closest one to active
+      if (updatedTabs.length > 0) {
+        const newActiveIndex =
+          activeIndex >= updatedTabs.length ? updatedTabs.length - 1 : activeIndex;
+        updatedTabs[newActiveIndex].isActive = true;
+      }
+
+      return updatedTabs;
+    });
+  }
+
+  return closeTab
+}
+
 export const TabLink = ({ tab }: { tab: any }) => {
   const [tabs, setTabs] = useAtom(tabsAtom);
+  const closeTab = useCloseTab();
 
   const setActiveTab = () => {
     setTabs(tabs.map((item: { url: any; }) => ({
@@ -85,25 +112,26 @@ export const TabLink = ({ tab }: { tab: any }) => {
     })));
   };
 
-  const closeTab = (event: any) => {
+  const closeTabEvent = (event: any) => {
     event.stopPropagation(); // Prevent triggering setActiveTab when closing
-    setTabs((prevTabs: any[]) => {
-      const updatedTabs = prevTabs.filter((item) => item.webviewRef !== tab.webviewRef);
-
-      // If the closed tab was active, make another tab active
-      if (tab.isActive && updatedTabs.length > 0) {
-        updatedTabs[0].isActive = true;
-      }
-
-      return updatedTabs;
-    });
+    closeTab();
+    // setTabs((prevTabs: any[]) => {
+    //   const updatedTabs = prevTabs.filter((item) => item.webviewRef !== tab.webviewRef);
+    //
+    //   // If the closed tab was active, make another tab active
+    //   if (tab.isActive && updatedTabs.length > 0) {
+    //     updatedTabs[0].isActive = true;
+    //   }
+    //
+    //   return updatedTabs;
+    // });
   };
 
   return (
     <Button onClick={setActiveTab} className="flex-grow text-left w-full" variant={tab.isActive ? "secondary" : "ghost"}>
       {tab.favicon ? <img src={"https://corsproxy.io/?" + tab.favicon} className="h-4 w-4 mr-2 " /> : <Globe className="h-4 w-4 mr-2" />}
       <span className="w-full truncate">{tab.title}</span>
-      <Button onClick={closeTab} className="h-7 w-7" size="icon" variant="link">
+      <Button onClick={closeTabEvent} className="h-7 w-7" size="icon" variant="link">
         <X size={16} />
       </Button>
     </Button>

@@ -1,7 +1,9 @@
-import { tabsAtom, useCreateNewTab } from "@/providers/TabProvider";
+import { tabsAtom, useCloseTab, useCreateNewTab } from "@/providers/TabProvider";
 import { useAtom } from "jotai";
-import React, { useEffect, useRef, useCallback } from "react";
+import React, { useEffect, useRef, useCallback, useState } from "react";
 import BaseLayout from './Layout';
+import { isNewTabDialogOpen } from "./components/NewTab";
+import { sidebarOpenAtom, SidebarProvider, SidebarTrigger, useSidebar } from "./components/ui/sidebar";
 
 // Debounce helper
 function debounce(func: Function, wait: number) {
@@ -34,7 +36,10 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => (
 function App(): JSX.Element {
   const [tabs, setTabs] = useAtom(tabsAtom);
   const createNewTab = useCreateNewTab();
+  const closeTab = useCloseTab()
   const initializedTabs = useRef<Set<number>>(new Set()); // Track initialized tabs
+  const [tabDialogOpen, setTabDialogOpen] = useAtom(isNewTabDialogOpen);
+  const [sidebarOpen, setSidebarOpen] = useAtom(sidebarOpenAtom)
 
   const handleOpenUrl = useCallback(
     (event: any, data: any) => {
@@ -49,6 +54,47 @@ function App(): JSX.Element {
     (event: any, data: any) =>
       function(event: any, data: any) {
         createNewTab({ url: data })
+      },
+    event
+  );
+
+  //@ts-ignore
+  window.api.handle("close-active-tab",
+    (event: any, data: any) =>
+      function(event: any, data: any) {
+        console.log("close-active-tab")
+        closeTab()
+        // remove api handler
+        // @ts-ignore
+        window.api.removeHandler("close-active-tab", closeTab);
+      },
+    event
+  );
+
+  // @ts-ignore
+  window.api.handle("new-tab",
+    (event: any, data: any) =>
+      function(event: any, data: any) {
+        console.log("new-tab")
+        setTabDialogOpen(true);
+        // remove api handler
+        // @ts-ignore
+        window.api.removeHandler("new-tab", setTabDialogOpen);
+      },
+    event
+  );
+
+  // toggle-sidebar listener
+  // @ts-ignore
+  window.api.handle("toggle-sidebar",
+    (event: any, data: any) =>
+      function(event: any, data: any) {
+        console.log("toggle-sidebar")
+        setSidebarOpen((open) => !open);
+        console.log(sidebarOpen)
+        // remove api handler
+        // @ts-ignore
+        window.api.removeHandler("toggle-sidebar", setSidebarOpen);
       },
     event
   );

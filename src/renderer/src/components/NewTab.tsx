@@ -14,16 +14,16 @@ export function NewTabDialog() {
   const createNewTab = useCreateNewTab();
 
   // Keyboard shortcut for toggling the dialog
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "t" && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        setOpen((prev) => !prev);
-      }
-    };
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [setOpen]);
+  // useEffect(() => {
+  //   const handleKeyDown = (e: KeyboardEvent) => {
+  //     if (e.key === "t" && (e.metaKey || e.ctrlKey)) {
+  //       e.preventDefault();
+  //       setOpen((prev) => !prev);
+  //     }
+  //   };
+  //   document.addEventListener("keydown", handleKeyDown);
+  //   return () => document.removeEventListener("keydown", handleKeyDown);
+  // }, [setOpen]);
 
   // Fetch autocomplete suggestions from DuckDuckGo API
   const fetchSuggestions = useCallback(async (query: string) => {
