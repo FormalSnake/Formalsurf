@@ -62,27 +62,44 @@ export function NewTabDialog() {
   }, [value, fetchSuggestions]);
 
   // Handle Enter key press
-  const handleEnterPress = useCallback((value: string) => {
-    if (value.trim()) {
-      const isURL = /^(https?|file):\/\/[^ "]+$/.test(value); // Updated regex to support http, https, and file protocols
-      let url: string;
+  const handleEnterPress = useCallback(
+    (value: string) => {
+      if (value.trim()) {
+        const validIP4Regex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/i;
+        const unicodeRegex = /[^\u0000-\u00ff]/;
+        const isURLRegex = /^(https?|file):\/\/[^ "]+$/i;
+        const localhostRegex = /^localhost(:\d+)?$/i;
 
-      if (isURL) {
-        url = value;
-      } else if (/^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
-        // Matches plain domains like google.com
-        url = `https://${value}`;
-      } else {
-        // Treat as a search query
-        url = `https://www.google.com/search?q=${encodeURIComponent(value)}`;
+        let url: string;
+
+        if (isURLRegex.test(value)) {
+          // Value is a valid URL
+          url = value;
+        } else if (validIP4Regex.test(value)) {
+          // Value is an IPv4 address
+          url = `https://${value}`;
+        } else if (localhostRegex.test(value)) {
+          // Value is localhost with optional port
+          url = `http://${value}`;
+        } else if (/^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
+          // Value is a plain domain like google.com
+          url = `https://${value}`;
+        } else if (unicodeRegex.test(value)) {
+          // Value contains Unicode characters (likely not a URL or domain)
+          url = `https://www.google.com/search?q=${encodeURIComponent(value)}`;
+        } else {
+          // Treat value as a search query
+          url = `https://www.google.com/search?q=${encodeURIComponent(value)}`;
+        }
+
+        createNewTab({ url });
+        setOpen(false);
+        setValue("");
+        setSuggestions([]);
       }
-
-      createNewTab({ url });
-      setOpen(false);
-      setValue("");
-      setSuggestions([]);
-    }
-  }, [value, createNewTab, setOpen]);
+    },
+    [createNewTab, setOpen, setValue, setSuggestions]
+  );
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen} >

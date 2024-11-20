@@ -128,10 +128,33 @@ export const TabLink = ({ tab }: { tab: any }) => {
     //   return updatedTabs;
     // });
   };
+  // "https://corsproxy.io/?" + tab.favicon
+  const getFavicon = (tab: any) => {
+    // Updated regex patterns to handle trailing slashes
+    const validIP4Regex = /^(https?:\/\/)?(?:[0-9]{1,3}\.){3}[0-9]{1,3}(?::\d+)?\/?$/i;
+    const localhostRegex = /^(https?:\/\/)?localhost(?::\d+)?\/?$/i;
 
+    console.log("Tab URL:", tab.url);
+    console.log("Testing for IP address:", validIP4Regex.test(tab.url));
+    console.log("Testing for localhost:", localhostRegex.test(tab.url));
+
+    if (tab.favicon.startsWith("data:image/png;base64,")) {
+      console.log("Returning favicon directly (base64):", tab.favicon);
+      return tab.favicon;
+    }
+
+    if (validIP4Regex.test(tab.url) || localhostRegex.test(tab.url)) {
+      console.log("URL is localhost or an IP address, returning favicon directly:", tab.favicon);
+      return tab.favicon;
+    }
+
+    const proxiedFavicon = "https://corsproxy.io/?" + tab.favicon;
+    console.log("Applying proxy to favicon:", proxiedFavicon);
+    return proxiedFavicon;
+  };
   return (
     <Button onClick={setActiveTab} className="flex-grow text-left w-full" variant={tab.isActive ? "secondary" : "ghost"}>
-      {tab.favicon ? <img src={"https://corsproxy.io/?" + tab.favicon} className="h-4 w-4 mr-2 " /> : <Globe className="h-4 w-4 mr-2" />}
+      {tab.favicon ? <img src={getFavicon(tab)} className="h-4 w-4 mr-2 " /> : <Globe className="h-4 w-4 mr-2" />}
       <span className="w-full truncate">{tab.title}</span>
       <Button onClick={closeTabEvent} className="h-7 w-7" size="icon" variant="link">
         <X size={16} />
