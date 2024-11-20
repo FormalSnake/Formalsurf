@@ -1,15 +1,11 @@
-# formalsurf-refactor
+# Formalsurf web browser
 
-An Electron application with React and TypeScript
-
-## Recommended IDE Setup
-
-- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+A simple web browser built with Electron and React, it is not the most efficient but it works pretty well and is mostly just an experiment.
 
 ## Project Setup
 
 ### Install
-
+_You can also use Bun instead of npm, doesn't matter that much tho_
 ```bash
 $ npm install
 ```
