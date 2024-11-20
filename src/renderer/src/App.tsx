@@ -84,11 +84,8 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
       ref={ref}
       src={tab.url}
       className={`w-full h-full bg-foreground ${isActive ? "" : "hidden"}`}
-      allowpopups="true"
-      webpreferences="allowRunningInsecureContent"
-      disablewebsecurity="true"
-      nodeintegration="true"
-      plugins="true"
+      webpreferences="autoplayPolicy=user-gesture-required,defaultFontSize=16,contextIsolation=true,nodeIntegration=false,sandbox=true,webSecurity=true"
+      allowpopups
       partition="persist:webview"
     />
   );
