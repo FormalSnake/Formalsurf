@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useCallback } from "react";
 import { useAtom } from "jotai";
 import { activeTabRefAtom, tabsAtom, useCloseTab, useCreateNewTab } from "@/providers/TabProvider";
-import { isNewTabDialogOpen } from "./components/NewTab";
+import { isNewTabDialogOpen, tabBarUrl } from "./components/NewTab";
 import { sidebarOpenAtom } from "./components/ui/sidebar";
 import BaseLayout from "./Layout";
 
@@ -77,7 +77,7 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
     //   console.log("Setting active tab", ref.current);
     //   setActiveTab(ref.current);
     // }
-  }, [tabs]);
+  }, [tabs, setTabs]);
 
   return (
     <webview
@@ -85,7 +85,8 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
       src={tab.url}
       className={`w-full h-full bg-foreground ${isActive ? "" : "hidden"}`}
       webpreferences="autoplayPolicy=user-gesture-required,defaultFontSize=16,contextIsolation=true,nodeIntegration=false,sandbox=true,webSecurity=true"
-      allowpopups
+      // @ts-ignore
+      allowpopups="true"
       partition="persist:webview"
     />
   );
@@ -156,7 +157,6 @@ function App(): JSX.Element {
       },
     event
   );
-
   // useEffect(() => {
   //   // @ts-ignore
   //   window.api.handle("open-url", handleOpenUrl);
@@ -170,8 +170,8 @@ function App(): JSX.Element {
   return (
     <BaseLayout>
       <div className="w-full h-full">
-        {tabs.map((tab: any, index: number) => (
-          <Tab key={index} tab={tab} isActive={tab.isActive} />
+        {tabs.map((tab) => (
+          <Tab key={tab.id} tab={tab} isActive={tab.isActive} />
         ))}
         {tabs.length === 0 && (
           <div className="w-full h-full flex justify-center items-center text-foreground">

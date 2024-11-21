@@ -6,6 +6,7 @@ import { useCreateNewTab } from "@/providers/TabProvider";
 import { Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "./ui/command";
 
 export const isNewTabDialogOpen = atom(false);
+export const tabBarUrl = atom("");
 
 export function NewTabDialog() {
   const [open, setOpen] = useAtom(isNewTabDialogOpen);

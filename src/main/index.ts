@@ -45,6 +45,15 @@ const template = [
           }
         },
       },
+      // {
+      //   label: "Open URL bar",
+      //   accelerator: "CmdOrCtrl+L",
+      //   click: (menuItem, browserWindow) => {
+      //     if (browserWindow) {
+      //       browserWindow.webContents.send("open-url-bar");
+      //     }
+      //   },
+      // }
     ]
   },
   // { role: 'editMenu' }

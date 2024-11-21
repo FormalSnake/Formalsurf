@@ -43,7 +43,7 @@ const ActionButton = React.memo(
 const TabList = React.memo(({ tabs }: { tabs: any[] }) => (
   <SidebarMenu>
     {tabs.map((item, index) => (
-      <SidebarMenuItem key={index}>
+      <SidebarMenuItem key={item.id}>
         <SidebarMenuButton asChild>
           <TabLink tab={item} />
         </SidebarMenuButton>
@@ -80,7 +80,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar {...props} className="draglayer" >
       <SidebarContent className={`${isMacOS ? "mt-6" : ""} draglayer`}>
         <SidebarGroup className="nodraglayer">
-          <div className="flex h-full w-full flex-row gap-1 p-1 justify-evenly">
+          <div className="flex flex-row gap-1 p-1 justify-evenly">
             <AddTabButton onClick={handleAddTab} />
             <SidebarTrigger />
             <ActionButton

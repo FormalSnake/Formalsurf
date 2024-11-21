@@ -3,6 +3,7 @@ import { ipcRenderer } from "electron";
 import { atom, useAtom } from "jotai";
 import { Globe, X } from "lucide-react";
 import React, { useEffect } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 const atomWithLocalStorage = (key: string, initialValue: any) => {
   const getInitialValue = () => {
@@ -37,6 +38,7 @@ const atomWithLocalStorage = (key: string, initialValue: any) => {
 // Define the tabsAtom with webviewRefs
 export const tabsAtom = atomWithLocalStorage("FormalTabs", [
   {
+    id: uuidv4(),
     url: "https://www.google.com",
     title: "Google",
     webviewRef: null,
@@ -56,6 +58,7 @@ export function useCreateNewTab() {
 
   function createNewTab({ url = "https://www.google.com" }: { url?: string }) {
     const newTab = {
+      id: uuidv4(),
       url,
       title: "New tab",
       webviewRef: React.createRef(),
@@ -74,19 +77,26 @@ export function useCreateNewTab() {
 }
 
 export function useCloseTab() {
-  const [tabs, setTabs] = useAtom(tabsAtom)
+  const [tabs, setTabs] = useAtom(tabsAtom);
 
-  function closeTab() {
+  function closeTab(tabToClose: any = null) {
     setTabs((prevTabs) => {
-      // Find the index of the active tab
-      const activeIndex = prevTabs.findIndex((tab) => tab.isActive);
+      let activeIndex;
+
+      if (tabToClose) {
+        // Find the index of the specified tab
+        activeIndex = prevTabs.findIndex((tab) => tab === tabToClose);
+      } else {
+        // Find the index of the active tab
+        activeIndex = prevTabs.findIndex((tab) => tab.isActive);
+      }
 
       if (activeIndex === -1) {
-        // If no active tab is found, return the current tabs (shouldn't happen in a valid state)
+        // If no tab is found, return the current tabs
         return prevTabs;
       }
 
-      // Remove the active tab from the array
+      // Remove the specified tab from the array
       const updatedTabs = prevTabs.filter((_, index) => index !== activeIndex);
 
       // If there are still tabs left, set the next closest one to active
@@ -100,7 +110,7 @@ export function useCloseTab() {
     });
   }
 
-  return closeTab
+  return closeTab;
 }
 
 export const TabLink = ({ tab }: { tab: any }) => {
@@ -116,7 +126,7 @@ export const TabLink = ({ tab }: { tab: any }) => {
 
   const closeTabEvent = (event: any) => {
     event.stopPropagation(); // Prevent triggering setActiveTab when closing
-    closeTab();
+    closeTab(tab);
     // setTabs((prevTabs: any[]) => {
     //   const updatedTabs = prevTabs.filter((item) => item.webviewRef !== tab.webviewRef);
     //
