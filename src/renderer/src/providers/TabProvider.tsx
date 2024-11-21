@@ -26,14 +26,14 @@ const atomWithLocalStorage = (key: string, initialValue: any) => {
         ? nextValue.map((tab) => ({ ...tab, webviewRef: undefined }))
         : nextValue;
 
-      set(baseAtom, nextValue);
+      // Update both atom and localStorage with the same sanitized value
+      set(baseAtom, sanitizedValue);
       localStorage.setItem(key, JSON.stringify(sanitizedValue));
     }
   );
 
   return derivedAtom;
 };
-
 
 // Define the tabsAtom with webviewRefs
 export const tabsAtom = atomWithLocalStorage("FormalTabs", [
