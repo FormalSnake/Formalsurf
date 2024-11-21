@@ -58,15 +58,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const createNewTab = useCreateNewTab();
   const [activeTab, setActiveTab] = useAtom(activeTabRefAtom);
 
-  const isMacOS = useMemo(
-    () => typeof navigator !== "undefined" && /Mac/i.test(navigator.platform),
-    []
-  );
-
   const handleAddTab = useCallback(() => setTabDialogOpen(true), [setTabDialogOpen]);
 
   // handleAction but every time it is called it looks for the tab with the activeTab being true
   const handleAction = useCallback((action: "reload" | "goBack" | "goForward") => {
+    console.log("Action", action)
     // const activeTab = tabs.find((tab) => tab.isActive);
     // console.log("Active tab", activeTab)
     if (activeTab) {
@@ -75,6 +71,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       if (action === "goForward") activeTab.goForward();
     }
   }, [tabs, activeTab]);
+
+  // @ts-ignore
+  window.api.handle("reload",
+    (event: any, data: any) =>
+      function(event: any, data: any) {
+        console.log("reload")
+        handleAction("reload")
+        // remove api handler
+      },
+    event
+  );
 
   return (
     <Sidebar {...props} className="draglayer" >

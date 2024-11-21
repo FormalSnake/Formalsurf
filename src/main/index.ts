@@ -2,13 +2,10 @@ import { app, shell, BrowserWindow, ipcMain, Menu } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-// import contextMenu from 'electron-context-menu';
+import contextMenu from 'electron-context-menu';
 
 const isMac = process.platform === 'darwin'
 
-// contextMenu({
-//   showSaveImageAs: true
-// });
 
 const template = [
   // { role: 'appMenu' }
@@ -96,7 +93,16 @@ const template = [
   {
     label: 'View',
     submenu: [
-      { role: 'reload' },
+      { label: 'Reload app', role: 'reload', accelerator: 'option+CmdOrCtrl+R' },
+      {
+        label: 'Reload',
+        accelerator: 'CmdOrCtrl+R',
+        click: (menuItem, browserWindow) => {
+          if (browserWindow) {
+            browserWindow.webContents.send("reload");
+          }
+        }
+      },
       { role: 'forceReload' },
       { role: 'toggleDevTools' },
       { type: 'separator' },
@@ -167,6 +173,7 @@ function createWindow(): void {
       // webSecurity: false,
     }
   })
+
   // @ts-ignore
   const menu = Menu.buildFromTemplate(template)
   Menu.setApplicationMenu(menu)
@@ -229,6 +236,27 @@ app.whenReady().then(() => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 })
+
+app.on("web-contents-created", (e, contents) => {
+  if (contents.getType() == "webview") {
+    // set context menu in webview contextMenu({ window: contents, });
+    contextMenu({
+      window: contents,
+      prepend: (defaultActions, params, mainWindow) => [
+        // Can add custom right click actions here
+      ],
+      showInspectElement: true,
+      showSaveImageAs: true,
+      showSaveImage: true,
+      showCopyImageAddress: true,
+      showCopyImage: true,
+      showCopyVideoAddress: true,
+      showSaveVideo: true,
+      showSaveVideoAs: true,
+    },
+    );
+  }
+});
 
 app.userAgentFallback = app.userAgentFallback.replace('Chrome/' + process.versions.chrome, 'Chrome');
 
