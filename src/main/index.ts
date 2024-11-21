@@ -2,8 +2,13 @@ import { app, shell, BrowserWindow, ipcMain, Menu } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+// import contextMenu from 'electron-context-menu';
 
 const isMac = process.platform === 'darwin'
+
+// contextMenu({
+//   showSaveImageAs: true
+// });
 
 const template = [
   // { role: 'appMenu' }
@@ -150,8 +155,9 @@ function createWindow(): void {
     height: 670,
     show: false,
     autoHideMenuBar: true,
-    titleBarStyle: "hidden",
+    titleBarStyle: "hiddenInset",
     trafficLightPosition: { x: 12, y: 15 },
+    backgroundColor: "#09090b",
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
@@ -161,7 +167,7 @@ function createWindow(): void {
       // webSecurity: false,
     }
   })
-
+  // @ts-ignore
   const menu = Menu.buildFromTemplate(template)
   Menu.setApplicationMenu(menu)
 
@@ -180,6 +186,16 @@ function createWindow(): void {
     shell.openExternal(details.url)
     return { action: 'deny' }
   })
+
+  ipcMain.on('toggle-traffic-lights', (event, show) => {
+    if (show) {
+      mainWindow.setWindowButtonVisibility(true)
+      console.log("Show traffic lights")
+    } else {
+      mainWindow.setWindowButtonVisibility(false)
+      console.log("Hide traffic lights")
+    }
+  });
 
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
@@ -204,8 +220,6 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // IPC test
-  ipcMain.on('ping', () => console.log('pong'))
 
   createWindow()
 

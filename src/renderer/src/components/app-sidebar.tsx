@@ -17,7 +17,7 @@ import { activeTabRefAtom, TabLink, tabsAtom, useCreateNewTab } from "@/provider
 import { isNewTabDialogOpen } from "./NewTab";
 
 const AddTabButton = React.memo(({ onClick }: { onClick: () => void }) => (
-  <Button onClick={onClick} className="ml-2 h-7 w-7 group/addtab" size="icon" variant="ghost">
+  <Button onClick={onClick} className="h-7 w-7 group/addtab" size="icon" variant="ghost">
     <Plus className="group-hover/addtab:scale-110 ease-in-out transition-transform duration-200" size={16} />
   </Button>
 ));
@@ -34,7 +34,7 @@ const ActionButton = React.memo(
     Icon: any;
     hoverClass: string;
   }) => (
-    <Button className={`ml-2 h-7 w-7 ${className}`} size="icon" variant="ghost" onClick={onClick}>
+    <Button className={`h-7 w-7 ${className}`} size="icon" variant="ghost" onClick={onClick}>
       <Icon className={hoverClass} size={16} />
     </Button>
   )
@@ -74,34 +74,34 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       if (action === "goBack") activeTab.goBack();
       if (action === "goForward") activeTab.goForward();
     }
-  }, [tabs]);
+  }, [tabs, activeTab]);
 
   return (
     <Sidebar {...props} className="draglayer" >
-      <SidebarContent className={`${isMacOS ? "mt-6" : ""} draglayer`}>
+      <div className="flex flex-row mt-2.5 ml-16 justify-evenly nodraglayer">
+        <AddTabButton onClick={handleAddTab} />
+        <SidebarTrigger />
+        <ActionButton
+          className="group/refresh"
+          onClick={() => handleAction("reload")}
+          Icon={RefreshCcw}
+          hoverClass="group-hover/refresh:rotate-180 ease-in-out transition-transform duration-200"
+        />
+        <ActionButton
+          className="group/goback"
+          onClick={() => handleAction("goBack")}
+          Icon={ArrowLeft}
+          hoverClass="group-hover/goback:translate-x-[-4px] ease-in-out transition-transform duration-200"
+        />
+        <ActionButton
+          className="group/goforward"
+          onClick={() => handleAction("goForward")}
+          Icon={ArrowRight}
+          hoverClass="group-hover/goforward:translate-x-1 ease-in-out transition-transform duration-200"
+        />
+      </div>
+      <SidebarContent className={`draglayer`}>
         <SidebarGroup className="nodraglayer">
-          <div className="flex flex-row gap-1 p-1 justify-evenly">
-            <AddTabButton onClick={handleAddTab} />
-            <SidebarTrigger />
-            <ActionButton
-              className="group/refresh"
-              onClick={() => handleAction("reload")}
-              Icon={RefreshCcw}
-              hoverClass="group-hover/refresh:rotate-180 ease-in-out transition-transform duration-200"
-            />
-            <ActionButton
-              className="group/goback"
-              onClick={() => handleAction("goBack")}
-              Icon={ArrowLeft}
-              hoverClass="group-hover/goback:translate-x-[-4px] ease-in-out transition-transform duration-200"
-            />
-            <ActionButton
-              className="group/goforward"
-              onClick={() => handleAction("goForward")}
-              Icon={ArrowRight}
-              hoverClass="group-hover/goforward:translate-x-1 ease-in-out transition-transform duration-200"
-            />
-          </div>
           <SidebarGroupContent>
             <TabList tabs={tabs} />
           </SidebarGroupContent>

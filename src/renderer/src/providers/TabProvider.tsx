@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { ipcRenderer } from "electron";
 import { atom, useAtom } from "jotai";
 import { Globe, X } from "lucide-react";
 import React, { useEffect } from "react";
@@ -118,9 +117,9 @@ export const TabLink = ({ tab }: { tab: any }) => {
   const closeTab = useCloseTab();
 
   const setActiveTab = () => {
-    setTabs(tabs.map((item: { url: any; }) => ({
+    setTabs(tabs.map((item: { id: any; }) => ({
       ...item,
-      isActive: item.url === tab.url,
+      isActive: item.id === tab.id,
     })));
   };
 

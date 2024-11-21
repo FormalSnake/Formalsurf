@@ -4,7 +4,8 @@ import { electronAPI } from '@electron-toolkit/preload'
 // Custom APIs for renderer
 const api = {
   send: (channel: string, data: any) => ipcRenderer.invoke(channel, data),
-  handle: (channel: string, callable: (arg0: any, arg1: any) => (event: Electron.IpcRendererEvent, ...args: any[]) => void, event: any, data: any) => ipcRenderer.on(channel, callable(event, data))
+  handle: (channel: string, callable: (arg0: any, arg1: any) => (event: Electron.IpcRendererEvent, ...args: any[]) => void, event: any, data: any) => ipcRenderer.on(channel, callable(event, data)),
+  toggleTrafficLights: (show) => ipcRenderer.send('toggle-traffic-lights', show),
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

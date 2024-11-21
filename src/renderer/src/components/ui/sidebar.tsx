@@ -115,6 +115,8 @@ const SidebarProvider = React.forwardRef<
         setOpenMobile(sidebarOpen)
       } else {
         setOpen(sidebarOpen)
+        // @ts-ignore
+        window.api.toggleTrafficLights(sidebarOpen);
       }
     }, [sidebarOpen, open])
 

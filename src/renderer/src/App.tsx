@@ -15,52 +15,67 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
   useEffect(() => {
     const webview = ref.current;
 
+    // @ts-ignore
     if (webview && !webview.hasListeners) {
       console.log(`Adding listeners for tab ${tab.url}`);
 
-      const updateTabState = (update: Partial<typeof tab>) => {
-        setTabs((prevTabs) =>
-          prevTabs.map((prevTab) =>
-            prevTab.url === tab.url ? { ...prevTab, ...update } : prevTab
-          )
-        );
+      const updateTabState = (id: string, update: Partial<typeof tab>) => {
+        setTabs((prevTabs) => {
+          const tabExists = prevTabs.some((prevTab) => prevTab.id === id);
+          if (!tabExists) {
+            console.warn(`Tab with id ${id} not found!`);
+            return prevTabs;
+          }
+          return prevTabs.map((prevTab) =>
+            prevTab.id === id ? { ...prevTab, ...update } : prevTab
+          );
+        });
+      };
+      const navigateHandler = (id: string, event: { url: string }) => {
+        console.log(`NavigateHandler triggered for id: ${id}, url: ${event.url}`);
+        updateTabState(id, { url: event.url });
       };
 
-      // if (webview && activeTab && activeTab.url === tab.url) {
-      //   console.log("Setting active tab", webview);
-      //   setActiveTab(webview);
-      // }
-
-      // Safe event listener addition
-      const navigateHandler = (event: { url: string }) => {
-        console.log("did-navigate", event.url);
-        updateTabState({ url: event.url });
+      const titleHandler = (id: string, event: { title: string }) => {
+        console.log(`TitleHandler triggered for id: ${id}, title: ${event.title}`);
+        updateTabState(id, { title: event.title });
       };
 
-      const titleHandler = (event: { title: string }) => {
-        console.log("page-title-updated", event.title);
-        updateTabState({ title: event.title });
-      };
-
-      const faviconHandler = (event: { favicons: string[] }) => {
-        console.log("page-favicon-updated", event.favicons);
+      const faviconHandler = (id: string, event: { favicons: string[] }) => {
+        console.log(`FaviconHandler triggered for id: ${id}, favicons: ${event.favicons}`);
         if (event.favicons.length > 0) {
-          updateTabState({ favicon: event.favicons[0] });
+          updateTabState(id, { favicon: event.favicons[0] });
         }
       };
+      // Updated navigateHandler to use `id` instead of `url`
+      webview.addEventListener('did-navigate', (event) => {
+        // @ts-ignore
+        navigateHandler(tab.id, event);
+      });
 
-      webview.addEventListener('did-navigate', navigateHandler);
-      webview.addEventListener('page-title-updated', titleHandler);
-      webview.addEventListener('page-favicon-updated', faviconHandler);
+      webview.addEventListener('page-title-updated', (event) => {
+        // @ts-ignore
+        titleHandler(tab.id, event);
+      });
+
+      webview.addEventListener('page-favicon-updated', (event) => {
+        // @ts-ignore
+        faviconHandler(tab.id, event);
+      });
+      // @ts-ignore
 
       // Prevent redundant listeners
       webview.hasListeners = true;
 
       // Cleanup function
       return () => {
+        // @ts-ignore
         webview.removeEventListener('did-navigate', navigateHandler);
+        // @ts-ignore
         webview.removeEventListener('page-title-updated', titleHandler);
+        // @ts-ignore
         webview.removeEventListener('page-favicon-updated', faviconHandler);
+        // @ts-ignore
         webview.hasListeners = false;
       };
     }
