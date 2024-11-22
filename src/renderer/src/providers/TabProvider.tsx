@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { atom, useAtom } from "jotai";
 import { Globe, X, Pin, PinOff } from "lucide-react";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { motion, AnimatePresence } from "framer-motion";
+
 
 const atomWithLocalStorage = (key: string, initialValue: any) => {
   const getInitialValue = () => {
@@ -137,6 +139,7 @@ export const TabLink = ({ tab }: { tab: any }) => {
   const [tabs, setTabs] = useAtom(tabsAtom);
   const closeTab = useCloseTab();
   const togglePinTab = useTogglePinTab();
+  const [isHovered, setIsHovered] = useState(false);
 
   const setActiveTab = () => {
     setTabs(
@@ -158,25 +161,55 @@ export const TabLink = ({ tab }: { tab: any }) => {
   };
 
   return (
-    <Button
-      onClick={setActiveTab}
-      className="flex-grow text-left w-full"
-      variant={tab.isActive ? "secondary" : "ghost"}
-    >
-      {tab.favicon ? (
-        <img src={getFavicon(tab)} className="h-4 w-4 mr-2 " />
-      ) : (
-        <Globe className="h-4 w-4 mr-2" />
-      )}
-      <span className="w-full truncate">{tab.title}</span>
-      <Button onClick={pinTabEvent} className="h-7 w-7" size="icon" variant="link">
-        {tab.pinned ? <PinOff size={16} /> : <Pin size={16} />}
-      </Button>
-      {!tab.pinned && ( // Only render the close button if the tab is not pinned
-        <Button onClick={closeTabEvent} className="h-7 w-7" size="icon" variant="link">
-          <X size={16} />
+    <AnimatePresence>
+      <motion.div
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        initial={{ scale: 0.5, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.5, opacity: 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        className="w-full"
+      >
+        <Button
+          onClick={setActiveTab}
+          className="flex items-center text-left w-full relative"
+          variant={tab.isActive ? "secondary" : "ghost"}
+        >
+          {tab.favicon ? (
+            <img src={getFavicon(tab)} className="h-4 w-4 mr-2" />
+          ) : (
+            <Globe className="h-4 w-4 mr-2" />
+          )}
+          <motion.span
+            className="truncate flex-grow"
+            animate={{ marginRight: isHovered ? '55px' : '0px' }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+          >
+            {tab.title}
+          </motion.span>
+          <AnimatePresence>
+            {isHovered && (
+              <motion.div
+                className="flex space-x-1 absolute right-0 mr-2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Button onClick={pinTabEvent} className="h-7 w-7" size="icon" variant="link">
+                  {tab.pinned ? <PinOff size={16} /> : <Pin size={16} />}
+                </Button>
+                {!tab.pinned && ( // Only render the close button if the tab is not pinned
+                  <Button onClick={closeTabEvent} className="h-7 w-7" size="icon" variant="link">
+                    <X size={16} />
+                  </Button>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </Button>
-      )}
-    </Button>
+      </motion.div>
+    </AnimatePresence>
   );
 };

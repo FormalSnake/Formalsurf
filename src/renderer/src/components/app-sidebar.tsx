@@ -91,6 +91,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     (event: any, data: any) =>
       function(event: any, data: any) {
         console.log("reload")
+        console.log("Current active tab:", activeTab);
         handleAction("reload")
         // remove api handler
       },

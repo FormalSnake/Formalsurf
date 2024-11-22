@@ -1,10 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: ["class"],
-  content: [
-    "./src/renderer/index.html",
-    "./src/renderer/src/**/*.{js,ts,jsx,tsx}",
-  ],
+  darkMode: ['class'],
+  content: ['./src/renderer/index.html', './src/renderer/src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     container: {
       center: 'true',
@@ -60,7 +57,7 @@ module.exports = {
         }
       },
       fontFamily: {
-        sans: ["Geist", "sans-serif"]
+        sans: ['Geist', 'sans-serif']
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -83,14 +80,27 @@ module.exports = {
           to: {
             height: '0'
           }
+        },
+        meteor: {
+          '0%': { transform: 'rotate(215deg) translateX(0)', opacity: 1 },
+          '70%': { opacity: 1 },
+          '100%': {
+            transform: 'rotate(215deg) translateX(-500px)',
+            opacity: 0
+          }
+        },
+        pulse: {
+          '0%, 100%': { boxShadow: '0 0 0 0 var(--pulse-color)' },
+          '50%': { boxShadow: '0 0 0 8px var(--pulse-color)' }
         }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
-        'accordion-up': 'accordion-up 0.2s ease-out'
+        'accordion-up': 'accordion-up 0.2s ease-out',
+        meteor: 'meteor 5s linear infinite',
+        pulse: 'pulse var(--duration) ease-out infinite'
       }
     }
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require('tailwindcss-animate')]
 }
-

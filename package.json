@@ -35,6 +35,7 @@
     "electron-updater": "^6.1.7",
     "jotai": "^2.10.2",
     "lucide-react": "^0.460.0",
+    "motion": "^11.11.17",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^11.0.3"
