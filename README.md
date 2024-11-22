@@ -1,6 +1,6 @@
 # Formalsurf web browser
 
-[screenshot](https://github.com/FormalSnake/Formalsurf/blob/main/assets/screenshot.png)
+![screenshot](https://github.com/FormalSnake/Formalsurf/blob/main/assets/screenshot.png)
 
 A simple web browser built with Electron and React, it is not the most efficient but it works pretty well and is mostly just an experiment.
 
