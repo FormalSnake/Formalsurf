@@ -69,7 +69,10 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
 
       webview.addEventListener('did-navigate-in-page', (event) => {
         // @ts-ignore
-        navigateHandler(tab.id, event)
+        if (event.isMainFrame) {
+          // @ts-ignore
+          navigateHandler(tab.id, event)
+        }
       })
       // @ts-ignore
 
@@ -88,7 +91,7 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
         webview.hasListeners = false
       }
     }
-    return () => {}
+    return () => { }
   }, [ref, tab.url, setTabs])
 
   // useEffect that changes setActiveTab to use the ref of the current active tabs webveiew
@@ -136,7 +139,7 @@ function App(): JSX.Element {
   window.api.handle(
     'open-url',
     (event: any, data: any) =>
-      function (event: any, data: any) {
+      function(event: any, data: any) {
         createNewTab({ url: data })
       },
     event
@@ -146,7 +149,7 @@ function App(): JSX.Element {
   window.api.handle(
     'close-active-tab',
     (event: any, data: any) =>
-      function (event: any, data: any) {
+      function(event: any, data: any) {
         console.log('close-active-tab')
         closeTab()
         // remove api handler
@@ -160,7 +163,7 @@ function App(): JSX.Element {
   window.api.handle(
     'new-tab',
     (event: any, data: any) =>
-      function (event: any, data: any) {
+      function(event: any, data: any) {
         console.log('new-tab')
         setIsUpdate(false)
         setTabDialogOpen(true)
@@ -178,7 +181,7 @@ function App(): JSX.Element {
   window.api.handle(
     'toggle-sidebar',
     (event: any, data: any) =>
-      function (event: any, data: any) {
+      function(event: any, data: any) {
         console.log('toggle-sidebar')
         setSidebarOpen((open) => !open)
         console.log(sidebarOpen)
@@ -193,7 +196,7 @@ function App(): JSX.Element {
   window.api.handle(
     'open-url-bar',
     (event: any, data: any) =>
-      function (event: any, data: any) {
+      function(event: any, data: any) {
         console.log('open-url-bar')
         setIsUpdate(true)
         setTabDialogOpen(true)

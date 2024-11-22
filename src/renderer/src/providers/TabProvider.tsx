@@ -160,6 +160,16 @@ export const TabLink = ({ tab }: { tab: any }) => {
     togglePinTab(tab);
   };
 
+  const textMargin = () => {
+    if (isHovered) {
+      if (tab.pinned) {
+        return '25px'
+      }
+      return '55px'
+    }
+    return '0px'
+  }
+
   return (
     <AnimatePresence>
       <motion.div
@@ -183,7 +193,7 @@ export const TabLink = ({ tab }: { tab: any }) => {
           )}
           <motion.span
             className="truncate flex-grow"
-            animate={{ marginRight: isHovered ? '55px' : '0px' }}
+            animate={{ marginRight: textMargin() }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
           >
             {tab.title}

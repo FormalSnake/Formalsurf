@@ -242,12 +242,12 @@ app.on('web-contents-created', (e, contents) => {
   }
 })
 
-app.userAgentFallback = app.userAgentFallback.replace('Chrome/' + process.versions.chrome, 'Chrome')
-// const newUserAgent = app.userAgentFallback.replace(
-//   /Chrome\/[\d.]+/,
-//   'Chrome/131.0.0.0' // Example: Update to a recent Chrome version
-// )
-// app.userAgentFallback = newUserAgent
+// app.userAgentFallback = app.userAgentFallback.replace('Chrome/' + process.versions.chrome, 'Chrome')
+const newUserAgent = app.userAgentFallback.replace(
+  /Chrome\/[\d.]+/,
+  'Chrome/131.0.0.0' // Example: Update to a recent Chrome version
+)
+app.userAgentFallback = newUserAgent
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
