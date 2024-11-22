@@ -16,10 +16,13 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
   // Ensure ref is always initialized, even if it wasn't before
   const ref = useRef<HTMLWebViewElement | null>(tab.webviewRef?.current || null)
 
+  // Local state to manage the webview's src independently
+  const initialSrc = useRef(tab.url) // Store initial URL to prevent re-renders
+  const [currentUrl, setCurrentUrl] = React.useState(initialSrc.current)
+
   useEffect(() => {
     const webview = ref.current
 
-    // @ts-ignore
     if (webview && !webview.hasListeners) {
       console.log(`Adding listeners for tab ${tab.url}`)
 
@@ -35,9 +38,13 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
           )
         })
       }
+
       const navigateHandler = (id: string, event: { url: string }) => {
         console.log(`NavigateHandler triggered for id: ${id}, url: ${event.url}`)
-        updateTabState(id, { url: event.url })
+        if (event.url !== currentUrl) {
+          setCurrentUrl(event.url) // Update local state without triggering a WebView reload
+          updateTabState(id, { url: event.url })
+        }
       }
 
       const titleHandler = (id: string, event: { title: string }) => {
@@ -51,68 +58,51 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
           updateTabState(id, { favicon: event.favicons[0] })
         }
       }
-      // Updated navigateHandler to use `id` instead of `url`
+
       webview.addEventListener('did-navigate', (event) => {
-        // @ts-ignore
         navigateHandler(tab.id, event)
       })
 
+      webview.addEventListener('did-navigate-in-page', (event) => {
+        if (event.isMainFrame) {
+          navigateHandler(tab.id, event)
+        }
+      })
+
       webview.addEventListener('page-title-updated', (event) => {
-        // @ts-ignore
         titleHandler(tab.id, event)
       })
 
       webview.addEventListener('page-favicon-updated', (event) => {
-        // @ts-ignore
         faviconHandler(tab.id, event)
       })
 
-      webview.addEventListener('did-navigate-in-page', (event) => {
-        // @ts-ignore
-        if (event.isMainFrame) {
-          // @ts-ignore
-          navigateHandler(tab.id, event)
-        }
-      })
-      // @ts-ignore
-
-      // Prevent redundant listeners
       webview.hasListeners = true
 
       // Cleanup function
       return () => {
-        // @ts-ignore
         webview.removeEventListener('did-navigate', navigateHandler)
-        // @ts-ignore
+        webview.removeEventListener('did-navigate-in-page', navigateHandler)
         webview.removeEventListener('page-title-updated', titleHandler)
-        // @ts-ignore
         webview.removeEventListener('page-favicon-updated', faviconHandler)
-        // @ts-ignore
         webview.hasListeners = false
       }
     }
-    return () => { }
-  }, [ref, tab.url, setTabs])
+  }, [ref, tab.id, setTabs, currentUrl])
 
-  // useEffect that changes setActiveTab to use the ref of the current active tabs webveiew
+  // Keep the active tab reference updated
   useEffect(() => {
-    const activeTab = tabs.find((tab) => tab.isActive)
-    if (ref.current && activeTab && activeTab.url === tab.url) {
+    if (isActive && ref.current) {
       setActiveTab(ref.current)
     }
-    // if (ref.current && activeTab && activeTab.url === tab.url) {
-    //   console.log("Setting active tab", ref.current);
-    //   setActiveTab(ref.current);
-    // }
-  }, [tabs, setTabs])
+  }, [isActive, setActiveTab])
 
   return (
     <webview
       ref={ref}
-      src={tab.url}
+      src={initialSrc.current} // Use the initial source only
       className={`w-full h-full bg-foreground ${isActive ? '' : 'hidden'}`}
       webpreferences="autoplayPolicy=user-gesture-required,defaultFontSize=16,contextIsolation=true,nodeIntegration=false,sandbox=true,webSecurity=true"
-      // @ts-ignore
       allowpopups="true"
       partition="persist:webview"
     />
@@ -139,7 +129,7 @@ function App(): JSX.Element {
   window.api.handle(
     'open-url',
     (event: any, data: any) =>
-      function(event: any, data: any) {
+      function (event: any, data: any) {
         createNewTab({ url: data })
       },
     event
@@ -149,7 +139,7 @@ function App(): JSX.Element {
   window.api.handle(
     'close-active-tab',
     (event: any, data: any) =>
-      function(event: any, data: any) {
+      function (event: any, data: any) {
         console.log('close-active-tab')
         closeTab()
         // remove api handler
@@ -163,7 +153,7 @@ function App(): JSX.Element {
   window.api.handle(
     'new-tab',
     (event: any, data: any) =>
-      function(event: any, data: any) {
+      function (event: any, data: any) {
         console.log('new-tab')
         setIsUpdate(false)
         setTabDialogOpen(true)
@@ -181,7 +171,7 @@ function App(): JSX.Element {
   window.api.handle(
     'toggle-sidebar',
     (event: any, data: any) =>
-      function(event: any, data: any) {
+      function (event: any, data: any) {
         console.log('toggle-sidebar')
         setSidebarOpen((open) => !open)
         console.log(sidebarOpen)
@@ -196,7 +186,7 @@ function App(): JSX.Element {
   window.api.handle(
     'open-url-bar',
     (event: any, data: any) =>
-      function(event: any, data: any) {
+      function (event: any, data: any) {
         console.log('open-url-bar')
         setIsUpdate(true)
         setTabDialogOpen(true)
