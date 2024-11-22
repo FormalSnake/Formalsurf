@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useCallback } from "react";
 import { useAtom } from "jotai";
 import { activeTabRefAtom, tabsAtom, useCloseTab, useCreateNewTab } from "@/providers/TabProvider";
-import { isNewTabDialogOpen, tabBarUrl } from "./components/NewTab";
+import { isNewTabDialogOpen, isUpdateAtom, NewTabDialog, tabBarUrl } from "./components/NewTab";
 import { sidebarOpenAtom } from "./components/ui/sidebar";
 import BaseLayout from "./Layout";
 
@@ -114,6 +114,7 @@ function App(): JSX.Element {
   const initializedTabs = useRef<Set<number>>(new Set()); // Track initialized tabs
   const [tabDialogOpen, setTabDialogOpen] = useAtom(isNewTabDialogOpen);
   const [sidebarOpen, setSidebarOpen] = useAtom(sidebarOpenAtom)
+  const [isUpdate, setIsUpdate] = useAtom(isUpdateAtom)
 
   const handleOpenUrl = useCallback(
     (event: any, data: any) => {
@@ -150,7 +151,10 @@ function App(): JSX.Element {
     (event: any, data: any) =>
       function(event: any, data: any) {
         console.log("new-tab")
+        setIsUpdate(false)
         setTabDialogOpen(true);
+        // Pass false to indicate creating a new tab
+        // <NewTabDialog isUpdate={false} />
         // remove api handler
         // @ts-ignore
         window.api.removeHandler("new-tab", setTabDialogOpen);
@@ -172,6 +176,23 @@ function App(): JSX.Element {
       },
     event
   );
+
+  // @ts-ignore
+  window.api.handle("open-url-bar",
+    (event: any, data: any) =>
+      function(event: any, data: any) {
+        console.log("open-url-bar")
+        setIsUpdate(true)
+        setTabDialogOpen(true);
+        // Pass true to indicate updating an existing tab
+        // <NewTabDialog isUpdate={true} />
+        // remove api handler
+        // @ts-ignore
+        window.api.removeHandler("open-url-bar", setTabDialogOpen);
+      },
+    event
+  );
+
   // useEffect(() => {
   //   // @ts-ignore
   //   window.api.handle("open-url", handleOpenUrl);

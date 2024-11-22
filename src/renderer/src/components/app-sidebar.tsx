@@ -15,6 +15,7 @@ import { Plus, RefreshCcw, ArrowLeft, ArrowRight } from "lucide-react";
 import { useAtom } from "jotai";
 import { activeTabRefAtom, TabLink, tabsAtom, useCreateNewTab } from "@/providers/TabProvider";
 import { isNewTabDialogOpen } from "./NewTab";
+import { Separator } from "./ui/separator";
 
 const AddTabButton = React.memo(({ onClick }: { onClick: () => void }) => (
   <Button onClick={onClick} className="h-7 w-7 group/addtab" size="icon" variant="ghost">
@@ -40,17 +41,30 @@ const ActionButton = React.memo(
   )
 );
 
-const TabList = React.memo(({ tabs }: { tabs: any[] }) => (
-  <SidebarMenu>
-    {tabs.map((item, index) => (
-      <SidebarMenuItem key={item.id}>
-        <SidebarMenuButton asChild>
-          <TabLink tab={item} />
-        </SidebarMenuButton>
-      </SidebarMenuItem>
-    ))}
-  </SidebarMenu>
-));
+const TabList = React.memo(({ tabs }: { tabs: any[] }) => {
+  const pinnedTabs = tabs.filter((tab) => tab.pinned);
+  const unpinnedTabs = tabs.filter((tab) => !tab.pinned);
+
+  return (
+    <SidebarMenu>
+      {pinnedTabs.map((item) => (
+        <SidebarMenuItem key={item.id}>
+          <SidebarMenuButton asChild>
+            <TabLink tab={item} />
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      ))}
+      {pinnedTabs.length > 0 && <Separator />}
+      {unpinnedTabs.map((item) => (
+        <SidebarMenuItem key={item.id}>
+          <SidebarMenuButton asChild>
+            <TabLink tab={item} />
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      ))}
+    </SidebarMenu>
+  );
+});
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [tabs, setTabs] = useAtom(tabsAtom);

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { atom, useAtom } from "jotai";
-import { Globe, X } from "lucide-react";
+import { Globe, X, Pin, PinOff } from "lucide-react";
 import React, { useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 
@@ -42,7 +42,8 @@ export const tabsAtom = atomWithLocalStorage("FormalTabs", [
     title: "Google",
     webviewRef: null,
     isActive: true,
-    favicon: ""
+    favicon: "",
+    pinned: false,
   },
 ]);
 
@@ -90,8 +91,8 @@ export function useCloseTab() {
         activeIndex = prevTabs.findIndex((tab) => tab.isActive);
       }
 
-      if (activeIndex === -1) {
-        // If no tab is found, return the current tabs
+      if (activeIndex === -1 || prevTabs[activeIndex].pinned) {
+        // If no tab is found or the tab is pinned, return the current tabs
         return prevTabs;
       }
 
@@ -112,62 +113,70 @@ export function useCloseTab() {
   return closeTab;
 }
 
+export function useTogglePinTab() {
+  const [tabs, setTabs] = useAtom(tabsAtom);
+
+  function togglePinTab(tabToToggle: any) {
+    setTabs((prevTabs) =>
+      prevTabs.map((tab) =>
+        tab.id === tabToToggle.id ? { ...tab, pinned: !tab.pinned } : tab
+      )
+    );
+  }
+
+  return togglePinTab;
+}
+
+// Define the getFavicon function
+function getFavicon(tab: any): string {
+  // Assuming the favicon URL is stored in the tab object
+  return tab.favicon || 'default-favicon-url'; // Replace 'default-favicon-url' with a fallback URL if needed
+}
+
 export const TabLink = ({ tab }: { tab: any }) => {
   const [tabs, setTabs] = useAtom(tabsAtom);
   const closeTab = useCloseTab();
+  const togglePinTab = useTogglePinTab();
 
   const setActiveTab = () => {
-    setTabs(tabs.map((item: { id: any; }) => ({
-      ...item,
-      isActive: item.id === tab.id,
-    })));
+    setTabs(
+      tabs.map((item: { id: any }) => ({
+        ...item,
+        isActive: item.id === tab.id,
+      }))
+    );
   };
 
   const closeTabEvent = (event: any) => {
     event.stopPropagation(); // Prevent triggering setActiveTab when closing
     closeTab(tab);
-    // setTabs((prevTabs: any[]) => {
-    //   const updatedTabs = prevTabs.filter((item) => item.webviewRef !== tab.webviewRef);
-    //
-    //   // If the closed tab was active, make another tab active
-    //   if (tab.isActive && updatedTabs.length > 0) {
-    //     updatedTabs[0].isActive = true;
-    //   }
-    //
-    //   return updatedTabs;
-    // });
   };
-  // "https://corsproxy.io/?" + tab.favicon
-  const getFavicon = (tab: any) => {
-    // Updated regex patterns to handle trailing slashes
-    const validIP4Regex = /^(https?:\/\/)?(?:[0-9]{1,3}\.){3}[0-9]{1,3}(?::\d+)?\/?$/i;
-    const localhostRegex = /^(https?:\/\/)?localhost(?::\d+)?\/?$/i;
 
-    console.log("Tab URL:", tab.url);
-    console.log("Testing for IP address:", validIP4Regex.test(tab.url));
-    console.log("Testing for localhost:", localhostRegex.test(tab.url));
-
-    if (tab.favicon.startsWith("data:image/png;base64,")) {
-      console.log("Returning favicon directly (base64):", tab.favicon);
-      return tab.favicon;
-    }
-
-    if (validIP4Regex.test(tab.url) || localhostRegex.test(tab.url)) {
-      console.log("URL is localhost or an IP address, returning favicon directly:", tab.favicon);
-      return tab.favicon;
-    }
-
-    const proxiedFavicon = "https://corsproxy.io/?" + tab.favicon;
-    console.log("Applying proxy to favicon:", proxiedFavicon);
-    return proxiedFavicon;
+  const pinTabEvent = (event: any) => {
+    event.stopPropagation(); // Prevent triggering setActiveTab when pinning
+    togglePinTab(tab);
   };
+
   return (
-    <Button onClick={setActiveTab} className="flex-grow text-left w-full" variant={tab.isActive ? "secondary" : "ghost"}>
-      {tab.favicon ? <img src={getFavicon(tab)} className="h-4 w-4 mr-2 " /> : <Globe className="h-4 w-4 mr-2" />}
+    <Button
+      onClick={setActiveTab}
+      className="flex-grow text-left w-full"
+      variant={tab.isActive ? "secondary" : "ghost"}
+    >
+      {tab.favicon ? (
+        <img src={getFavicon(tab)} className="h-4 w-4 mr-2 " />
+      ) : (
+        <Globe className="h-4 w-4 mr-2" />
+      )}
       <span className="w-full truncate">{tab.title}</span>
-      <Button onClick={closeTabEvent} className="h-7 w-7" size="icon" variant="link">
-        <X size={16} />
+      <Button onClick={pinTabEvent} className="h-7 w-7" size="icon" variant="link">
+        {tab.pinned ? <PinOff size={16} /> : <Pin size={16} />}
       </Button>
+      {!tab.pinned && ( // Only render the close button if the tab is not pinned
+        <Button onClick={closeTabEvent} className="h-7 w-7" size="icon" variant="link">
+          <X size={16} />
+        </Button>
+      )}
     </Button>
   );
 };
