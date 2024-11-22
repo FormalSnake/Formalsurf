@@ -2,59 +2,60 @@ import { app, shell, BrowserWindow, ipcMain, Menu } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import contextMenu from 'electron-context-menu';
+import contextMenu from 'electron-context-menu'
 
 const isMac = process.platform === 'darwin'
-
 
 const template = [
   // { role: 'appMenu' }
   ...(isMac
-    ? [{
-      label: app.name,
-      submenu: [
-        { role: 'about' },
-        { type: 'separator' },
-        { role: 'services' },
-        { type: 'separator' },
-        { role: 'hide' },
-        { role: 'hideOthers' },
-        { role: 'unhide' },
-        { type: 'separator' },
-        { role: 'quit' }
+    ? [
+        {
+          label: app.name,
+          submenu: [
+            { role: 'about' },
+            { type: 'separator' },
+            { role: 'services' },
+            { type: 'separator' },
+            { role: 'hide' },
+            { role: 'hideOthers' },
+            { role: 'unhide' },
+            { type: 'separator' },
+            { role: 'quit' }
+          ]
+        }
       ]
-    }]
     : []),
   // { role: 'fileMenu' }
   {
     label: 'File',
     submenu: [
       {
-        label: "New Tab",
-        accelerator: "CmdOrCtrl+T",
+        label: 'New Tab',
+        accelerator: 'CmdOrCtrl+T',
         click: (menuItem, browserWindow) => {
           if (browserWindow) {
-            browserWindow.webContents.send("new-tab");
+            browserWindow.webContents.send('new-tab')
           }
-        },
+        }
       },
       {
-        label: "Close Tab",
-        accelerator: "CmdOrCtrl+W",
+        label: 'Close Tab',
+        accelerator: 'CmdOrCtrl+W',
         click: (menuItem, browserWindow) => {
           if (browserWindow) {
-            browserWindow.webContents.send("close-active-tab");
+            browserWindow.webContents.send('close-active-tab')
           }
-        },
+        }
       },
       {
-        label: "Open URL bar",
-        accelerator: "CmdOrCtrl+L",
+        label: 'Open URL bar',
+        accelerator: 'CmdOrCtrl+L',
         click: (menuItem, browserWindow) => {
           if (browserWindow) {
-            browserWindow.webContents.send("open-url-bar");
+            browserWindow.webContents.send('open-url-bar')
           }
-        },
+        }
       }
     ]
   },
@@ -70,23 +71,16 @@ const template = [
       { role: 'paste' },
       ...(isMac
         ? [
-          { role: 'pasteAndMatchStyle' },
-          { role: 'delete' },
-          { role: 'selectAll' },
-          { type: 'separator' },
-          {
-            label: 'Speech',
-            submenu: [
-              { role: 'startSpeaking' },
-              { role: 'stopSpeaking' }
-            ]
-          }
-        ]
-        : [
-          { role: 'delete' },
-          { type: 'separator' },
-          { role: 'selectAll' }
-        ])
+            { role: 'pasteAndMatchStyle' },
+            { role: 'delete' },
+            { role: 'selectAll' },
+            { type: 'separator' },
+            {
+              label: 'Speech',
+              submenu: [{ role: 'startSpeaking' }, { role: 'stopSpeaking' }]
+            }
+          ]
+        : [{ role: 'delete' }, { type: 'separator' }, { role: 'selectAll' }])
     ]
   },
   // { role: 'viewMenu' }
@@ -99,7 +93,7 @@ const template = [
         accelerator: 'CmdOrCtrl+R',
         click: (menuItem, browserWindow) => {
           if (browserWindow) {
-            browserWindow.webContents.send("reload");
+            browserWindow.webContents.send('reload')
           }
         }
       },
@@ -113,12 +107,12 @@ const template = [
       { role: 'togglefullscreen' },
       {
         label: 'Toggle sidebar',
-        accelerator: "CmdOrCtrl+shift+b",
+        accelerator: 'CmdOrCtrl+shift+b',
         click: (menuItem, browserWindow) => {
           if (browserWindow) {
-            browserWindow.webContents.send("toggle-sidebar");
+            browserWindow.webContents.send('toggle-sidebar')
           }
-        },
+        }
       }
     ]
   },
@@ -129,15 +123,8 @@ const template = [
       { role: 'minimize' },
       { role: 'zoom' },
       ...(isMac
-        ? [
-          { type: 'separator' },
-          { role: 'front' },
-          { type: 'separator' },
-          { role: 'window' }
-        ]
-        : [
-          { role: 'close' }
-        ])
+        ? [{ type: 'separator' }, { role: 'front' }, { type: 'separator' }, { role: 'window' }]
+        : [{ role: 'close' }])
     ]
   },
   {
@@ -161,15 +148,15 @@ function createWindow(): void {
     height: 670,
     show: false,
     autoHideMenuBar: true,
-    titleBarStyle: "hiddenInset",
+    titleBarStyle: 'hiddenInset',
     trafficLightPosition: { x: 12, y: 15 },
-    backgroundColor: "#09090b",
+    backgroundColor: '#09090b',
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
       contextIsolation: true,
-      webviewTag: true,
+      webviewTag: true
       // webSecurity: false,
     }
   })
@@ -182,9 +169,9 @@ function createWindow(): void {
     mainWindow.show()
   })
 
-  mainWindow.webContents.on("did-attach-webview", (_, contents) => {
+  mainWindow.webContents.on('did-attach-webview', (_, contents) => {
     contents.setWindowOpenHandler((details) => {
-      mainWindow.webContents.send('open-url', details.url);
+      mainWindow.webContents.send('open-url', details.url)
       return { action: 'deny' }
     })
   })
@@ -197,12 +184,12 @@ function createWindow(): void {
   ipcMain.on('toggle-traffic-lights', (event, show) => {
     if (show) {
       mainWindow.setWindowButtonVisibility(true)
-      console.log("Show traffic lights")
+      console.log('Show traffic lights')
     } else {
       mainWindow.setWindowButtonVisibility(false)
-      console.log("Hide traffic lights")
+      console.log('Hide traffic lights')
     }
-  });
+  })
 
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
@@ -219,7 +206,6 @@ function createWindow(): void {
 app.whenReady().then(() => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
-
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
   // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
@@ -227,18 +213,17 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-
   createWindow()
 
-  app.on('activate', function() {
+  app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 })
 
-app.on("web-contents-created", (e, contents) => {
-  if (contents.getType() == "webview") {
+app.on('web-contents-created', (e, contents) => {
+  if (contents.getType() == 'webview') {
     // set context menu in webview contextMenu({ window: contents, });
     contextMenu({
       window: contents,
@@ -252,13 +237,17 @@ app.on("web-contents-created", (e, contents) => {
       showCopyImage: true,
       showCopyVideoAddress: true,
       showSaveVideo: true,
-      showSaveVideoAs: true,
-    },
-    );
+      showSaveVideoAs: true
+    })
   }
-});
+})
 
-app.userAgentFallback = app.userAgentFallback.replace('Chrome/' + process.versions.chrome, 'Chrome');
+// app.userAgentFallback = app.userAgentFallback.replace('Chrome/' + process.versions.chrome, 'Chrome')
+const newUserAgent = app.userAgentFallback.replace(
+  /Chrome\/[\d.]+/,
+  'Chrome/132.0.6834.15' // Example: Update to a recent Chrome version
+)
+app.userAgentFallback = newUserAgent
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits

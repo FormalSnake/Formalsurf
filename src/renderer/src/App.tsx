@@ -66,6 +66,11 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
         // @ts-ignore
         faviconHandler(tab.id, event)
       })
+
+      webview.addEventListener('did-navigate-in-page', (event) => {
+        // @ts-ignore
+        navigateHandler(tab.id, event)
+      })
       // @ts-ignore
 
       // Prevent redundant listeners
