@@ -202,6 +202,10 @@ function App(): JSX.Element {
   const [tabDialogOpen, setTabDialogOpen] = useAtom(isNewTabDialogOpen)
   const [sidebarOpen, setSidebarOpen] = useAtom(sidebarOpenAtom)
   const [isUpdate, setIsUpdate] = useAtom(isUpdateAtom)
+  const [, setFindInPageVisible] = useAtom(findInPageVisibleAtom)
+  const toggleFindInPage = () => {
+    setFindInPageVisible((prev) => !prev)
+  }
 
   const handleOpenUrl = useCallback(
     (event: any, data: any) => {
@@ -210,99 +214,113 @@ function App(): JSX.Element {
     [createNewTab]
   )
 
-  // @ts-ignore
-  window.api.handle(
-    'open-url',
-    (event: any, data: any) =>
-      function(event: any, data: any) {
-        createNewTab({ url: data })
-      },
-    event
-  )
+  useEffect(() => {
+    // @ts-ignore
+    window.api.handle(
+      'open-url',
+      (event: any, data: any) =>
+        function(event: any, data: any) {
+          createNewTab({ url: data })
+        },
+      event
+    )
 
-  //@ts-ignore
-  window.api.handle(
-    'close-active-tab',
-    (event: any, data: any) =>
-      function(event: any, data: any) {
-        console.log('close-active-tab')
-        closeTab()
-        // remove api handler
-        // @ts-ignore
-        window.api.removeHandler('close-active-tab', closeTab)
-      },
-    event
-  )
+    //@ts-ignore
+    window.api.handle(
+      'close-active-tab',
+      (event: any, data: any) =>
+        function(event: any, data: any) {
+          console.log('close-active-tab')
+          closeTab()
+          // remove api handler
+          // @ts-ignore
+          window.api.removeHandler('close-active-tab', closeTab)
+        },
+      event
+    )
 
-  // @ts-ignore
-  window.api.handle(
-    'new-tab',
-    (event: any, data: any) =>
-      function(event: any, data: any) {
-        console.log('new-tab')
-        setIsUpdate(false)
-        setTabDialogOpen(true)
-        // Pass false to indicate creating a new tab
-        // <NewTabDialog isUpdate={false} />
-        // remove api handler
-        // @ts-ignore
-        window.api.removeHandler('new-tab', setTabDialogOpen)
-      },
-    event
-  )
+    // @ts-ignore
+    window.api.handle(
+      'new-tab',
+      (event: any, data: any) =>
+        function(event: any, data: any) {
+          console.log('new-tab')
+          setIsUpdate(false)
+          setTabDialogOpen(true)
+          // Pass false to indicate creating a new tab
+          // <NewTabDialog isUpdate={false} />
+          // remove api handler
+          // @ts-ignore
+          window.api.removeHandler('new-tab', setTabDialogOpen)
+        },
+      event
+    )
 
-  // toggle-sidebar listener
-  // @ts-ignore
-  window.api.handle(
-    'toggle-sidebar',
-    (event: any, data: any) =>
-      function(event: any, data: any) {
-        console.log('toggle-sidebar')
-        setSidebarOpen((open) => !open)
-        console.log(sidebarOpen)
-        // remove api handler
-        // @ts-ignore
-        window.api.removeHandler('toggle-sidebar', setSidebarOpen)
-      },
-    event
-  )
+    // toggle-sidebar listener
+    // @ts-ignore
+    window.api.handle(
+      'toggle-sidebar',
+      (event: any, data: any) =>
+        function(event: any, data: any) {
+          console.log('toggle-sidebar')
+          setSidebarOpen((open) => !open)
+          console.log(sidebarOpen)
+          // remove api handler
+          // @ts-ignore
+          window.api.removeHandler('toggle-sidebar', setSidebarOpen)
+        },
+      event
+    )
 
-  // @ts-ignore
-  window.api.handle(
-    'open-url-bar',
-    (event: any, data: any) =>
-      function(event: any, data: any) {
-        console.log('open-url-bar')
-        setIsUpdate(true)
-        setTabDialogOpen(true)
-        // Pass true to indicate updating an existing tab
-        // <NewTabDialog isUpdate={true} />
-        // remove api handler
-        // @ts-ignore
-        window.api.removeHandler('open-url-bar', setTabDialogOpen)
-      },
-    event
-  )
+    // @ts-ignore
+    window.api.handle(
+      'open-url-bar',
+      (event: any, data: any) =>
+        function(event: any, data: any) {
+          console.log('open-url-bar')
+          setIsUpdate(true)
+          setTabDialogOpen(true)
+          // Pass true to indicate updating an existing tab
+          // <NewTabDialog isUpdate={true} />
+          // remove api handler
+          // @ts-ignore
+          window.api.removeHandler('open-url-bar', setTabDialogOpen)
+        },
+      event
+    )
 
-  const [, setFindInPageVisible] = useAtom(findInPageVisibleAtom)
-  const toggleFindInPage = () => {
-    setFindInPageVisible((prev) => !prev)
-  }
-  // @ts-ignore
-  window.api.handle(
-    'find',
-    (event: any, data: any) =>
-      function(event: any, data: any) {
-        console.log('find')
-        toggleFindInPage()
-        // Pass true to indicate updating an existing tab
-        // <NewTabDialog isUpdate={true} />
-        // remove api handler
-        // @ts-ignore
-        window.api.removeHandler('find', toggleFindInPage)
-      },
-    event
-  )
+    // @ts-ignore
+    window.api.handle(
+      'find',
+      (event: any, data: any) =>
+        function(event: any, data: any) {
+          console.log('find')
+          toggleFindInPage()
+          // Pass true to indicate updating an existing tab
+          // <NewTabDialog isUpdate={true} />
+          // remove api handler
+          // @ts-ignore
+          window.api.removeHandler('find', toggleFindInPage)
+        },
+      event
+    )
+
+    // Cleanup function to remove handlers
+    // return () => {
+    //   // @ts-ignore
+    //   window.api.removeHandler('open-url', handleOpenUrl)
+    //   // @ts-ignore
+    //   window.api.removeHandler('close-active-tab', closeTab)
+    //   // @ts-ignore
+    //   window.api.removeHandler('new-tab', setTabDialogOpen)
+    //   // @ts-ignore
+    //   window.api.removeHandler('toggle-sidebar', setSidebarOpen)
+    //   // @ts-ignore
+    //   window.api.removeHandler('open-url-bar', setTabDialogOpen)
+    //   // @ts-ignore
+    //   window.api.removeHandler('find', toggleFindInPage)
+    // }
+  }, [])
 
   // useEffect(() => {
   //   // @ts-ignore
