@@ -7,7 +7,7 @@ A simple web browser built with Electron and React, it is not the most efficient
 The intention of this browser is to only implement basic browser features that I truly need, which means I do not want this to become a configuration hell.
 
 ## Roadmap
-- [-] Tabs with proper management (drag and drop is not implemented yet)
+- [x] Tabs with proper management (drag and drop is not implemented yet)
 - [x] Bookmarks (pinning tabs)
 - [ ] Downloads
 - [ ] History
@@ -15,7 +15,7 @@ The intention of this browser is to only implement basic browser features that I
 - [x] Functional navigation
 - [x] Keyboard shortcuts
 - [x] Persistence
-- [-] Context menu
+- [x] Context menu (Downloading is currently broken)
 - [ ] Settings
 - [ ] Extensions
 - [ ] Profiles
