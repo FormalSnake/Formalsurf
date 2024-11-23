@@ -325,6 +325,7 @@ function App(): JSX.Element {
             <Meteors number={5} />
             <div className="text-center z-10 mb-32 space-y-4">
               <BlurIn word="Formalsurf" className="text-sm font-bold" />
+              <p>The vast universe is waiting for you to explore.</p>
             </div>
           </div>
         )}
