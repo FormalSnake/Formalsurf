@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useCallback } from 'react'
-import { useAtom } from 'jotai'
+import React, { useEffect, useRef, useCallback, useState } from 'react'
+import { atom, useAtom } from 'jotai'
 import { activeTabRefAtom, tabsAtom, useCloseTab, useCreateNewTab } from '@/providers/TabProvider'
 import { isNewTabDialogOpen, isUpdateAtom, NewTabDialog, tabBarUrl } from './components/NewTab'
 import { sidebarOpenAtom } from './components/ui/sidebar'
@@ -8,13 +8,94 @@ import { Button } from './components/ui/button'
 import Particles from './components/magicui/Particles'
 import Meteors from './components/magicui/Meteor'
 import BlurIn from './components/magicui/BlurIn'
+import { Search, ArrowUp, ArrowDown } from 'lucide-react' // Importing icons from Lucide
+import { Input } from './components/ui/input'
+import { AnimatePresence, motion } from 'framer-motion'
+
+const findInPageVisibleAtom = atom(false)
+
+const FindInPage = ({ webviewRef }: { webviewRef: React.RefObject<WebviewElement> }) => {
+  const [isVisible, setIsVisible] = useAtom(findInPageVisibleAtom)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  const handleSearch = () => {
+    if (webviewRef.current) {
+      webviewRef.current.findInPage(searchTerm)
+    }
+  }
+
+  const handleNext = () => {
+    if (webviewRef.current) {
+      webviewRef.current.findInPage(searchTerm, { forward: true })
+      setCurrentIndex((prev) => prev + 1)
+    }
+  }
+
+  const handlePrevious = () => {
+    if (webviewRef.current) {
+      webviewRef.current.findInPage(searchTerm, { forward: false })
+      setCurrentIndex((prev) => Math.max(prev - 1, 0))
+    }
+  }
+
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      handleSearch()
+    } else if (event.key === 'Escape') {
+      if (webviewRef.current) {
+        webviewRef.current.stopFindInPage('clearSelection')
+      }
+      setIsVisible(false)
+    }
+  }
+
+  useEffect(() => {
+    if (isVisible && inputRef.current) {
+      inputRef.current.focus()
+    }
+  }, [isVisible])
+
+  return (
+    <AnimatePresence>
+      {isVisible && (
+        <motion.div
+          className="find-in-page-bar bg-popover border-border border fixed top-4 right-4  rounded-lg flex flex-row space-x-2"
+          initial={{ scale: 0.5, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.5, opacity: 0 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+        >
+          <Input
+            ref={inputRef}
+            value={searchTerm}
+            className=" ring-0 outline-none border-none focus-visible:ring-offset-0 focus-visible:ring-0"
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Find in page..."
+          />
+          <Button size="icon" variant={'ghost'} onClick={handleSearch} className="min-w-10">
+            <Search />
+          </Button>
+          <Button size="icon" variant={'ghost'} onClick={handlePrevious} className="min-w-10">
+            <ArrowUp />
+          </Button>
+          <Button size="icon" variant={'ghost'} onClick={handleNext} className="min-w-10">
+            <ArrowDown />
+          </Button>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  )
+}
 
 const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
   const [tabs, setTabs] = useAtom(tabsAtom)
   const [activeTab, setActiveTab] = useAtom(activeTabRefAtom)
 
   // Ensure ref is always initialized, even if it wasn't before
-  const ref = useRef<HTMLWebViewElement | null>(tab.webviewRef?.current || null)
+  const ref = useRef<WebviewElement | null>(tab.webviewRef?.current || null)
 
   // Local state to manage the webview's src independently
   const initialSrc = useRef(tab.url) // Store initial URL to prevent re-renders
@@ -88,6 +169,7 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
         webview.hasListeners = false
       }
     }
+    return () => {}
   }, [ref, tab.id, setTabs, currentUrl])
 
   // Keep the active tab reference updated
@@ -98,14 +180,17 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
   }, [isActive, setActiveTab])
 
   return (
-    <webview
-      ref={ref}
-      src={initialSrc.current} // Use the initial source only
-      className={`w-full h-full bg-foreground ${isActive ? '' : 'hidden'}`}
-      webpreferences="autoplayPolicy=user-gesture-required,defaultFontSize=16,contextIsolation=true,nodeIntegration=false,sandbox=true,webSecurity=true"
-      allowpopups="true"
-      partition="persist:webview"
-    />
+    <div className={`tab-container w-full h-full ${isActive ? '' : 'hidden'}`}>
+      <webview
+        ref={ref}
+        src={initialSrc.current}
+        className="w-full h-full bg-foreground"
+        webpreferences="autoplayPolicy=user-gesture-required,defaultFontSize=16,contextIsolation=true,nodeIntegration=false,sandbox=true,webSecurity=true"
+        allowpopups="true"
+        partition="persist:webview"
+      />
+      {isActive && <FindInPage webviewRef={ref} />}
+    </div>
   )
 })
 
@@ -195,6 +280,26 @@ function App(): JSX.Element {
         // remove api handler
         // @ts-ignore
         window.api.removeHandler('open-url-bar', setTabDialogOpen)
+      },
+    event
+  )
+
+  const [, setFindInPageVisible] = useAtom(findInPageVisibleAtom)
+  const toggleFindInPage = () => {
+    setFindInPageVisible((prev) => !prev)
+  }
+  // @ts-ignore
+  window.api.handle(
+    'find',
+    (event: any, data: any) =>
+      function (event: any, data: any) {
+        console.log('find')
+        toggleFindInPage()
+        // Pass true to indicate updating an existing tab
+        // <NewTabDialog isUpdate={true} />
+        // remove api handler
+        // @ts-ignore
+        window.api.removeHandler('find', toggleFindInPage)
       },
     event
   )
