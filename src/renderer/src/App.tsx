@@ -11,6 +11,7 @@ import BlurIn from './components/magicui/BlurIn'
 import { Search, ArrowUp, ArrowDown } from 'lucide-react' // Importing icons from Lucide
 import { Input } from './components/ui/input'
 import { AnimatePresence, motion } from 'framer-motion'
+import { ipcRenderer } from 'electron'
 
 const findInPageVisibleAtom = atom(false)
 
@@ -209,10 +210,16 @@ function App(): JSX.Element {
 
   const handleOpenUrl = useCallback(
     (event: any, data: any) => {
+      console.log('handleOpenUrl')
       createNewTab({ url: data })
     },
     [createNewTab]
   )
+
+  const memoizedHandleOpenUrl = useCallback((event: any, data: any) => {
+    console.log('open-url', data);
+    handleOpenUrl(event, data);
+  }, [tabs]);
 
   useEffect(() => {
     // @ts-ignore
@@ -220,11 +227,15 @@ function App(): JSX.Element {
       'open-url',
       (event: any, data: any) =>
         function(event: any, data: any) {
-          createNewTab({ url: data })
+          console.log('open-url', data)
+          memoizedHandleOpenUrl(event, data)
+          // handleOpenUrl(event, data)
         },
       event
     )
+  }, [tabs])
 
+  useEffect(() => {
     //@ts-ignore
     window.api.handle(
       'close-active-tab',
