@@ -169,7 +169,7 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
         webview.hasListeners = false
       }
     }
-    return () => {}
+    return () => { }
   }, [ref, tab.id, setTabs, currentUrl])
 
   // Keep the active tab reference updated
@@ -214,7 +214,7 @@ function App(): JSX.Element {
   window.api.handle(
     'open-url',
     (event: any, data: any) =>
-      function (event: any, data: any) {
+      function(event: any, data: any) {
         createNewTab({ url: data })
       },
     event
@@ -224,7 +224,7 @@ function App(): JSX.Element {
   window.api.handle(
     'close-active-tab',
     (event: any, data: any) =>
-      function (event: any, data: any) {
+      function(event: any, data: any) {
         console.log('close-active-tab')
         closeTab()
         // remove api handler
@@ -238,7 +238,7 @@ function App(): JSX.Element {
   window.api.handle(
     'new-tab',
     (event: any, data: any) =>
-      function (event: any, data: any) {
+      function(event: any, data: any) {
         console.log('new-tab')
         setIsUpdate(false)
         setTabDialogOpen(true)
@@ -256,7 +256,7 @@ function App(): JSX.Element {
   window.api.handle(
     'toggle-sidebar',
     (event: any, data: any) =>
-      function (event: any, data: any) {
+      function(event: any, data: any) {
         console.log('toggle-sidebar')
         setSidebarOpen((open) => !open)
         console.log(sidebarOpen)
@@ -271,7 +271,7 @@ function App(): JSX.Element {
   window.api.handle(
     'open-url-bar',
     (event: any, data: any) =>
-      function (event: any, data: any) {
+      function(event: any, data: any) {
         console.log('open-url-bar')
         setIsUpdate(true)
         setTabDialogOpen(true)
@@ -292,7 +292,7 @@ function App(): JSX.Element {
   window.api.handle(
     'find',
     (event: any, data: any) =>
-      function (event: any, data: any) {
+      function(event: any, data: any) {
         console.log('find')
         toggleFindInPage()
         // Pass true to indicate updating an existing tab
@@ -324,16 +324,7 @@ function App(): JSX.Element {
             <Particles className="absolute inset-0" quantity={100} ease={80} refresh />
             <Meteors number={5} />
             <div className="text-center z-10 mb-32 space-y-4">
-              <BlurIn word="No tabs open" className="text-sm font-bold" />
-              <p>The vast universe is waiting for you to explore.</p>
-              <Button
-                onClick={() => {
-                  setIsUpdate(false)
-                  setTabDialogOpen(true)
-                }}
-              >
-                Create a new tab
-              </Button>
+              <BlurIn word="Formalsurf" className="text-sm font-bold" />
             </div>
           </div>
         )}
