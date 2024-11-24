@@ -94,9 +94,11 @@ const FindInPage = ({ webviewRef }: { webviewRef: React.RefObject<WebviewElement
 const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
   const [tabs, setTabs] = useAtom(tabsAtom)
   const [activeTab, setActiveTab] = useAtom(activeTabRefAtom)
+  const createNewTab = useCreateNewTab()
 
   // Ensure ref is always initialized, even if it wasn't before
   const ref = useRef<WebviewElement | null>(tab.webviewRef?.current || null)
+  const hasListenersRef = useRef(false)
 
   // Local state to manage the webview's src independently
   const initialSrc = useRef(tab.url) // Store initial URL to prevent re-renders
@@ -105,8 +107,9 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
   useEffect(() => {
     const webview = ref.current
 
-    if (webview && !webview.hasListeners) {
+    if (webview && !hasListenersRef.current) {
       console.log(`Adding listeners for tab ${tab.url}`)
+      hasListenersRef.current = true
 
       const updateTabState = (id: string, update: Partial<typeof tab>) => {
         setTabs((prevTabs) => {
@@ -141,6 +144,14 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
         }
       }
 
+      webview.addEventListener('did-start-loading', () => {
+        updateTabState(tab.id, { isLoading: true })
+      })
+
+      webview.addEventListener('did-stop-loading', () => {
+        updateTabState(tab.id, { isLoading: false })
+      })
+
       webview.addEventListener('did-navigate', (event) => {
         navigateHandler(tab.id, event)
       })
@@ -159,7 +170,11 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
         faviconHandler(tab.id, event)
       })
 
-      webview.hasListeners = true
+      // Handle new window events (target="_blank" links)
+      webview.addEventListener('new-window', (event) => {
+        event.preventDefault()
+        createNewTab({ url: event.url })
+      })
 
       // Cleanup function
       return () => {
@@ -167,10 +182,12 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
         webview.removeEventListener('did-navigate-in-page', navigateHandler)
         webview.removeEventListener('page-title-updated', titleHandler)
         webview.removeEventListener('page-favicon-updated', faviconHandler)
-        webview.hasListeners = false
+        webview.removeEventListener('did-start-loading', () => {})
+        webview.removeEventListener('did-stop-loading', () => {})
+        webview.removeEventListener('new-window', (e) => {})
       }
     }
-    return () => { }
+    return () => {}
   }, [ref, tab.id, setTabs, currentUrl])
 
   // Keep the active tab reference updated
@@ -203,6 +220,7 @@ function App(): JSX.Element {
   const [tabDialogOpen, setTabDialogOpen] = useAtom(isNewTabDialogOpen)
   const [sidebarOpen, setSidebarOpen] = useAtom(sidebarOpenAtom)
   const [isUpdate, setIsUpdate] = useAtom(isUpdateAtom)
+  const [activeTab, setActiveTab] = useAtom(activeTabRefAtom)
   const [, setFindInPageVisible] = useAtom(findInPageVisibleAtom)
   const toggleFindInPage = () => {
     setFindInPageVisible((prev) => !prev)
@@ -211,36 +229,33 @@ function App(): JSX.Element {
   const handleOpenUrl = useCallback(
     (event: any, data: any) => {
       console.log('handleOpenUrl')
-      createNewTab({ url: data })
+      // Prevent duplicate handling of the same URL
+      const existingTab = tabs.find((tab) => tab.url === data)
+      if (!existingTab) {
+        createNewTab({ url: data })
+      }
     },
-    [createNewTab]
+    [createNewTab, tabs]
   )
-
-  const memoizedHandleOpenUrl = useCallback((event: any, data: any) => {
-    console.log('open-url', data);
-    handleOpenUrl(event, data);
-  }, [tabs]);
 
   useEffect(() => {
     // @ts-ignore
     window.api.handle(
       'open-url',
       (event: any, data: any) =>
-        function(event: any, data: any) {
+        function (event: any, data: any) {
           console.log('open-url', data)
-          memoizedHandleOpenUrl(event, data)
-          // handleOpenUrl(event, data)
-        },
-      event
+          handleOpenUrl(event, data)
+        }
     )
-  }, [tabs])
+  }, [handleOpenUrl])
 
   useEffect(() => {
     //@ts-ignore
     window.api.handle(
       'close-active-tab',
       (event: any, data: any) =>
-        function(event: any, data: any) {
+        function (event: any, data: any) {
           console.log('close-active-tab')
           closeTab()
           // remove api handler
@@ -254,7 +269,7 @@ function App(): JSX.Element {
     window.api.handle(
       'new-tab',
       (event: any, data: any) =>
-        function(event: any, data: any) {
+        function (event: any, data: any) {
           console.log('new-tab')
           setIsUpdate(false)
           setTabDialogOpen(true)
@@ -272,7 +287,7 @@ function App(): JSX.Element {
     window.api.handle(
       'toggle-sidebar',
       (event: any, data: any) =>
-        function(event: any, data: any) {
+        function (event: any, data: any) {
           console.log('toggle-sidebar')
           setSidebarOpen((open) => !open)
           console.log(sidebarOpen)
@@ -287,7 +302,7 @@ function App(): JSX.Element {
     window.api.handle(
       'open-url-bar',
       (event: any, data: any) =>
-        function(event: any, data: any) {
+        function (event: any, data: any) {
           console.log('open-url-bar')
           setIsUpdate(true)
           setTabDialogOpen(true)
@@ -304,7 +319,7 @@ function App(): JSX.Element {
     window.api.handle(
       'find',
       (event: any, data: any) =>
-        function(event: any, data: any) {
+        function (event: any, data: any) {
           console.log('find')
           toggleFindInPage()
           // Pass true to indicate updating an existing tab
@@ -332,15 +347,6 @@ function App(): JSX.Element {
     //   window.api.removeHandler('find', toggleFindInPage)
     // }
   }, [])
-
-  // useEffect(() => {
-  //   // @ts-ignore
-  //   window.api.handle("open-url", handleOpenUrl);
-  //   return () => {
-  //     // @ts-ignore
-  //     window.api.removeHandler("open-url", handleOpenUrl);
-  //   };
-  // }, [handleOpenUrl]);
 
   return (
     <BaseLayout>

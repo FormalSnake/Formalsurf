@@ -107,7 +107,11 @@ const template = [
         }
       },
       { role: 'forceReload' },
-      { role: 'toggleDevTools' },
+      {
+        label: 'Toggle DevTools (App)',
+        accelerator: 'Alt+Command+Shift+I',
+        role: 'toggleDevTools'
+      },
       { type: 'separator' },
       { role: 'resetZoom' },
       { role: 'zoomIn' },

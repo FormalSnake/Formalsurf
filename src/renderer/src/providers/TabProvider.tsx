@@ -1,9 +1,12 @@
 import { Button } from '@/components/ui/button'
 import { atom, useAtom } from 'jotai'
 import { Globe, X, Pin, PinOff } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
+import { LoadingSpinner } from '@/components/loading-spinner'
 
 const atomWithLocalStorage = (key: string, initialValue: any) => {
   const getInitialValue = () => {
@@ -44,7 +47,8 @@ export const tabsAtom = atomWithLocalStorage('FormalTabs', [
     webviewRef: null,
     isActive: true,
     favicon: '',
-    pinned: false
+    pinned: false,
+    isLoading: false
   }
 ])
 
@@ -63,7 +67,8 @@ export function useCreateNewTab() {
       url,
       title: 'New tab',
       webviewRef: React.createRef(),
-      isActive: true
+      isActive: true,
+      isLoading: false
     }
 
     setTabs([
@@ -132,82 +137,152 @@ function getFavicon(tab: any): string {
   return tab.favicon || 'default-favicon-url' // Replace 'default-favicon-url' with a fallback URL if needed
 }
 
-export const TabLink = ({ tab }: { tab: any }) => {
-  const [tabs, setTabs] = useAtom(tabsAtom)
-  const closeTab = useCloseTab()
-  const togglePinTab = useTogglePinTab()
-  const [isHovered, setIsHovered] = useState(false)
+export const TabLink = React.memo(
+  ({ tab, isDragging: isParentDragging }: { tab: any; isDragging?: boolean }) => {
+    const [tabs, setTabs] = useAtom(tabsAtom)
+    const closeTab = useCloseTab()
+    const togglePinTab = useTogglePinTab()
+    const [isHovered, setIsHovered] = useState(false)
+    const [isHoveringButtons, setIsHoveringButtons] = useState(false)
 
-  const setActiveTab = () => {
-    setTabs(
-      tabs.map((item: { id: any }) => ({
-        ...item,
-        isActive: item.id === tab.id
-      }))
-    )
-  }
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+      id: tab.id,
+      disabled: isHoveringButtons
+    })
 
-  const closeTabEvent = (event: any) => {
-    event.stopPropagation() // Prevent triggering setActiveTab when closing
-    closeTab(tab)
-  }
-
-  const pinTabEvent = (event: any) => {
-    event.stopPropagation() // Prevent triggering setActiveTab when pinning
-    togglePinTab(tab)
-  }
-
-  const textMargin = () => {
-    if (isHovered) {
-      if (tab.pinned) {
-        return '25px'
-      }
-      return '55px'
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+      position: 'relative' as const,
+      width: '100%',
+      ...(isDragging ? { opacity: 0.4 } : {})
     }
-    return '0px'
-  }
 
-  return (
-    <AnimatePresence>
-      <motion.div
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        initial={{ scale: 0.5, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.5, opacity: 0 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-        className="w-full"
-      >
-        <Button
-          onClick={setActiveTab}
-          className="flex items-center text-left w-full relative"
-          variant={tab.isActive ? 'secondary' : 'ghost'}
+    const setActiveTab = useCallback(
+      (e: React.MouseEvent) => {
+        if (!isDragging && !isHoveringButtons) {
+          setTabs((prevTabs) => {
+            const activeTabExists = prevTabs.some((t) => t.isActive && t.id === tab.id)
+            if (activeTabExists) return prevTabs
+
+            return prevTabs.map((item) => ({
+              ...item,
+              isActive: item.id === tab.id
+            }))
+          })
+        }
+      },
+      [isDragging, isHoveringButtons, tab.id]
+    )
+
+    const closeTabEvent = useCallback(
+      (event: React.MouseEvent) => {
+        event.stopPropagation()
+        closeTab(tab)
+      },
+      [tab]
+    )
+
+    const pinTabEvent = useCallback(
+      (event: React.MouseEvent) => {
+        event.stopPropagation()
+        togglePinTab(tab)
+      },
+      [tab]
+    )
+
+    const textMargin = () => {
+      if (isHovered) {
+        if (tab.pinned) {
+          return '20px'
+        }
+        return '45px'
+      }
+      return '0px'
+    }
+
+    return (
+      <AnimatePresence>
+        <motion.div
+          ref={setNodeRef}
+          style={style}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          initial={{ scale: 0.5, opacity: 0 }}
+          animate={{
+            scale: 1,
+            opacity: 1,
+            boxShadow: isDragging ? '0 5px 15px rgba(0,0,0,0.3)' : 'none'
+          }}
+          exit={{ scale: 0.5, opacity: 0 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+          className={`w-full relative ${isDragging ? 'opacity-40' : ''}`}
         >
-          {tab.favicon ? (
-            <img src={getFavicon(tab)} className="h-4 w-4 mr-2" />
-          ) : (
-            <Globe className="h-4 w-4 mr-2" />
-          )}
-          <span
-            className={`truncate flex-grow transition-all duration-300 ease-in-out`}
-            style={{ marginRight: textMargin() }}
+          <Button
+            onClick={setActiveTab}
+            className={`flex items-center text-left w-full relative group ${isDragging ? 'pointer-events-none' : ''}`}
+            variant={tab.isActive ? 'secondary' : 'ghost'}
           >
-            {tab.title}
-          </span>
-          {isHovered && (
-            <div className="flex space-x-1 absolute right-0 mr-2 transition-opacity duration-300">
-              <Button onClick={pinTabEvent} className="h-7 w-7" size="icon" variant="link">
-                {tab.pinned ? <PinOff size={16} /> : <Pin size={16} />}
-              </Button>
-              {!tab.pinned && ( // Only render the close button if the tab is not pinned
-                <Button onClick={closeTabEvent} className="h-7 w-7" size="icon" variant="link">
-                  <X size={16} />
-                </Button>
+            <div
+              {...attributes}
+              {...listeners}
+              className={`absolute left-0 top-0 bottom-0 w-8 
+              before:absolute before:inset-y-2 before:left-2 before:w-[2px] before:rounded-full
+              before:bg-foreground/20 before:transition-colors
+              hover:before:bg-foreground/40 active:before:bg-foreground/60 transition-colors duration-200 ease-in-out
+              ${isDragging ? 'before:bg-foreground/60' : ''}
+              cursor-grab active:cursor-grabbing`}
+            />
+            <div className="flex items-center relative pl-2">
+              {tab.favicon ? (
+                <img src={getFavicon(tab)} className="h-4 w-4 mr-2" />
+              ) : (
+                <Globe className="h-4 w-4 mr-2" />
               )}
             </div>
-          )}
-        </Button>
-      </motion.div>
-    </AnimatePresence>
-  )
-}
+            <motion.span
+              animate={{ marginRight: textMargin() }}
+              transition={{ duration: 0.2 }}
+              className="truncate relative flex-1 flex items-center gap-2"
+            >
+              {tab.isLoading && <LoadingSpinner />}
+              {tab.isLoading ? 'Loading...' : tab.title}
+            </motion.span>
+            <AnimatePresence>
+              {isHovered && !isDragging && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.1 }}
+                  className="absolute right-2 flex gap-1 z-10"
+                  onMouseEnter={() => setIsHoveringButtons(true)}
+                  onMouseLeave={() => setIsHoveringButtons(false)}
+                >
+                  <Button
+                    onClick={pinTabEvent}
+                    className="h-5 w-5 hover:bg-accent"
+                    size="icon"
+                    variant="ghost"
+                  >
+                    {tab.pinned ? <PinOff className="h-3 w-3" /> : <Pin className="h-3 w-3" />}
+                  </Button>
+                  {!tab.pinned && (
+                    <Button
+                      onClick={closeTabEvent}
+                      className="h-5 w-5 hover:bg-accent"
+                      size="icon"
+                      variant="ghost"
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </Button>
+        </motion.div>
+      </AnimatePresence>
+    )
+  }
+)

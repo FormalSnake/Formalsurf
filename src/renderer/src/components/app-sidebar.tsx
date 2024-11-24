@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useMemo, useState, useEffect, useRef } from 'react'
 import {
   Sidebar,
   SidebarContent,
@@ -16,6 +16,17 @@ import { useAtom } from 'jotai'
 import { activeTabRefAtom, TabLink, tabsAtom, useCreateNewTab } from '@/providers/TabProvider'
 import { isNewTabDialogOpen } from './NewTab'
 import { Separator } from './ui/separator'
+import {
+  DndContext,
+  DragEndEvent,
+  DragStartEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragOverlay,
+  defaultDropAnimationSideEffects
+} from '@dnd-kit/core'
+import { SortableContext, arrayMove, horizontalListSortingStrategy } from '@dnd-kit/sortable'
 
 const AddTabButton = React.memo(({ onClick }: { onClick: () => void }) => (
   <Button onClick={onClick} className="h-7 w-7 group/addtab" size="icon" variant="ghost">
@@ -45,27 +56,127 @@ const ActionButton = React.memo(
 )
 
 const TabList = React.memo(({ tabs }: { tabs: any[] }) => {
+  const [, setTabs] = useAtom(tabsAtom)
+  const [activeId, setActiveId] = useState<string | null>(null)
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5 // Start dragging after moving 5px
+      }
+    })
+  )
+
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event
+    setActiveId(active.id as string)
+  }
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+    setActiveId(null)
+
+    if (!over) return
+
+    if (active.id !== over.id) {
+      setTabs((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id)
+        const newIndex = items.findIndex((item) => item.id === over.id)
+
+        // Create a new array with the moved item
+        const newItems = [...items]
+        const [movedItem] = newItems.splice(oldIndex, 1)
+        newItems.splice(newIndex, 0, movedItem)
+
+        // Return new array while preserving all properties including refs
+        return newItems.map((item) => {
+          // Find the original item to preserve all its properties
+          const originalItem = items.find((oldItem) => oldItem.id === item.id)
+          if (!originalItem) return item
+
+          // Keep the exact same object reference if it hasn't moved
+          if (
+            originalItem.id === item.id &&
+            items.indexOf(originalItem) === newItems.indexOf(item)
+          ) {
+            return originalItem
+          }
+
+          // For moved items, preserve all properties but update position
+          return {
+            ...originalItem,
+            ...item
+          }
+        })
+      })
+    }
+  }
+
+  const handleDragCancel = () => {
+    setActiveId(null)
+  }
+
   const pinnedTabs = tabs.filter((tab) => tab.pinned)
   const unpinnedTabs = tabs.filter((tab) => !tab.pinned)
+  const activeTab = tabs.find((tab) => tab.id === activeId)
 
   return (
-    <SidebarMenu>
-      {pinnedTabs.map((item) => (
-        <SidebarMenuItem key={item.id}>
-          <SidebarMenuButton asChild>
-            <TabLink tab={item} />
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      ))}
-      {pinnedTabs.length > 0 && <Separator />}
-      {unpinnedTabs.map((item) => (
-        <SidebarMenuItem key={item.id}>
-          <SidebarMenuButton asChild>
-            <TabLink tab={item} />
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      ))}
-    </SidebarMenu>
+    <DndContext
+      sensors={sensors}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      onDragCancel={handleDragCancel}
+    >
+      <SidebarMenu>
+        {pinnedTabs.length > 0 && (
+          <SortableContext
+            items={pinnedTabs.map((tab) => tab.id)}
+            strategy={horizontalListSortingStrategy}
+          >
+            {pinnedTabs.map((item) => (
+              <SidebarMenuItem key={item.id}>
+                <SidebarMenuButton asChild>
+                  <TabLink tab={item} isDragging={item.id === activeId} />
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+            <Separator />
+          </SortableContext>
+        )}
+        <SortableContext
+          items={unpinnedTabs.map((tab) => tab.id)}
+          strategy={horizontalListSortingStrategy}
+        >
+          {unpinnedTabs.map((item) => (
+            <SidebarMenuItem key={item.id}>
+              <SidebarMenuButton asChild>
+                <TabLink tab={item} isDragging={item.id === activeId} />
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+        </SortableContext>
+      </SidebarMenu>
+      <DragOverlay
+        dropAnimation={{
+          duration: 200,
+          easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)',
+          sideEffects: defaultDropAnimationSideEffects({
+            styles: {
+              active: {
+                opacity: '0.8'
+              }
+            }
+          })
+        }}
+      >
+        {activeId && activeTab ? (
+          <SidebarMenuItem className="w-full">
+            <SidebarMenuButton asChild>
+              <TabLink tab={activeTab} isDragging={true} />
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        ) : null}
+      </DragOverlay>
+    </DndContext>
   )
 })
 
@@ -81,8 +192,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const handleAction = useCallback(
     (action: 'reload' | 'goBack' | 'goForward') => {
       console.log('Action', action)
-      // const activeTab = tabs.find((tab) => tab.isActive);
-      // console.log("Active tab", activeTab)
       if (activeTab) {
         if (action === 'reload') activeTab.reload()
         if (action === 'goBack') activeTab.goBack()
@@ -92,18 +201,26 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     [activeTab]
   )
 
-  // @ts-ignore
-  window.api.handle(
-    'reload',
-    (event: any, data: any) =>
-      function (event: any, data: any) {
-        console.log('reload')
-        console.log('Current active tab:', activeTab)
-        handleAction('reload')
-        // remove api handler
-      },
-    event
-  )
+  const handlerRef = useRef((event: any, data: any) => {
+    console.log('reload')
+    handleAction('reload')
+  })
+
+  useEffect(() => {
+    handlerRef.current = (event: any, data: any) => {
+      console.log('reload')
+      handleAction('reload')
+    }
+  }, [handleAction])
+
+  useEffect(() => {
+    const handler = (event: any, data: any) => handlerRef.current(event, data)
+    window.electron.ipcRenderer.on('reload', handler)
+
+    return () => {
+      window.electron.ipcRenderer.removeListener('reload', handler)
+    }
+  }, [])
 
   return (
     <Sidebar {...props} className="draglayer">
