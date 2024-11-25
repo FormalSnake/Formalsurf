@@ -135,6 +135,25 @@ const template = [
     submenu: [
       { role: 'minimize' },
       { role: 'zoom' },
+      { type: 'separator' },
+      {
+        label: 'Next Tab',
+        accelerator: 'Control+Tab',
+        click: (menuItem, browserWindow) => {
+          if (browserWindow) {
+            browserWindow.webContents.send('next-tab')
+          }
+        }
+      },
+      {
+        label: 'Previous Tab',
+        accelerator: 'Control+Shift+Tab',
+        click: (menuItem, browserWindow) => {
+          if (browserWindow) {
+            browserWindow.webContents.send('previous-tab')
+          }
+        }
+      },
       ...(isMac
         ? [{ type: 'separator' }, { role: 'front' }, { type: 'separator' }, { role: 'window' }]
         : [{ role: 'close' }])

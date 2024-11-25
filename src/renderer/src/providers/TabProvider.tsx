@@ -55,6 +55,116 @@ export const tabsAtom = atomWithLocalStorage('FormalTabs', [
 export const activeTabRefAtom = atom<any>(null)
 
 export const TabProvider = ({ children }: { children: any }) => {
+  const [tabs, setTabs] = useAtom(tabsAtom)
+
+  const switchToNextTab = useCallback(() => {
+    setTabs((prevTabs) => {
+      const currentActiveIndex = prevTabs.findIndex((tab) => tab.isActive)
+      if (currentActiveIndex === -1) return prevTabs
+
+      const currentTab = prevTabs[currentActiveIndex]
+      const pinnedTabs = prevTabs.filter((tab) => tab.pinned)
+      const unpinnedTabs = prevTabs.filter((tab) => !tab.pinned)
+
+      let nextIndex = currentActiveIndex
+      if (currentTab.pinned) {
+        // If current tab is pinned, find next pinned tab or first unpinned tab
+        const currentPinnedIndex = pinnedTabs.findIndex((tab) => tab.id === currentTab.id)
+        if (currentPinnedIndex < pinnedTabs.length - 1) {
+          // Move to next pinned tab
+          nextIndex = prevTabs.findIndex((tab) => tab.id === pinnedTabs[currentPinnedIndex + 1].id)
+        } else if (unpinnedTabs.length > 0) {
+          // Move to first unpinned tab
+          nextIndex = prevTabs.findIndex((tab) => tab.id === unpinnedTabs[0].id)
+        }
+      } else {
+        // If current tab is unpinned, find next unpinned tab or loop to start
+        const currentUnpinnedIndex = unpinnedTabs.findIndex((tab) => tab.id === currentTab.id)
+        if (currentUnpinnedIndex < unpinnedTabs.length - 1) {
+          // Move to next unpinned tab
+          nextIndex = prevTabs.findIndex(
+            (tab) => tab.id === unpinnedTabs[currentUnpinnedIndex + 1].id
+          )
+        } else if (pinnedTabs.length > 0) {
+          // Move to first pinned tab if there are any
+          nextIndex = prevTabs.findIndex((tab) => tab.id === pinnedTabs[0].id)
+        } else {
+          // No pinned tabs, loop back to first unpinned tab
+          nextIndex = prevTabs.findIndex((tab) => tab.id === unpinnedTabs[0].id)
+        }
+      }
+
+      return prevTabs.map((tab, index) => ({
+        ...tab,
+        isActive: index === nextIndex
+      }))
+    })
+  }, [])
+
+  const switchToPreviousTab = useCallback(() => {
+    setTabs((prevTabs) => {
+      const currentActiveIndex = prevTabs.findIndex((tab) => tab.isActive)
+      if (currentActiveIndex === -1) return prevTabs
+
+      const currentTab = prevTabs[currentActiveIndex]
+      const pinnedTabs = prevTabs.filter((tab) => tab.pinned)
+      const unpinnedTabs = prevTabs.filter((tab) => !tab.pinned)
+
+      let previousIndex = currentActiveIndex
+      if (currentTab.pinned) {
+        // If current tab is pinned, find previous pinned tab or last unpinned tab
+        const currentPinnedIndex = pinnedTabs.findIndex((tab) => tab.id === currentTab.id)
+        if (currentPinnedIndex > 0) {
+          // Move to previous pinned tab
+          previousIndex = prevTabs.findIndex(
+            (tab) => tab.id === pinnedTabs[currentPinnedIndex - 1].id
+          )
+        } else if (unpinnedTabs.length > 0) {
+          // Move to last unpinned tab
+          previousIndex = prevTabs.findIndex(
+            (tab) => tab.id === unpinnedTabs[unpinnedTabs.length - 1].id
+          )
+        }
+      } else {
+        // If current tab is unpinned, find previous unpinned tab or loop to end
+        const currentUnpinnedIndex = unpinnedTabs.findIndex((tab) => tab.id === currentTab.id)
+        if (currentUnpinnedIndex > 0) {
+          // Move to previous unpinned tab
+          previousIndex = prevTabs.findIndex(
+            (tab) => tab.id === unpinnedTabs[currentUnpinnedIndex - 1].id
+          )
+        } else if (pinnedTabs.length > 0) {
+          // Move to last pinned tab if there are any
+          previousIndex = prevTabs.findIndex(
+            (tab) => tab.id === pinnedTabs[pinnedTabs.length - 1].id
+          )
+        } else {
+          // No pinned tabs, loop back to last unpinned tab
+          previousIndex = prevTabs.findIndex(
+            (tab) => tab.id === unpinnedTabs[unpinnedTabs.length - 1].id
+          )
+        }
+      }
+
+      return prevTabs.map((tab, index) => ({
+        ...tab,
+        isActive: index === previousIndex
+      }))
+    })
+  }, [])
+
+  useEffect(() => {
+    // Listen for tab switching events from the main process
+    window.electron.ipcRenderer.on('next-tab', switchToNextTab)
+    window.electron.ipcRenderer.on('previous-tab', switchToPreviousTab)
+
+    return () => {
+      // Clean up listeners when component unmounts
+      window.electron.ipcRenderer.removeAllListeners('next-tab')
+      window.electron.ipcRenderer.removeAllListeners('previous-tab')
+    }
+  }, [switchToNextTab, switchToPreviousTab])
+
   return <>{children}</>
 }
 
@@ -246,7 +356,7 @@ export const TabLink = React.memo(
               className="truncate relative flex-1 flex items-center gap-2"
             >
               {tab.isLoading && <LoadingSpinner />}
-              {tab.isLoading ? 'Loading...' : tab.title}
+              <span className="truncate">{tab.isLoading ? 'Loading...' : tab.title}</span>
             </motion.span>
             <AnimatePresence>
               {isHovered && !isDragging && (
