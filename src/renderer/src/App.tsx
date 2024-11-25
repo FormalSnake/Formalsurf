@@ -214,7 +214,6 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
 
 function App(): JSX.Element {
   const [tabs, setTabs] = useAtom(tabsAtom)
-  const createNewTab = useCreateNewTab()
   const closeTab = useCloseTab()
   const initializedTabs = useRef<Set<number>>(new Set()) // Track initialized tabs
   const [tabDialogOpen, setTabDialogOpen] = useAtom(isNewTabDialogOpen)
@@ -225,30 +224,6 @@ function App(): JSX.Element {
   const toggleFindInPage = () => {
     setFindInPageVisible((prev) => !prev)
   }
-
-  const handleOpenUrl = useCallback(
-    (event: any, data: any) => {
-      console.log('handleOpenUrl')
-      // Prevent duplicate handling of the same URL
-      const existingTab = tabs.find((tab) => tab.url === data)
-      if (!existingTab) {
-        createNewTab({ url: data })
-      }
-    },
-    [createNewTab, tabs]
-  )
-
-  useEffect(() => {
-    // @ts-ignore
-    window.api.handle(
-      'open-url',
-      (event: any, data: any) =>
-        function (event: any, data: any) {
-          console.log('open-url', data)
-          handleOpenUrl(event, data)
-        }
-    )
-  }, [handleOpenUrl])
 
   useEffect(() => {
     //@ts-ignore

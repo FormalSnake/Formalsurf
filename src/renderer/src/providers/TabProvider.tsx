@@ -56,6 +56,7 @@ export const activeTabRefAtom = atom<any>(null)
 
 export const TabProvider = ({ children }: { children: any }) => {
   const [tabs, setTabs] = useAtom(tabsAtom)
+  const createNewTab = useCreateNewTab()
 
   const switchToNextTab = useCallback(() => {
     setTabs((prevTabs) => {
@@ -153,17 +154,29 @@ export const TabProvider = ({ children }: { children: any }) => {
     })
   }, [])
 
+  const handleOpenUrl = useCallback(
+    (event: any, url: string) => {
+      const existingTab = tabs.find((tab) => tab.url === url)
+      if (!existingTab) {
+        createNewTab({ url })
+      }
+    },
+    [createNewTab, tabs]
+  )
+
   useEffect(() => {
     // Listen for tab switching events from the main process
     window.electron.ipcRenderer.on('next-tab', switchToNextTab)
     window.electron.ipcRenderer.on('previous-tab', switchToPreviousTab)
+    window.electron.ipcRenderer.on('open-url', handleOpenUrl)
 
     return () => {
       // Clean up listeners when component unmounts
       window.electron.ipcRenderer.removeAllListeners('next-tab')
       window.electron.ipcRenderer.removeAllListeners('previous-tab')
+      window.electron.ipcRenderer.removeAllListeners('open-url')
     }
-  }, [switchToNextTab, switchToPreviousTab])
+  }, [switchToNextTab, switchToPreviousTab, handleOpenUrl])
 
   return <>{children}</>
 }
