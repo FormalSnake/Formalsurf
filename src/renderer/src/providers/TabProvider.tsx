@@ -319,14 +319,15 @@ export const TabLink = React.memo(
         if (tab.pinned) {
           return '20px'
         }
-        return '45px'
+        return '40px'
       }
       return '0px'
     }
 
     return (
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         <motion.div
+          key={tab.id}
           ref={setNodeRef}
           style={style}
           onMouseEnter={() => setIsHovered(true)}

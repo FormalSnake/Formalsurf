@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { Dialog, DialogContent, DialogOverlay } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogOverlay, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { atom, useAtom } from 'jotai'
 import { tabsAtom, useCreateNewTab } from '@/providers/TabProvider'
@@ -117,7 +117,7 @@ export function NewTabDialog() {
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       fetchSuggestions(value)
-    }, 300) // Debounce API requests
+    }) // Debounce API requests
 
     // Add open tab titles to suggestions
     const tabTitles = tabs.map((tab) => tab.title)
@@ -129,6 +129,7 @@ export function NewTabDialog() {
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
       <CommandInput placeholder="Search or type a url..." value={value} onValueChange={setValue} />
+      <DialogTitle className="sr-only">Open New Tab</DialogTitle>
       <CommandList>
         {value !== '' && (
           <CommandGroup heading="Search">
@@ -148,18 +149,20 @@ export function NewTabDialog() {
           <>
             <CommandSeparator />
             <CommandGroup heading="Open Tabs">
-              {tabs.map((tab, index) => (
-                <CommandItem
-                  onSelect={(value) => {
-                    setValue(value)
-                    handleEnterPress(value)
-                  }}
-                  key={`tab-${index}`}
-                  className=""
-                >
-                  {tab.title}
-                </CommandItem>
-              ))}
+              {tabs
+                .filter((tab) => tab.title !== value)
+                .map((tab, index) => (
+                  <CommandItem
+                    onSelect={(value) => {
+                      setValue(value)
+                      handleEnterPress(value)
+                    }}
+                    key={`tab-${index}`}
+                    className=""
+                  >
+                    {tab.title}
+                  </CommandItem>
+                ))}
             </CommandGroup>
           </>
         )}

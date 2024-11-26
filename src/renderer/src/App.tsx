@@ -198,7 +198,7 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
   }, [isActive, setActiveTab])
 
   return (
-    <div className={`tab-container w-full h-full ${isActive ? '' : 'hidden'}`}>
+    <div className={`tab-container w-full h-full ${isActive ? '' : 'hidden'}`} key={tab.id}>
       <webview
         ref={ref}
         src={initialSrc.current}
@@ -206,6 +206,7 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
         webpreferences="autoplayPolicy=user-gesture-required,defaultFontSize=16,contextIsolation=true,nodeIntegration=false,sandbox=true,webSecurity=true,enableCamera=true,enableMicrophone=true"
         allowpopups="true"
         partition="persist:webview"
+        key={tab.id}
       />
       {isActive && <FindInPage webviewRef={ref} />}
     </div>

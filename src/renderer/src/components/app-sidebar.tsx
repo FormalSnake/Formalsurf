@@ -156,6 +156,7 @@ const TabList = React.memo(({ tabs }: { tabs: any[] }) => {
         </SortableContext>
       </SidebarMenu>
       <DragOverlay
+        modifiers={[]}
         dropAnimation={{
           duration: 200,
           easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)',
@@ -168,13 +169,7 @@ const TabList = React.memo(({ tabs }: { tabs: any[] }) => {
           })
         }}
       >
-        {activeId && activeTab ? (
-          <SidebarMenuItem className="w-full">
-            <SidebarMenuButton asChild>
-              <TabLink tab={activeTab} isDragging={true} />
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        ) : null}
+        {activeId && activeTab ? <TabLink tab={activeTab} isDragging={true} /> : null}
       </DragOverlay>
     </DndContext>
   )

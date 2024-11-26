@@ -1,8 +1,10 @@
-import { app, shell, BrowserWindow, ipcMain, Menu } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, Menu, session } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import contextMenu from 'electron-context-menu'
+import { ElectronBlocker } from '@ghostery/adblocker-electron'
+import fetch from 'cross-fetch' // required 'fetch'
 
 const isMac = process.platform === 'darwin'
 
@@ -173,7 +175,7 @@ const template = [
   }
 ]
 
-function createWindow(): void {
+async function createWindow(): Promise<void> {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 900,
@@ -204,6 +206,9 @@ function createWindow(): void {
       }
     }
   )
+  let blocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch) // ads only
+
+  blocker.enableBlockingInSession(mainWindow.webContents.session)
 
   // @ts-ignore
   const menu = Menu.buildFromTemplate(template)
@@ -247,7 +252,7 @@ function createWindow(): void {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
   // Default open or close DevTools by F12 in development
