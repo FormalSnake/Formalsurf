@@ -187,11 +187,23 @@ function createWindow(): void {
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
-      contextIsolation: true,
-      webviewTag: true
-      // webSecurity: false,
+      webviewTag: true,
+      nodeIntegration: true,
+      contextIsolation: false
     }
   })
+
+  // Set up permission handling
+  mainWindow.webContents.session.setPermissionRequestHandler(
+    (webContents, permission, callback) => {
+      const allowedPermissions = ['media']
+      if (allowedPermissions.includes(permission)) {
+        callback(true)
+      } else {
+        callback(false)
+      }
+    }
+  )
 
   // @ts-ignore
   const menu = Menu.buildFromTemplate(template)
