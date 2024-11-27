@@ -60,7 +60,7 @@ const template = [
       {
         label: 'Set as Default Browser',
         click: async (menuItem, browserWindow) => {
-          const protocols = ['http', 'https']
+          const protocols = ['http', 'https', 'file', 'pdf', 'html', 'htm']
           let success = true
 
           for (const protocol of protocols) {
@@ -79,14 +79,7 @@ const template = [
               buttons: ['OK']
             })
           } else {
-            dialog.showMessageBox(browserWindow!, {
-              type: 'error',
-              title: 'Error',
-              message: 'Could not set as default browser',
-              detail:
-                'There was an error while trying to set this as your default browser. You may need to change this in your system settings.',
-              buttons: ['OK']
-            })
+            console.log('Failed to set as default browser')
           }
         }
       }
@@ -297,10 +290,19 @@ app.whenReady().then(async () => {
   app.on('open-url', (event, url) => {
     event.preventDefault()
 
+    // Handle local files by converting to proper file:// URL
+    let processedUrl = url
+    if (!url.startsWith('http://') && !url.startsWith('https://') && !url.startsWith('file://')) {
+      // Remove any protocol prefix if present (like pdf://)
+      const cleanPath = url.replace(/^[a-zA-Z]+:\/\//, '')
+      // Convert to proper file URL, handling spaces and special characters
+      processedUrl = `file://${encodeURI(cleanPath)}`
+    }
+
     // If we already have a window, use it
     const existingWindow = BrowserWindow.getAllWindows()[0]
     if (existingWindow) {
-      existingWindow.webContents.send('open-url', url)
+      existingWindow.webContents.send('open-url', processedUrl)
       if (existingWindow.isMinimized()) existingWindow.restore()
       existingWindow.focus()
     } else {
@@ -308,7 +310,31 @@ app.whenReady().then(async () => {
       createWindow().then(() => {
         const window = BrowserWindow.getAllWindows()[0]
         if (window) {
-          window.webContents.send('open-url', url)
+          window.webContents.send('open-url', processedUrl)
+        }
+      })
+    }
+  })
+
+  // Handle local files when opened directly
+  app.on('open-file', (event, filePath) => {
+    event.preventDefault()
+
+    // Convert the file path to a proper file:// URL
+    const fileUrl = `file://${encodeURI(filePath)}`
+
+    // If we already have a window, use it
+    const existingWindow = BrowserWindow.getAllWindows()[0]
+    if (existingWindow) {
+      existingWindow.webContents.send('open-url', fileUrl)
+      if (existingWindow.isMinimized()) existingWindow.restore()
+      existingWindow.focus()
+    } else {
+      // If no window exists, create one and wait for it to be ready
+      createWindow().then(() => {
+        const window = BrowserWindow.getAllWindows()[0]
+        if (window) {
+          window.webContents.send('open-url', fileUrl)
         }
       })
     }
