@@ -293,6 +293,27 @@ app.whenReady().then(async () => {
     optimizer.watchWindowShortcuts(window)
   })
 
+  // Handle URLs when app is launched with a URL
+  app.on('open-url', (event, url) => {
+    event.preventDefault()
+
+    // If we already have a window, use it
+    const existingWindow = BrowserWindow.getAllWindows()[0]
+    if (existingWindow) {
+      existingWindow.webContents.send('open-url', url)
+      if (existingWindow.isMinimized()) existingWindow.restore()
+      existingWindow.focus()
+    } else {
+      // If no window exists, create one and wait for it to be ready
+      createWindow().then(() => {
+        const window = BrowserWindow.getAllWindows()[0]
+        if (window) {
+          window.webContents.send('open-url', url)
+        }
+      })
+    }
+  })
+
   createWindow()
 
   app.on('activate', function () {
