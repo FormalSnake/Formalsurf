@@ -8,7 +8,7 @@ import { Button } from './components/ui/button'
 import Particles from './components/magicui/Particles'
 import Meteors from './components/magicui/Meteor'
 import BlurIn from './components/magicui/BlurIn'
-import { Search, ArrowUp, ArrowDown } from 'lucide-react' // Importing icons from Lucide
+import { Search, ArrowUp, ArrowDown, TriangleAlert } from 'lucide-react' // Importing icons from Lucide
 import { Input } from './components/ui/input'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ipcRenderer } from 'electron'
@@ -95,6 +95,9 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
   const [tabs, setTabs] = useAtom(tabsAtom)
   const [activeTab, setActiveTab] = useAtom(activeTabRefAtom)
   const createNewTab = useCreateNewTab()
+  const [hasLoadFailed, setHasLoadFailed] = useState(false)
+  const [failedLoadMessage, setFailedLoadMessage] = useState('')
+  const [failedLoadDescription, setFailedLoadDescription] = useState('')
 
   // Ensure ref is always initialized, even if it wasn't before
   const ref = useRef<WebviewElement | null>(tab.webviewRef?.current || null)
@@ -146,6 +149,7 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
 
       webview.addEventListener('did-start-loading', () => {
         updateTabState(tab.id, { isLoading: true })
+        setHasLoadFailed(false)
       })
 
       webview.addEventListener('did-stop-loading', () => {
@@ -170,6 +174,16 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
         faviconHandler(tab.id, event)
       })
 
+      webview.addEventListener('did-fail-load', (event) => {
+        // Ignore aborted loads
+        if (event.errorCode !== -3) {
+          setHasLoadFailed(true)
+          setFailedLoadMessage(event.errorCode)
+          setFailedLoadDescription(event.errorDescription)
+          updateTabState(tab.id, { isLoading: false, title: 'Failed to load' })
+        }
+      })
+
       // Handle new window events (target="_blank" links)
       webview.addEventListener('new-window', (event) => {
         event.preventDefault()
@@ -184,6 +198,7 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
         webview.removeEventListener('page-favicon-updated', faviconHandler)
         webview.removeEventListener('did-start-loading', () => {})
         webview.removeEventListener('did-stop-loading', () => {})
+        webview.removeEventListener('did-fail-load', () => {})
         webview.removeEventListener('new-window', (e) => {})
       }
     }
@@ -202,12 +217,32 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
       <webview
         ref={ref}
         src={initialSrc.current}
-        className="w-full h-full bg-foreground"
+        className={`w-full h-full bg-foreground ${hasLoadFailed ? 'hidden' : ''}`}
         webpreferences="autoplayPolicy=user-gesture-required,defaultFontSize=16,contextIsolation=true,nodeIntegration=false,sandbox=true,webSecurity=true,enableCamera=true,enableMicrophone=true"
         allowpopups="true"
         partition="persist:webview"
         key={tab.id}
       />
+      {hasLoadFailed && (
+        <div className="w-full h-full flex flex-col items-center justify-center">
+          <div className="flex flex-col w-fit space-y-2">
+            <TriangleAlert className="w-10 h-10" />
+            <span>
+              <a href={tab.url}>{tab.url}</a> failed to load
+            </span>
+            <span className="text-neutral-600">
+              {failedLoadDescription} ({failedLoadMessage})
+            </span>
+            <Button
+              onClick={() => {
+                ref.current?.reload()
+              }}
+            >
+              Reload
+            </Button>
+          </div>
+        </div>
+      )}
       {isActive && <FindInPage webviewRef={ref} />}
     </div>
   )

@@ -3,8 +3,6 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import contextMenu from 'electron-context-menu'
-import { ElectronBlocker } from '@ghostery/adblocker-electron'
-import fetch from 'cross-fetch' // required 'fetch'
 
 const isMac = process.platform === 'darwin'
 
@@ -12,21 +10,21 @@ const template = [
   // { role: 'appMenu' }
   ...(isMac
     ? [
-        {
-          label: app.name,
-          submenu: [
-            { role: 'about' },
-            { type: 'separator' },
-            { role: 'services' },
-            { type: 'separator' },
-            { role: 'hide' },
-            { role: 'hideOthers' },
-            { role: 'unhide' },
-            { type: 'separator' },
-            { role: 'quit' }
-          ]
-        }
-      ]
+      {
+        label: app.name,
+        submenu: [
+          { role: 'about' },
+          { type: 'separator' },
+          { role: 'services' },
+          { type: 'separator' },
+          { role: 'hide' },
+          { role: 'hideOthers' },
+          { role: 'unhide' },
+          { type: 'separator' },
+          { role: 'quit' }
+        ]
+      }
+    ]
     : []),
   // { role: 'fileMenu' }
   {
@@ -73,15 +71,15 @@ const template = [
       { role: 'paste' },
       ...(isMac
         ? [
-            { role: 'pasteAndMatchStyle' },
-            { role: 'delete' },
-            { role: 'selectAll' },
-            { type: 'separator' },
-            {
-              label: 'Speech',
-              submenu: [{ role: 'startSpeaking' }, { role: 'stopSpeaking' }]
-            }
-          ]
+          { role: 'pasteAndMatchStyle' },
+          { role: 'delete' },
+          { role: 'selectAll' },
+          { type: 'separator' },
+          {
+            label: 'Speech',
+            submenu: [{ role: 'startSpeaking' }, { role: 'stopSpeaking' }]
+          }
+        ]
         : [{ role: 'delete' }, { type: 'separator' }, { role: 'selectAll' }]),
       {
         label: 'Find',
@@ -206,9 +204,9 @@ async function createWindow(): Promise<void> {
       }
     }
   )
-  let blocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch) // ads only
-
-  blocker.enableBlockingInSession(mainWindow.webContents.session)
+  // let blocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch) // ads only
+  //
+  // blocker.enableBlockingInSession(mainWindow.webContents.session)
 
   // @ts-ignore
   const menu = Menu.buildFromTemplate(template)
@@ -264,7 +262,7 @@ app.whenReady().then(async () => {
 
   createWindow()
 
-  app.on('activate', function () {
+  app.on('activate', function() {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
@@ -294,9 +292,11 @@ app.on('web-contents-created', (e, contents) => {
 // app.userAgentFallback = app.userAgentFallback.replace('Chrome/' + process.versions.chrome, 'Chrome')
 const newUserAgent = app.userAgentFallback.replace(
   /Chrome\/[\d.]+/,
-  'Chrome/131.0.0.0' // Example: Update to a recent Chrome version
-)
-app.userAgentFallback = newUserAgent
+  'Chrome/130.0.0.0' // Example: Update to a recent Chrome version
+).replace(/Electron\/[\d.]+/, '').replace(/formalsurf-refactor\/[\d.]+/, '')
+
+// also replace Electron/* with nothing, and replace formalsurf-refactor/* with nothing
+app.userAgentFallback = newUserAgent// app.userAgentFallback = newUserAgent
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
