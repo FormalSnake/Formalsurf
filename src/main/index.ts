@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain, Menu, session } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, Menu, dialog, session } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -10,21 +10,21 @@ const template = [
   // { role: 'appMenu' }
   ...(isMac
     ? [
-      {
-        label: app.name,
-        submenu: [
-          { role: 'about' },
-          { type: 'separator' },
-          { role: 'services' },
-          { type: 'separator' },
-          { role: 'hide' },
-          { role: 'hideOthers' },
-          { role: 'unhide' },
-          { type: 'separator' },
-          { role: 'quit' }
-        ]
-      }
-    ]
+        {
+          label: app.name,
+          submenu: [
+            { role: 'about' },
+            { type: 'separator' },
+            { role: 'services' },
+            { type: 'separator' },
+            { role: 'hide' },
+            { role: 'hideOthers' },
+            { role: 'unhide' },
+            { type: 'separator' },
+            { role: 'quit' }
+          ]
+        }
+      ]
     : []),
   // { role: 'fileMenu' }
   {
@@ -56,6 +56,39 @@ const template = [
             browserWindow.webContents.send('open-url-bar')
           }
         }
+      },
+      {
+        label: 'Set as Default Browser',
+        click: async (menuItem, browserWindow) => {
+          const protocols = ['http', 'https']
+          let success = true
+
+          for (const protocol of protocols) {
+            if (!app.setAsDefaultProtocolClient(protocol)) {
+              success = false
+              break
+            }
+          }
+
+          if (success) {
+            dialog.showMessageBox(browserWindow!, {
+              type: 'info',
+              title: 'Default Browser',
+              message: 'Successfully set as default browser',
+              detail: 'This browser will now handle web links by default.',
+              buttons: ['OK']
+            })
+          } else {
+            dialog.showMessageBox(browserWindow!, {
+              type: 'error',
+              title: 'Error',
+              message: 'Could not set as default browser',
+              detail:
+                'There was an error while trying to set this as your default browser. You may need to change this in your system settings.',
+              buttons: ['OK']
+            })
+          }
+        }
       }
     ]
   },
@@ -71,15 +104,15 @@ const template = [
       { role: 'paste' },
       ...(isMac
         ? [
-          { role: 'pasteAndMatchStyle' },
-          { role: 'delete' },
-          { role: 'selectAll' },
-          { type: 'separator' },
-          {
-            label: 'Speech',
-            submenu: [{ role: 'startSpeaking' }, { role: 'stopSpeaking' }]
-          }
-        ]
+            { role: 'pasteAndMatchStyle' },
+            { role: 'delete' },
+            { role: 'selectAll' },
+            { type: 'separator' },
+            {
+              label: 'Speech',
+              submenu: [{ role: 'startSpeaking' }, { role: 'stopSpeaking' }]
+            }
+          ]
         : [{ role: 'delete' }, { type: 'separator' }, { role: 'selectAll' }]),
       {
         label: 'Find',
@@ -262,7 +295,7 @@ app.whenReady().then(async () => {
 
   createWindow()
 
-  app.on('activate', function() {
+  app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
@@ -290,13 +323,16 @@ app.on('web-contents-created', (e, contents) => {
 })
 
 // app.userAgentFallback = app.userAgentFallback.replace('Chrome/' + process.versions.chrome, 'Chrome')
-const newUserAgent = app.userAgentFallback.replace(
-  /Chrome\/[\d.]+/,
-  'Chrome/130.0.0.0' // Example: Update to a recent Chrome version
-).replace(/Electron\/[\d.]+/, '').replace(/formalsurf-refactor\/[\d.]+/, '')
+const newUserAgent = app.userAgentFallback
+  .replace(
+    /Chrome\/[\d.]+/,
+    'Chrome/130.0.0.0' // Example: Update to a recent Chrome version
+  )
+  .replace(/Electron\/[\d.]+/, '')
+  .replace(/formalsurf-refactor\/[\d.]+/, '')
 
 // also replace Electron/* with nothing, and replace formalsurf-refactor/* with nothing
-app.userAgentFallback = newUserAgent// app.userAgentFallback = newUserAgent
+app.userAgentFallback = newUserAgent // app.userAgentFallback = newUserAgent
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
