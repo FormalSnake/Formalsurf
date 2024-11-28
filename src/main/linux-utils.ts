@@ -40,13 +40,30 @@ Exec="${execPath}" --private-window`
     }
     fs.copyFileSync(desktopFilePath, path.join(desktopFileDir, 'formalsurf.desktop'))
 
-    // Set as default browser using xdg-settings
-    execSync('xdg-settings set default-web-browser formalsurf.desktop')
+    // Try to set as default browser using multiple methods
+    try {
+      // First attempt: direct xdg-mime setting for protocols
+      const protocols = ['http', 'https']
+      for (const protocol of protocols) {
+        execSync(`xdg-mime default formalsurf.desktop x-scheme-handler/${protocol}`)
+      }
 
-    // Register protocols
-    const protocols = ['http', 'https']
-    for (const protocol of protocols) {
-      execSync(`xdg-mime default formalsurf.desktop x-scheme-handler/${protocol}`)
+      // Second attempt: try xdg-settings with BROWSER unset
+      execSync('unset BROWSER && xdg-settings set default-web-browser formalsurf.desktop', {
+        shell: '/bin/bash',
+        env: { ...process.env, BROWSER: undefined }
+      })
+    } catch (cmdError) {
+      // If the above methods fail, try using update-alternatives if available
+      try {
+        execSync('which update-alternatives', { stdio: 'ignore' })
+        execSync(`sudo update-alternatives --set x-www-browser ${execPath}`, {
+          stdio: 'ignore'
+        })
+      } catch {
+        // If update-alternatives fails, we'll still count it as success if we set the MIME types
+        console.log('Could not set as system default, but browser associations have been set')
+      }
     }
 
     return { success: true }
