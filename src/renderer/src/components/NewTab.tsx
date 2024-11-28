@@ -22,9 +22,31 @@ export function NewTabDialog() {
   const [open, setOpen] = useAtom(isNewTabDialogOpen)
   const [value, setValue] = useState('')
   const [suggestions, setSuggestions] = useState<string[]>([])
+  const [searchEngine, setSearchEngine] = useState('google')
   const createNewTab = useCreateNewTab()
   const [tabs, setTabs] = useAtom(tabsAtom)
   const [isUpdate, setIsUpdate] = useAtom(isUpdateAtom)
+
+  useEffect(() => {
+    // @ts-ignore
+    window.api
+      .getSettings('searchEngine')
+      .then((data: any) => {
+        setSearchEngine(data || 'google')
+      })
+      .catch((error: any) => {
+        console.error('Error fetching search engine setting:', error)
+        setSearchEngine('google') // Fallback to google if there's an error
+      })
+
+    // Listen for setting changes
+    // @ts-ignore
+    window.api.onSettingChanged((event: any, key: string, value: any) => {
+      if (key === 'searchEngine') {
+        setSearchEngine(value || 'google')
+      }
+    })
+  }, [])
 
   const fetchSuggestions = useCallback(
     async (query: string) => {
@@ -92,9 +114,35 @@ export function NewTabDialog() {
         } else if (/^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
           url = `https://${value}`
         } else if (unicodeRegex.test(value)) {
-          url = `https://www.google.com/search?q=${encodeURIComponent(value)}`
+          // Use selected search engine
+          switch (searchEngine) {
+            case 'bing':
+              url = `https://www.bing.com/search?q=${encodeURIComponent(value)}`
+              break
+            case 'duckduckgo':
+              url = `https://duckduckgo.com/?q=${encodeURIComponent(value)}`
+              break
+            case 'perplexity':
+              url = `https://www.perplexity.ai/search?q=${encodeURIComponent(value)}`
+              break
+            default: // 'google' or fallback
+              url = `https://www.google.com/search?q=${encodeURIComponent(value)}`
+          }
         } else {
-          url = `https://www.google.com/search?q=${encodeURIComponent(value)}`
+          // Use selected search engine
+          switch (searchEngine) {
+            case 'bing':
+              url = `https://www.bing.com/search?q=${encodeURIComponent(value)}`
+              break
+            case 'duckduckgo':
+              url = `https://duckduckgo.com/?q=${encodeURIComponent(value)}`
+              break
+            case 'perplexity':
+              url = `https://www.perplexity.ai/search?q=${encodeURIComponent(value)}`
+              break
+            default: // 'google' or fallback
+              url = `https://www.google.com/search?q=${encodeURIComponent(value)}`
+          }
         }
 
         if (isUpdate) {
@@ -111,7 +159,7 @@ export function NewTabDialog() {
         setSuggestions([])
       }
     },
-    [createNewTab, setOpen, setValue, setSuggestions, tabs, setTabs, isUpdate]
+    [createNewTab, setOpen, setValue, setSuggestions, tabs, setTabs, isUpdate, searchEngine]
   )
 
   useEffect(() => {

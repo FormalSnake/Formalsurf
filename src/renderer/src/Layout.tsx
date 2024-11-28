@@ -3,6 +3,8 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/s
 import { AppSidebar } from '@/components/app-sidebar'
 import { TabProvider } from '@/providers/TabProvider'
 import { NewTabDialog } from '@/components/NewTab'
+import { Settings } from 'lucide-react'
+import { SettingsDialog } from './components/settings-dialog'
 
 export default function BaseLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -10,7 +12,11 @@ export default function BaseLayout({ children }: { children: React.ReactNode }) 
       <AppSidebar />
       <NewTabDialog />
       <SidebarInset className="overflow-hidden">
-        <TabProvider>{children}</TabProvider>
+        <TabProvider>
+          <SettingsDialog />
+
+          {children}
+        </TabProvider>
       </SidebarInset>
     </SidebarProvider>
   )

@@ -13,6 +13,7 @@ import { Input } from './components/ui/input'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ipcRenderer } from 'electron'
 import { Snake } from './components/snake'
+import { ThemeProvider } from './components/theme-provider'
 
 const findInPageVisibleAtom = atom(false)
 
@@ -269,6 +270,30 @@ function App(): JSX.Element {
     setFindInPageVisible((prev) => !prev)
   }
 
+  const [theme, setTheme] = React.useState<'dark' | 'light' | 'system'>('system')
+
+  React.useEffect(() => {
+    // @ts-ignore
+    window.api
+      .getSettings('theme')
+      .then((savedTheme: any) => {
+        if (savedTheme) {
+          setTheme(savedTheme)
+        }
+      })
+      .catch((error: any) => {
+        console.error('Error fetching theme setting:', error)
+      })
+
+    // Listen for theme changes
+    // @ts-ignore
+    window.api.onSettingChanged((event: any, key: string, value: any) => {
+      if (key === 'theme') {
+        setTheme(value || 'system')
+      }
+    })
+  }, [])
+
   useEffect(() => {
     //@ts-ignore
     window.api.handle(
@@ -368,23 +393,27 @@ function App(): JSX.Element {
   }, [])
 
   return (
-    <BaseLayout>
-      <div className="w-full h-full">
-        {tabs.map((tab) => (
-          <Tab key={tab.id} tab={tab} isActive={tab.isActive} />
-        ))}
-        {tabs.length === 0 && (
-          <div className="w-full h-full flex justify-center items-center text-foreground">
-            <Particles className="absolute inset-0" quantity={100} ease={80} refresh />
-            <Meteors number={5} />
-            <div className="text-center z-10 mb-32 space-y-4">
-              <BlurIn word="Formalsurf" className="text-sm font-bold" />
-              <p>The vast universe is waiting for you to explore.</p>
-            </div>
+    <ThemeProvider defaultTheme={theme}>
+      <div className="min-h-screen bg-background">
+        <BaseLayout>
+          <div className="w-full h-full">
+            {tabs.map((tab) => (
+              <Tab key={tab.id} tab={tab} isActive={tab.isActive} />
+            ))}
+            {tabs.length === 0 && (
+              <div className="w-full h-full flex justify-center items-center text-foreground">
+                <Particles className="absolute inset-0" quantity={100} ease={80} refresh />
+                <Meteors number={5} />
+                <div className="text-center z-10 mb-32 space-y-4">
+                  <BlurIn word="Formalsurf" className="text-sm font-bold" />
+                  <p>The vast universe is waiting for you to explore.</p>
+                </div>
+              </div>
+            )}
           </div>
-        )}
+        </BaseLayout>
       </div>
-    </BaseLayout>
+    </ThemeProvider>
   )
 }
 

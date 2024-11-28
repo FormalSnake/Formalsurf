@@ -5,8 +5,11 @@ import icon from '../../resources/icon.png?asset'
 import contextMenu from 'electron-context-menu'
 import { ElectronBlocker } from '@ghostery/adblocker-electron'
 import fetch from 'cross-fetch' // required 'fetch'
+import Store from 'electron-store'
 
 const isMac = process.platform === 'darwin'
+
+const store = new Store()
 
 const template = [
   // { role: 'appMenu' }
@@ -16,6 +19,16 @@ const template = [
           label: app.name,
           submenu: [
             { role: 'about' },
+            { type: 'separator' },
+            {
+              label: 'Settings',
+              accelerator: 'CmdOrCtrl+,',
+              click: (menuItem, browserWindow) => {
+                if (browserWindow) {
+                  browserWindow.webContents.send('show-settings')
+                }
+              }
+            },
             { type: 'separator' },
             { role: 'services' },
             { type: 'separator' },
@@ -236,6 +249,10 @@ async function createWindow(): Promise<void> {
   //
   // blocker.enableBlockingInSession(mainWindow.webContents.session)
 
+  if (store.get('searchEngine') === null) {
+    store.set('searchEngine', 'google')
+  }
+
   // @ts-ignore
   const menu = Menu.buildFromTemplate(template)
   Menu.setApplicationMenu(menu)
@@ -264,6 +281,22 @@ async function createWindow(): Promise<void> {
       mainWindow.setWindowButtonVisibility(false)
       console.log('Hide traffic lights')
     }
+  })
+
+  // A 'change-setting' event receiver that does store.set and store.get using a provided value with the event.
+  ipcMain.handle('change-setting', async (event, key, value) => {
+    store.set(key, value)
+    // Notify all windows about the setting change
+    BrowserWindow.getAllWindows().forEach((window) => {
+      window.webContents.send('setting-changed', key, value)
+    })
+    return store.get(key)
+  })
+
+  // A 'get-setting' event receiver that does store.get using a provided value with the event.
+  ipcMain.handle('get-setting', async (event, key) => {
+    console.log('get-setting', key)
+    return store.get(key)
   })
 
   // HMR for renderer base on electron-vite cli.

@@ -4,10 +4,10 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   main: {
-    plugins: [externalizeDepsPlugin({ exclude: ['electron-context-menu'] })]
+    plugins: [externalizeDepsPlugin({ exclude: ['electron-context-menu', 'electron-store'] })]
   },
   preload: {
-    plugins: [externalizeDepsPlugin({ exclude: ['electron-context-menu'] })]
+    plugins: [externalizeDepsPlugin({ exclude: ['electron-context-menu', 'electron-store'] })]
   },
   renderer: {
     resolve: {
