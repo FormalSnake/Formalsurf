@@ -274,12 +274,17 @@ async function createWindow(): Promise<void> {
   })
 
   ipcMain.on('toggle-traffic-lights', (event, show) => {
-    if (show) {
-      mainWindow.setWindowButtonVisibility(true)
-      console.log('Show traffic lights')
+    // Check if the platform supports window button visibility
+    if (process.platform === 'darwin' && mainWindow?.setWindowButtonVisibility) {
+      if (show) {
+        mainWindow.setWindowButtonVisibility(true)
+        console.log('Show traffic lights')
+      } else {
+        mainWindow.setWindowButtonVisibility(false)
+        console.log('Hide traffic lights')
+      }
     } else {
-      mainWindow.setWindowButtonVisibility(false)
-      console.log('Hide traffic lights')
+      console.log('Window button visibility not supported on this platform')
     }
   })
 
