@@ -8,10 +8,11 @@ import { Button } from './components/ui/button'
 import Particles from './components/magicui/Particles'
 import Meteors from './components/magicui/Meteor'
 import BlurIn from './components/magicui/BlurIn'
-import { Search, ArrowUp, ArrowDown, TriangleAlert } from 'lucide-react' // Importing icons from Lucide
+import { Search, ArrowUp, ArrowDown, TriangleAlert, WifiOff } from 'lucide-react' // Importing icons from Lucide
 import { Input } from './components/ui/input'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ipcRenderer } from 'electron'
+import { Snake } from './components/snake'
 
 const findInPageVisibleAtom = atom(false)
 
@@ -226,7 +227,14 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
       {hasLoadFailed && (
         <div className="w-full h-full flex flex-col items-center justify-center">
           <div className="flex flex-col w-fit space-y-2">
-            <TriangleAlert className="w-10 h-10" />
+            {failedLoadMessage == '-106' ? (
+              <>
+                <WifiOff className="w-10 h-10" />
+                <Snake />
+              </>
+            ) : (
+              <TriangleAlert className="w-10 h-10" />
+            )}
             <span>
               <a href={tab.url}>{tab.url}</a> failed to load
             </span>
