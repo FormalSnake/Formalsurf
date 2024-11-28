@@ -3,6 +3,8 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import contextMenu from 'electron-context-menu'
+import { ElectronBlocker } from '@ghostery/adblocker-electron'
+import fetch from 'cross-fetch' // required 'fetch'
 
 const isMac = process.platform === 'darwin'
 
@@ -351,6 +353,9 @@ app.whenReady().then(async () => {
 
 app.on('web-contents-created', (e, contents) => {
   if (contents.getType() == 'webview') {
+    ElectronBlocker.fromPrebuiltAdsAndTracking(fetch).then((blocker) => {
+      blocker.enableBlockingInSession(contents.session)
+    })
     // set context menu in webview contextMenu({ window: contents, });
     contextMenu({
       window: contents,

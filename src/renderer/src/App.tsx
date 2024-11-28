@@ -175,7 +175,7 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
       })
 
       webview.addEventListener('did-fail-load', (event) => {
-        // Ignore aborted loads
+        // Ignore aborted loads and blocked responses
         if (event.errorCode !== -3 && event.errorCode !== -27) {
           setHasLoadFailed(true)
           setFailedLoadMessage(event.errorCode)
