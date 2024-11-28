@@ -230,6 +230,35 @@ const template = [
   }
 ]
 
+// Handle command line argument URL if provided
+const url = process.argv[process.argv.length - 1]
+if (url && !url.startsWith('-') && url !== '.' && url !== './') {
+  let processedUrl = url
+  // Check if it's a valid URL or domain name
+  if (!url.match(/^https?:\/\//)) {
+    // Basic domain validation
+    if (url.match(/^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/)) {
+      processedUrl = `https://${url}`
+    }
+  }
+  if (processedUrl.match(/^https?:\/\/.+\..+/)) {
+    // If we have an existing window, use it
+    const existingWindow = BrowserWindow.getAllWindows()[0]
+    if (existingWindow) {
+      existingWindow.webContents.send('open-url', processedUrl)
+      if (existingWindow.isMinimized()) existingWindow.restore()
+      existingWindow.focus()
+    } else {
+      // Store URL to be opened after window creation
+      app.once('browser-window-created', (_, window) => {
+        window.once('ready-to-show', () => {
+          window.webContents.send('open-url', processedUrl)
+        })
+      })
+    }
+  }
+}
+
 async function createWindow(): Promise<void> {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -322,7 +351,9 @@ async function createWindow(): Promise<void> {
 
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
-  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+  if (process.env['ELECTRON_START_URL']) {
+    mainWindow.loadURL(process.env['ELECTRON_START_URL'])
+  } else if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
