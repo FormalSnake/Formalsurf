@@ -6,6 +6,7 @@ import contextMenu from 'electron-context-menu'
 import { ElectronBlocker } from '@ghostery/adblocker-electron'
 import fetch from 'cross-fetch' // required 'fetch'
 import Store from 'electron-store'
+import { setAsDefaultBrowserLinux } from './linux-utils'
 
 const isMac = process.platform === 'darwin'
 
@@ -75,26 +76,41 @@ const template = [
       {
         label: 'Set as Default Browser',
         click: async (menuItem, browserWindow) => {
-          const protocols = ['http', 'https', 'file', 'pdf', 'html', 'htm']
-          let success = true
-
-          for (const protocol of protocols) {
-            if (!app.setAsDefaultProtocolClient(protocol)) {
-              success = false
-              break
+          if (process.platform === 'linux') {
+            const result = await setAsDefaultBrowserLinux()
+            if (result.success) {
+              dialog.showMessageBox(browserWindow!, {
+                type: 'info',
+                title: 'Default Browser',
+                message: 'Successfully set as default browser',
+                detail: 'This browser will now handle web links by default.',
+                buttons: ['OK']
+              })
+            } else {
+              console.log('Failed to set as default browser on Linux:', result.error)
             }
-          }
-
-          if (success) {
-            dialog.showMessageBox(browserWindow!, {
-              type: 'info',
-              title: 'Default Browser',
-              message: 'Successfully set as default browser',
-              detail: 'This browser will now handle web links by default.',
-              buttons: ['OK']
-            })
           } else {
-            console.log('Failed to set as default browser')
+            const protocols = ['http', 'https', 'file', 'pdf', 'html', 'htm']
+            let success = true
+
+            for (const protocol of protocols) {
+              if (!app.setAsDefaultProtocolClient(protocol)) {
+                success = false
+                break
+              }
+            }
+
+            if (success) {
+              dialog.showMessageBox(browserWindow!, {
+                type: 'info',
+                title: 'Default Browser',
+                message: 'Successfully set as default browser',
+                detail: 'This browser will now handle web links by default.',
+                buttons: ['OK']
+              })
+            } else {
+              console.log('Failed to set as default browser')
+            }
           }
         }
       }
