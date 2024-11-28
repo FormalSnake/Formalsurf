@@ -176,7 +176,7 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
 
       webview.addEventListener('did-fail-load', (event) => {
         // Ignore aborted loads
-        if (event.errorCode !== -3) {
+        if (event.errorCode !== -3 && event.errorCode !== -27) {
           setHasLoadFailed(true)
           setFailedLoadMessage(event.errorCode)
           setFailedLoadDescription(event.errorDescription)
@@ -220,7 +220,6 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
         className={`w-full h-full bg-foreground ${hasLoadFailed ? 'hidden' : ''}`}
         webpreferences="autoplayPolicy=user-gesture-required,defaultFontSize=16,contextIsolation=true,nodeIntegration=false,sandbox=true,webSecurity=true,enableCamera=true,enableMicrophone=true"
         allowpopups="true"
-        allowfileaccessfromfiles="true"
         partition="persist:webview"
         key={tab.id}
       />
