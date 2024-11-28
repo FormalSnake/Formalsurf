@@ -39,7 +39,7 @@
     "electron-settings": "^4.0.4",
     "electron-updater": "^6.1.7",
     "jotai": "^2.10.3",
-    "lucide-react": "^0.460.0",
+    "lucide-react": "^0.462.0",
     "motion": "^11.11.17",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
