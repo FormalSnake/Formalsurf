@@ -16,7 +16,7 @@ The intention of this browser is to only implement basic browser features that I
 - [x] Keyboard shortcuts
 - [x] Persistence
 - [x] Context menu (Downloading is currently broken)
-- [ ] Settings
+- [x] Settings
 - [ ] Extensions
 - [ ] Profiles
 - [ ] Spaces
