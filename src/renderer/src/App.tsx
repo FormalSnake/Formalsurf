@@ -109,6 +109,9 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
   const initialSrc = useRef(tab.url) // Store initial URL to prevent re-renders
   const [currentUrl, setCurrentUrl] = React.useState(initialSrc.current)
 
+  const [targetUrlOpen, setTargetUrlOpen] = useState(false)
+  const [targetUrl, setTargetUrl] = useState('')
+
   useEffect(() => {
     const webview = ref.current
 
@@ -192,6 +195,16 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
         createNewTab({ url: event.url })
       })
 
+      webview.addEventListener('update-target-url', (event) => {
+        event.preventDefault()
+        if (event.url) {
+          setTargetUrlOpen(true)
+          setTargetUrl(event.url)
+        } else {
+          setTargetUrlOpen(false)
+        }
+      })
+
       // Cleanup function
       return () => {
         webview.removeEventListener('did-navigate', navigateHandler)
@@ -202,6 +215,7 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
         webview.removeEventListener('did-stop-loading', () => {})
         webview.removeEventListener('did-fail-load', () => {})
         webview.removeEventListener('new-window', (e) => {})
+        webview.removeEventListener('update-target-url', (e) => {})
       }
     }
     return () => {}
@@ -216,6 +230,18 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
 
   return (
     <div className={`tab-container w-full h-full ${isActive ? '' : 'hidden'}`} key={tab.id}>
+      <AnimatePresence>
+        {targetUrlOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed bottom-0 right-0 m-1 h-fit w-fit max-w-[500px] bg-background/80 backdrop-blur-md border z-50 p-1 px-2 truncate rounded-md"
+          >
+            {targetUrl}
+          </motion.div>
+        )}
+      </AnimatePresence>
       <webview
         ref={ref}
         src={initialSrc.current}
