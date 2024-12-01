@@ -211,14 +211,14 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
         webview.removeEventListener('did-navigate-in-page', navigateHandler)
         webview.removeEventListener('page-title-updated', titleHandler)
         webview.removeEventListener('page-favicon-updated', faviconHandler)
-        webview.removeEventListener('did-start-loading', () => {})
-        webview.removeEventListener('did-stop-loading', () => {})
-        webview.removeEventListener('did-fail-load', () => {})
-        webview.removeEventListener('new-window', (e) => {})
-        webview.removeEventListener('update-target-url', (e) => {})
+        webview.removeEventListener('did-start-loading', () => { })
+        webview.removeEventListener('did-stop-loading', () => { })
+        webview.removeEventListener('did-fail-load', () => { })
+        webview.removeEventListener('new-window', (e) => { })
+        webview.removeEventListener('update-target-url', (e) => { })
       }
     }
-    return () => {}
+    return () => { }
   }, [ref, tab.id, setTabs, currentUrl])
 
   // Keep the active tab reference updated
@@ -236,7 +236,7 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed bottom-0 right-0 m-1 h-fit w-fit max-w-[500px] bg-background/80 backdrop-blur-md border z-50 p-1 px-2 truncate rounded-md"
+            className="fixed bottom-0 right-0 m-1 h-fit w-fit max-w-[500px] bg-background border z-50 p-1 px-2 truncate rounded-md"
           >
             {targetUrl}
           </motion.div>
@@ -325,7 +325,7 @@ function App(): JSX.Element {
     window.api.handle(
       'close-active-tab',
       (event: any, data: any) =>
-        function (event: any, data: any) {
+        function(event: any, data: any) {
           console.log('close-active-tab')
           closeTab()
           // remove api handler
@@ -339,7 +339,7 @@ function App(): JSX.Element {
     window.api.handle(
       'new-tab',
       (event: any, data: any) =>
-        function (event: any, data: any) {
+        function(event: any, data: any) {
           console.log('new-tab')
           setIsUpdate(false)
           setTabDialogOpen(true)
@@ -357,7 +357,7 @@ function App(): JSX.Element {
     window.api.handle(
       'toggle-sidebar',
       (event: any, data: any) =>
-        function (event: any, data: any) {
+        function(event: any, data: any) {
           console.log('toggle-sidebar')
           setSidebarOpen((open) => !open)
           console.log(sidebarOpen)
@@ -372,7 +372,7 @@ function App(): JSX.Element {
     window.api.handle(
       'open-url-bar',
       (event: any, data: any) =>
-        function (event: any, data: any) {
+        function(event: any, data: any) {
           console.log('open-url-bar')
           setIsUpdate(true)
           setTabDialogOpen(true)
@@ -389,7 +389,7 @@ function App(): JSX.Element {
     window.api.handle(
       'find',
       (event: any, data: any) =>
-        function (event: any, data: any) {
+        function(event: any, data: any) {
           console.log('find')
           toggleFindInPage()
           // Pass true to indicate updating an existing tab
