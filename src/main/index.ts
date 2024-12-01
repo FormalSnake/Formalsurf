@@ -60,7 +60,19 @@ const template = [
         accelerator: 'CmdOrCtrl+W',
         click: (menuItem, browserWindow) => {
           if (browserWindow) {
-            browserWindow.webContents.send('close-active-tab')
+            // Prevent the window from closing on Linux
+            if (process.platform === 'linux') {
+              browserWindow.setClosable(false)
+              browserWindow.webContents.send('close-active-tab')
+              // Re-enable window closing after a short delay
+              setTimeout(() => {
+                if (!browserWindow.isDestroyed()) {
+                  browserWindow.setClosable(true)
+                }
+              }, 100)
+            } else {
+              browserWindow.webContents.send('close-active-tab')
+            }
           }
         }
       },

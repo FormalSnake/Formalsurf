@@ -156,10 +156,7 @@ export const TabProvider = ({ children }: { children: any }) => {
 
   const handleOpenUrl = useCallback(
     (event: any, url: string) => {
-      const existingTab = tabs.find((tab) => tab.url === url)
-      if (!existingTab) {
-        createNewTab({ url })
-      }
+      createNewTab({ url })
     },
     [createNewTab, tabs]
   )
@@ -252,6 +249,23 @@ export function useTogglePinTab() {
   }
 
   return togglePinTab
+}
+
+export function useUpdateTab() {
+  const [tabs, setTabs] = useAtom(tabsAtom)
+
+  return useCallback((id: string, update: Partial<any>) => {
+    setTabs((prevTabs) => {
+      const tabExists = prevTabs.some((prevTab) => prevTab.id === id)
+      if (!tabExists) {
+        console.warn(`Tab with id ${id} not found!`)
+        return prevTabs
+      }
+      return prevTabs.map((prevTab) =>
+        prevTab.id === id ? { ...prevTab, ...update } : prevTab
+      )
+    })
+  }, [setTabs])
 }
 
 // Define the getFavicon function

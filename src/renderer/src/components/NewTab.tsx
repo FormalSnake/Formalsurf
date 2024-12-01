@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { Dialog, DialogContent, DialogOverlay, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { atom, useAtom } from 'jotai'
-import { tabsAtom, useCreateNewTab } from '@/providers/TabProvider'
+import { tabsAtom, useCreateNewTab, useUpdateTab, activeTabRefAtom } from '@/providers/TabProvider'
 import {
   Command,
   CommandDialog,
@@ -26,6 +26,8 @@ export function NewTabDialog() {
   const createNewTab = useCreateNewTab()
   const [tabs, setTabs] = useAtom(tabsAtom)
   const [isUpdate, setIsUpdate] = useAtom(isUpdateAtom)
+  const updateTab = useUpdateTab()
+  const [activeWebview] = useAtom(activeTabRefAtom)
 
   useEffect(() => {
     // @ts-ignore
@@ -148,7 +150,10 @@ export function NewTabDialog() {
         if (isUpdate) {
           const activeTab = tabs.find((tab) => tab.isActive)
           if (activeTab) {
-            setTabs(tabs.map((tab) => (tab.id === activeTab.id ? { ...tab, url } : tab)))
+            updateTab(activeTab.id, { url })
+            if (activeWebview) {
+              activeWebview.loadURL(url)
+            }
           }
         } else {
           createNewTab({ url })
@@ -159,7 +164,18 @@ export function NewTabDialog() {
         setSuggestions([])
       }
     },
-    [createNewTab, setOpen, setValue, setSuggestions, tabs, setTabs, isUpdate, searchEngine]
+    [
+      createNewTab,
+      setOpen,
+      setValue,
+      setSuggestions,
+      tabs,
+      setTabs,
+      isUpdate,
+      searchEngine,
+      updateTab,
+      activeWebview
+    ]
   )
 
   useEffect(() => {
@@ -175,7 +191,16 @@ export function NewTabDialog() {
   }, [value, fetchSuggestions, tabs])
 
   return (
-    <CommandDialog open={open} onOpenChange={setOpen}>
+    <CommandDialog
+      open={open}
+      onOpenChange={(isOpen) => {
+        setOpen(isOpen)
+        if (!isOpen) {
+          setValue('')
+          setSuggestions([])
+        }
+      }}
+    >
       <CommandInput placeholder="Search or type a url..." value={value} onValueChange={setValue} />
       <DialogTitle className="sr-only">Open New Tab</DialogTitle>
       <CommandList>
