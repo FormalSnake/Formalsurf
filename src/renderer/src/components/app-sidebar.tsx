@@ -27,6 +27,7 @@ import {
   defaultDropAnimationSideEffects
 } from '@dnd-kit/core'
 import { SortableContext, arrayMove, horizontalListSortingStrategy } from '@dnd-kit/sortable'
+import { cn } from '@renderer/lib/utils'
 
 const AddTabButton = React.memo(({ onClick }: { onClick: () => void }) => (
   <Button onClick={onClick} className="h-7 w-7 group/addtab" size="icon" variant="ghost">
@@ -219,7 +220,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar {...props} className="draglayer">
-      <div className="flex flex-row mt-2.5 ml-16 justify-evenly nodraglayer">
+      <div
+        className={cn(
+          'flex flex-row mt-2.5 justify-evenly nodraglayer',
+          process.platform === 'darwin' && 'ml-16'
+        )}
+      >
         <AddTabButton onClick={handleAddTab} />
         <SidebarTrigger />
         <ActionButton

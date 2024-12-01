@@ -211,14 +211,14 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
         webview.removeEventListener('did-navigate-in-page', navigateHandler)
         webview.removeEventListener('page-title-updated', titleHandler)
         webview.removeEventListener('page-favicon-updated', faviconHandler)
-        webview.removeEventListener('did-start-loading', () => { })
-        webview.removeEventListener('did-stop-loading', () => { })
-        webview.removeEventListener('did-fail-load', () => { })
-        webview.removeEventListener('new-window', (e) => { })
-        webview.removeEventListener('update-target-url', (e) => { })
+        webview.removeEventListener('did-start-loading', () => {})
+        webview.removeEventListener('did-stop-loading', () => {})
+        webview.removeEventListener('did-fail-load', () => {})
+        webview.removeEventListener('new-window', (e) => {})
+        webview.removeEventListener('update-target-url', (e) => {})
       }
     }
-    return () => { }
+    return () => {}
   }, [ref, tab.id, setTabs, currentUrl])
 
   // Keep the active tab reference updated
@@ -233,9 +233,10 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
       <AnimatePresence>
         {targetUrlOpen && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.5, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
             className=" m-1 h-fit w-fit max-w-[500px] z-50 p-1 px-2 truncate bg-popover border-border border fixed bottom-4 right-4 rounded-lg pointer-events-none"
           >
             {targetUrl}
@@ -325,7 +326,7 @@ function App(): JSX.Element {
     window.api.handle(
       'close-active-tab',
       (event: any, data: any) =>
-        function(event: any, data: any) {
+        function (event: any, data: any) {
           console.log('close-active-tab')
           closeTab()
           // remove api handler
@@ -339,7 +340,7 @@ function App(): JSX.Element {
     window.api.handle(
       'new-tab',
       (event: any, data: any) =>
-        function(event: any, data: any) {
+        function (event: any, data: any) {
           console.log('new-tab')
           setIsUpdate(false)
           setTabDialogOpen(true)
@@ -357,7 +358,7 @@ function App(): JSX.Element {
     window.api.handle(
       'toggle-sidebar',
       (event: any, data: any) =>
-        function(event: any, data: any) {
+        function (event: any, data: any) {
           console.log('toggle-sidebar')
           setSidebarOpen((open) => !open)
           console.log(sidebarOpen)
@@ -372,7 +373,7 @@ function App(): JSX.Element {
     window.api.handle(
       'open-url-bar',
       (event: any, data: any) =>
-        function(event: any, data: any) {
+        function (event: any, data: any) {
           console.log('open-url-bar')
           setIsUpdate(true)
           setTabDialogOpen(true)
@@ -389,7 +390,7 @@ function App(): JSX.Element {
     window.api.handle(
       'find',
       (event: any, data: any) =>
-        function(event: any, data: any) {
+        function (event: any, data: any) {
           console.log('find')
           toggleFindInPage()
           // Pass true to indicate updating an existing tab
