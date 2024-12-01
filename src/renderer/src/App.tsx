@@ -236,7 +236,7 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed bottom-0 right-0 m-1 h-fit w-fit max-w-[500px] bg-background border z-50 p-1 px-2 truncate rounded-md"
+            className=" m-1 h-fit w-fit max-w-[500px] z-50 p-1 px-2 truncate bg-popover border-border border fixed bottom-4 right-4 rounded-lg pointer-events-none"
           >
             {targetUrl}
           </motion.div>
