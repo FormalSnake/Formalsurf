@@ -204,6 +204,7 @@ export function NewTabDialog() {
       <CommandInput placeholder="Search or type a url..." value={value} onValueChange={setValue} />
       <DialogTitle className="sr-only">Open New Tab</DialogTitle>
       <CommandList>
+        <CommandEmpty>No results found.</CommandEmpty>
         {value !== '' && (
           <CommandGroup heading="Search">
             <CommandItem
@@ -242,29 +243,29 @@ export function NewTabDialog() {
         {suggestions.filter(
           (suggestion) => suggestion !== value && !tabs.some((tab) => tab.title === suggestion)
         ).length > 0 && (
-          <>
-            <CommandSeparator />
-            <CommandGroup heading="Suggestions">
-              {suggestions
-                .filter(
-                  (suggestion) =>
-                    suggestion !== value && !tabs.some((tab) => tab.title === suggestion)
-                )
-                .map((suggestion, index) => (
-                  <CommandItem
-                    onSelect={(value) => {
-                      setValue(value)
-                      handleEnterPress(value)
-                    }}
-                    key={`suggestion-${index}`}
-                    className=""
-                  >
-                    {suggestion}
-                  </CommandItem>
-                ))}
-            </CommandGroup>
-          </>
-        )}
+            <>
+              <CommandSeparator />
+              <CommandGroup heading="Suggestions">
+                {suggestions
+                  .filter(
+                    (suggestion) =>
+                      suggestion !== value && !tabs.some((tab) => tab.title === suggestion)
+                  )
+                  .map((suggestion, index) => (
+                    <CommandItem
+                      onSelect={(value) => {
+                        setValue(value)
+                        handleEnterPress(value)
+                      }}
+                      key={`suggestion-${index}`}
+                      className=""
+                    >
+                      {suggestion}
+                    </CommandItem>
+                  ))}
+              </CommandGroup>
+            </>
+          )}
       </CommandList>
     </CommandDialog>
   )
