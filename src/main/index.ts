@@ -453,6 +453,9 @@ app.on('web-contents-created', (e, contents) => {
     ElectronBlocker.fromPrebuiltAdsAndTracking(fetch).then((blocker) => {
       blocker.enableBlockingInSession(contents.session)
     })
+    contents.setVisualZoomLevelLimits(1, 4)
+    contents.setZoomFactor(10)
+
     // set context menu in webview contextMenu({ window: contents, });
     contextMenu({
       window: contents,
