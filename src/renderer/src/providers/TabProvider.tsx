@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { LoadingSpinner } from '@/components/loading-spinner'
+import { homeOpenAtom } from '@renderer/components/home'
 
 const atomWithLocalStorage = (key: string, initialValue: any) => {
   const getInitialValue = () => {
@@ -254,18 +255,19 @@ export function useTogglePinTab() {
 export function useUpdateTab() {
   const [tabs, setTabs] = useAtom(tabsAtom)
 
-  return useCallback((id: string, update: Partial<any>) => {
-    setTabs((prevTabs) => {
-      const tabExists = prevTabs.some((prevTab) => prevTab.id === id)
-      if (!tabExists) {
-        console.warn(`Tab with id ${id} not found!`)
-        return prevTabs
-      }
-      return prevTabs.map((prevTab) =>
-        prevTab.id === id ? { ...prevTab, ...update } : prevTab
-      )
-    })
-  }, [setTabs])
+  return useCallback(
+    (id: string, update: Partial<any>) => {
+      setTabs((prevTabs) => {
+        const tabExists = prevTabs.some((prevTab) => prevTab.id === id)
+        if (!tabExists) {
+          console.warn(`Tab with id ${id} not found!`)
+          return prevTabs
+        }
+        return prevTabs.map((prevTab) => (prevTab.id === id ? { ...prevTab, ...update } : prevTab))
+      })
+    },
+    [setTabs]
+  )
 }
 
 // Define the getFavicon function
@@ -281,6 +283,7 @@ export const TabLink = React.memo(
     const togglePinTab = useTogglePinTab()
     const [isHovered, setIsHovered] = useState(false)
     const [isHoveringButtons, setIsHoveringButtons] = useState(false)
+    const [homeOpen, setHomeOpen] = useAtom(homeOpenAtom)
 
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
       id: tab.id,
@@ -301,6 +304,8 @@ export const TabLink = React.memo(
           setTabs((prevTabs) => {
             const activeTabExists = prevTabs.some((t) => t.isActive && t.id === tab.id)
             if (activeTabExists) return prevTabs
+
+            setHomeOpen(false)
 
             return prevTabs.map((item) => ({
               ...item,
@@ -364,28 +369,24 @@ export const TabLink = React.memo(
             <div
               {...attributes}
               {...listeners}
-              className={`absolute left-0 top-0 bottom-0 w-8 
-              before:absolute before:inset-y-2 before:left-2 before:w-[2px] before:rounded-full
-              before:bg-foreground/20 before:transition-colors
-              hover:before:bg-foreground/40 active:before:bg-foreground/60 transition-colors duration-200 ease-in-out
-              ${isDragging ? 'before:bg-foreground/60' : ''}
-              cursor-grab active:cursor-grabbing`}
-            />
-            <div className="flex items-center relative pl-2">
-              {tab.favicon ? (
-                <img src={getFavicon(tab)} className="h-4 w-4 mr-2" />
-              ) : (
-                <Globe className="h-4 w-4 mr-2" />
-              )}
-            </div>
-            <motion.span
-              animate={{ marginRight: textMargin() }}
-              transition={{ duration: 0.2 }}
-              className="truncate relative flex-1 flex items-center gap-2"
+              className="flex items-center flex-1 cursor-grab active:cursor-grabbing"
             >
-              {tab.isLoading && <LoadingSpinner />}
-              <span className="truncate">{tab.isLoading ? 'Loading...' : tab.title}</span>
-            </motion.span>
+              <div className="flex items-center relative mr-2">
+                {tab.favicon ? (
+                  <img src={getFavicon(tab)} className="h-4 w-4" />
+                ) : (
+                  <Globe className="h-4 w-4" />
+                )}
+              </div>
+              <motion.span
+                animate={{ marginRight: textMargin() }}
+                transition={{ duration: 0.2 }}
+                className="truncate relative flex-1 flex items-center gap-2"
+              >
+                {tab.isLoading && <LoadingSpinner />}
+                <span className="truncate">{tab.isLoading ? 'Loading...' : tab.title}</span>
+              </motion.span>
+            </div>
             <AnimatePresence>
               {isHovered && !isDragging && (
                 <motion.div

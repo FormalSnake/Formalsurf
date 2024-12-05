@@ -14,6 +14,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ipcRenderer } from 'electron'
 import { Snake } from './components/snake'
 import { ThemeProvider } from './components/theme-provider'
+import { Home, homeOpenAtom } from './components/home'
 
 const findInPageVisibleAtom = atom(false)
 
@@ -237,7 +238,7 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.5, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-            className=" m-1 h-fit w-fit max-w-[500px] z-50 p-1 px-2 truncate bg-popover border-border border fixed bottom-4 right-4 rounded-lg pointer-events-none"
+            className="text-xs m-1 h-fit w-fit max-w-[500px] z-50 p-1 px-2 truncate bg-popover border-border border fixed bottom-4 right-4 rounded-lg pointer-events-none"
           >
             {targetUrl}
           </motion.div>
@@ -298,6 +299,7 @@ function App(): JSX.Element {
   }
 
   const [theme, setTheme] = React.useState<'dark' | 'light' | 'system'>('system')
+  const [homeOpen, setHomeOpen] = useAtom(homeOpenAtom)
 
   React.useEffect(() => {
     // @ts-ignore
@@ -424,10 +426,11 @@ function App(): JSX.Element {
       <div className="min-h-screen bg-background">
         <BaseLayout>
           <div className="w-full h-full">
+            {homeOpen && <Home />}
             {tabs.map((tab) => (
               <Tab key={tab.id} tab={tab} isActive={tab.isActive} />
             ))}
-            {tabs.length === 0 && (
+            {tabs.length === 0 && !homeOpen && (
               <div className="w-full h-full flex justify-center items-center text-foreground">
                 <Particles className="absolute inset-0" quantity={100} ease={80} refresh />
                 <Meteors number={5} />
