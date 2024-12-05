@@ -255,9 +255,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarGroupContent className="mb-1">
             <SidebarMenuButton onClick={() => setHomeOpen(true)} isActive={homeOpen}>
               <HomeIcon />
-              <span>
-                Home
-              </span>
+              <span>Home</span>
             </SidebarMenuButton>
           </SidebarGroupContent>
           <SidebarGroupContent>

@@ -369,9 +369,9 @@ export const TabLink = React.memo(
             <div
               {...attributes}
               {...listeners}
-              className="flex items-center flex-1 cursor-grab active:cursor-grabbing"
+              className="flex items-center flex-1 min-w-0 cursor-grab active:cursor-grabbing"
             >
-              <div className="flex items-center relative mr-2">
+              <div className="flex-shrink-0 flex items-center relative mr-2">
                 {tab.favicon ? (
                   <img src={getFavicon(tab)} className="h-4 w-4" />
                 ) : (
@@ -381,10 +381,10 @@ export const TabLink = React.memo(
               <motion.span
                 animate={{ marginRight: textMargin() }}
                 transition={{ duration: 0.2 }}
-                className="truncate relative flex-1 flex items-center gap-2"
+                className="min-w-0 flex-1 flex items-center gap-2"
               >
-                {tab.isLoading && <LoadingSpinner />}
-                <span className="truncate">{tab.isLoading ? 'Loading...' : tab.title}</span>
+                {tab.isLoading && <LoadingSpinner className="flex-shrink-0" />}
+                <span className="truncate min-w-0">{tab.isLoading ? 'Loading...' : tab.title}</span>
               </motion.span>
             </div>
             <AnimatePresence>
@@ -398,21 +398,11 @@ export const TabLink = React.memo(
                   onMouseEnter={() => setIsHoveringButtons(true)}
                   onMouseLeave={() => setIsHoveringButtons(false)}
                 >
-                  <Button
-                    onClick={pinTabEvent}
-                    className="h-5 w-5 hover:bg-accent"
-                    size="icon"
-                    variant="ghost"
-                  >
+                  <Button onClick={pinTabEvent} className="h-5 w-5" size="icon" variant="ghost">
                     {tab.pinned ? <PinOff className="h-3 w-3" /> : <Pin className="h-3 w-3" />}
                   </Button>
                   {!tab.pinned && (
-                    <Button
-                      onClick={closeTabEvent}
-                      className="h-5 w-5 hover:bg-accent"
-                      size="icon"
-                      variant="ghost"
-                    >
+                    <Button onClick={closeTabEvent} className="h-5 w-5" size="icon" variant="ghost">
                       <X className="h-3 w-3" />
                     </Button>
                   )}
