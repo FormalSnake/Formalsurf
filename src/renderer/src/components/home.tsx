@@ -10,7 +10,8 @@ import {
   useSensor,
   useSensors,
   DragOverlay,
-  defaultDropAnimationSideEffects
+  defaultDropAnimationSideEffects,
+  PointerSensor
 } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities'
 import { useSortable } from '@dnd-kit/sortable'
@@ -231,16 +232,9 @@ export function Home() {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const sensors = useSensors(
-    useSensor(MouseSensor, {
+    useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
-        tolerance: 1000 // Increase tolerance for movement
-      }
-    }),
-    useSensor(TouchSensor, {
-      activationConstraint: {
-        delay: 100,
-        tolerance: 1000 // Increase tolerance for movement
+        distance: 5 // Start dragging after moving 5px
       }
     })
   )

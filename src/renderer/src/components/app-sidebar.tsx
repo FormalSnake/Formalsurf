@@ -253,7 +253,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent className={`draglayer`}>
         <SidebarGroup className="nodraglayer">
           <SidebarGroupContent className="mb-1">
-            <SidebarMenuButton onClick={() => setHomeOpen(true)} isActive={homeOpen}>
+            <SidebarMenuButton
+              onClick={() => setHomeOpen(true)}
+              isActive={homeOpen}
+              tooltip={'Home'}
+            >
               <HomeIcon />
               <span>Home</span>
             </SidebarMenuButton>

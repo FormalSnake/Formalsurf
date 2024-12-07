@@ -8,6 +8,7 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { LoadingSpinner } from '@/components/loading-spinner'
 import { homeOpenAtom } from '@renderer/components/home'
+import { SidebarMenuButton } from '@renderer/components/ui/sidebar'
 
 const atomWithLocalStorage = (key: string, initialValue: any) => {
   const getInitialValue = () => {
@@ -43,8 +44,8 @@ const atomWithLocalStorage = (key: string, initialValue: any) => {
 export const tabsAtom = atomWithLocalStorage('FormalTabs', [
   {
     id: uuidv4(),
-    url: 'https://www.google.com',
-    title: 'Google',
+    url: 'https://www.formalsnake.dev',
+    title: '',
     webviewRef: null,
     isActive: true,
     favicon: '',
@@ -179,28 +180,33 @@ export const TabProvider = ({ children }: { children: any }) => {
   return <>{children}</>
 }
 
-export function useCreateNewTab() {
+export const useCreateNewTab = () => {
   const [tabs, setTabs] = useAtom(tabsAtom)
+  const [, setHomeOpen] = useAtom(homeOpenAtom)
 
-  function createNewTab({ url = 'https://www.google.com' }: { url?: string }) {
-    const newTab = {
-      id: uuidv4(),
-      url,
-      title: 'New tab',
-      webviewRef: React.createRef(),
-      isActive: true,
-      isLoading: false
-    }
-
-    setTabs([
-      // @ts-ignore
-      ...tabs.map((tab) => ({ ...tab, isActive: false })), // Deactivate current tabs
-      // @ts-ignore
-      newTab // Add new active tab
-    ])
-  }
-
-  return createNewTab
+  return useCallback(
+    ({ url = 'https://www.formalsnake.dev' }: { url?: string } = {}) => {
+      setHomeOpen(false)
+      setTabs((prevTabs) =>
+        prevTabs
+          .map((tab) => ({
+            ...tab,
+            isActive: false
+          }))
+          .concat({
+            id: uuidv4(),
+            url,
+            title: '',
+            webviewRef: null,
+            isActive: true,
+            favicon: '',
+            pinned: false,
+            isLoading: false
+          })
+      )
+    },
+    [setTabs, setHomeOpen]
+  )
 }
 
 export function useCloseTab() {
@@ -361,10 +367,12 @@ export const TabLink = React.memo(
           transition={{ type: 'spring', stiffness: 300, damping: 20 }}
           className={`w-full relative ${isDragging ? 'opacity-40' : ''}`}
         >
-          <Button
+          <SidebarMenuButton
             onClick={setActiveTab}
             className={`flex items-center text-left w-full relative group ${isDragging ? 'pointer-events-none' : ''}`}
-            variant={tab.isActive ? 'secondary' : 'ghost'}
+            //variant={tab.isActive ? 'secondary' : 'ghost'}
+            isActive={tab.isActive}
+            tooltip={tab.title}
           >
             <div
               {...attributes}
@@ -409,7 +417,7 @@ export const TabLink = React.memo(
                 </motion.div>
               )}
             </AnimatePresence>
-          </Button>
+          </SidebarMenuButton>
         </motion.div>
       </AnimatePresence>
     )

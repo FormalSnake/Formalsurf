@@ -112,7 +112,7 @@ export function WeatherWidget({ widget }: { widget: WidgetInstance }) {
         {weather ? (
           <div className="flex flex-col items-center w-full space-y-2 text-center">
             <img
-              src={weather.icon}
+              src={'https://corsproxy.io/?https:' + weather.icon}
               alt={weather.description}
               className="w-16 h-16 object-contain"
             />
