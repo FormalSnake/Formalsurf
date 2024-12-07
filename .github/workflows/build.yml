@@ -1,34 +1,31 @@
-name: Build and Upload
+name: Build/release
 
-on:
-  push:
-    branches:
-      - '**'
+on: push
 
 jobs:
-  build:
-    runs-on: macos-latest
+  release:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Check out Git repository
+        uses: actions/checkout@v1
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v1
+      - name: Install Node.js, NPM and Yarn
+        uses: actions/setup-node@v1
         with:
-          bun-version: latest
+          node-version: 10
 
-      - name: Install dependencies
-        run: bun install
-
-      - name: Build project
-        run: bun run build:mac
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+      - name: Build/release Electron app
+        uses: samuelmeuli/action-electron-builder@v1
         with:
-          name: formalsurf-build
-          path: |
-            dist
-            out
-          retention-days: 7
+          # GitHub token, automatically provided to the action
+          # (No need to define this secret in the repo settings)
+          github_token: ${{ secrets.github_token }}
+
+          # If the commit is tagged with a version (e.g. "v1.0.0"),
+          # release the app after building
+          release: ${{ startsWith(github.ref, 'refs/tags/v') }}

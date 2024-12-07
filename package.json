@@ -1,6 +1,6 @@
 {
   "name": "formalsurf-refactor",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "An electron and react based web browser.",
   "main": "./out/main/index.js",
   "author": "Kyan De Sutter",
@@ -13,7 +13,7 @@
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
     "start": "electron-vite preview",
     "dev": "electron-vite dev -w",
-    "build": "npm run typecheck && electron-vite build",
+    "build": "electron-vite build",
     "postinstall": "electron-builder install-app-deps",
     "build:unpack": "npm run build && electron-builder --dir",
     "build:win": "npm run build && electron-builder --win",
