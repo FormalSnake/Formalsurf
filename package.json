@@ -19,6 +19,7 @@
     "build:win": "npm run build && electron-builder --win",
     "build:mac": "electron-vite build && electron-builder --mac",
     "build:linux": "electron-vite build && electron-builder --linux",
+    "build:all": "electron-vite build && electron-builder --mac --win --linux",
     "test:url": "bun run build:mac && electron ./out/main/index.js formalsnake.dev"
   },
   "dependencies": {

@@ -22,7 +22,7 @@ jobs:
         run: bun install
 
       - name: Build project
-        run: bun run build
+        run: bun run build:all
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
