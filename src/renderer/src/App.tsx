@@ -134,69 +134,61 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
       }
 
       const navigateHandler = (id: string, event: { url: string }) => {
-        console.log(`NavigateHandler triggered for id: ${id}, url: ${event.url}`)
-        if (event.url !== currentUrl) {
-          setCurrentUrl(event.url) // Update local state without triggering a WebView reload
-          updateTabState(id, { url: event.url })
-        }
+        updateTabState(id, { url: event.url })
       }
 
       const titleHandler = (id: string, event: { title: string }) => {
-        console.log(`TitleHandler triggered for id: ${id}, title: ${event.title}`)
         updateTabState(id, { title: event.title })
       }
 
       const faviconHandler = (id: string, event: { favicons: string[] }) => {
-        console.log(`FaviconHandler triggered for id: ${id}, favicons: ${event.favicons}`)
         if (event.favicons.length > 0) {
           updateTabState(id, { favicon: event.favicons[0] })
         }
       }
 
-      webview.addEventListener('did-start-loading', () => {
+      const startLoadingHandler = () => {
         updateTabState(tab.id, { isLoading: true })
         setHasLoadFailed(false)
-      })
+      }
 
-      webview.addEventListener('did-stop-loading', () => {
+      const stopLoadingHandler = () => {
         updateTabState(tab.id, { isLoading: false })
-      })
+      }
 
-      webview.addEventListener('did-navigate', (event) => {
+      const didNavigateHandler = (event: any) => {
         navigateHandler(tab.id, event)
-      })
+      }
 
-      webview.addEventListener('did-navigate-in-page', (event) => {
+      const didNavigateInPageHandler = (event: any) => {
         if (event.isMainFrame) {
           navigateHandler(tab.id, event)
         }
-      })
+      }
 
-      webview.addEventListener('page-title-updated', (event) => {
+      const pageTitleHandler = (event: any) => {
         titleHandler(tab.id, event)
-      })
+      }
 
-      webview.addEventListener('page-favicon-updated', (event) => {
+      const pageFaviconHandler = (event: any) => {
         faviconHandler(tab.id, event)
-      })
+      }
 
-      webview.addEventListener('did-fail-load', (event) => {
-        // Ignore aborted loads and blocked responses
+      const failLoadHandler = (event: any) => {
         if (event.errorCode !== -3 && event.errorCode !== -27) {
           setHasLoadFailed(true)
           setFailedLoadMessage(event.errorCode)
           setFailedLoadDescription(event.errorDescription)
           updateTabState(tab.id, { isLoading: false, title: 'Failed to load' })
         }
-      })
+      }
 
-      // Handle new window events (target="_blank" links)
-      webview.addEventListener('new-window', (event) => {
+      const newWindowHandler = (event: any) => {
         event.preventDefault()
         createNewTab({ url: event.url })
-      })
+      }
 
-      webview.addEventListener('update-target-url', (event) => {
+      const updateTargetUrlHandler = (event: any) => {
         event.preventDefault()
         if (event.url) {
           setTargetUrlOpen(true)
@@ -204,23 +196,35 @@ const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
         } else {
           setTargetUrlOpen(false)
         }
-      })
+      }
 
-      // Cleanup function
+      webview.addEventListener('did-start-loading', startLoadingHandler)
+      webview.addEventListener('did-stop-loading', stopLoadingHandler)
+      webview.addEventListener('did-navigate', didNavigateHandler)
+      webview.addEventListener('did-navigate-in-page', didNavigateInPageHandler)
+      webview.addEventListener('page-title-updated', pageTitleHandler)
+      webview.addEventListener('page-favicon-updated', pageFaviconHandler)
+      webview.addEventListener('did-fail-load', failLoadHandler)
+      webview.addEventListener('new-window', newWindowHandler)
+      webview.addEventListener('update-target-url', updateTargetUrlHandler)
+
+      // Return cleanup function
       return () => {
-        webview.removeEventListener('did-navigate', navigateHandler)
-        webview.removeEventListener('did-navigate-in-page', navigateHandler)
-        webview.removeEventListener('page-title-updated', titleHandler)
-        webview.removeEventListener('page-favicon-updated', faviconHandler)
-        webview.removeEventListener('did-start-loading', () => {})
-        webview.removeEventListener('did-stop-loading', () => {})
-        webview.removeEventListener('did-fail-load', () => {})
-        webview.removeEventListener('new-window', (e) => {})
-        webview.removeEventListener('update-target-url', (e) => {})
+        if (webview) {
+          webview.removeEventListener('did-start-loading', startLoadingHandler)
+          webview.removeEventListener('did-stop-loading', stopLoadingHandler)
+          webview.removeEventListener('did-navigate', didNavigateHandler)
+          webview.removeEventListener('did-navigate-in-page', didNavigateInPageHandler)
+          webview.removeEventListener('page-title-updated', pageTitleHandler)
+          webview.removeEventListener('page-favicon-updated', pageFaviconHandler)
+          webview.removeEventListener('did-fail-load', failLoadHandler)
+          webview.removeEventListener('new-window', newWindowHandler)
+          webview.removeEventListener('update-target-url', updateTargetUrlHandler)
+          hasListenersRef.current = false
+        }
       }
     }
-    return () => {}
-  }, [ref, tab.id, setTabs, currentUrl])
+  }, [tab.id, tab.url])
 
   // Keep the active tab reference updated
   useEffect(() => {
