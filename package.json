@@ -23,7 +23,7 @@
     "test:url": "bun run build:mac && electron ./out/main/index.js formalsnake.dev"
   },
   "dependencies": {
-    "@dnd-kit/core": "^6.2.0",
+    "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^9.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@electron-toolkit/preload": "^3.0.1",
