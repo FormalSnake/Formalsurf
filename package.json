@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "An electron and react based web browser.",
   "main": "./out/main/index.js",
+  "repository": "https://github.com/FormalSnake/Formalsurf.git",
   "author": "Kyan De Sutter",
   "homepage": "https://formalsurf.formalsnake.dev",
   "scripts": {
@@ -23,8 +24,8 @@
     "test:url": "bun run build:mac && electron ./out/main/index.js formalsnake.dev"
   },
   "dependencies": {
-    "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^3.0.0",
@@ -42,7 +43,7 @@
     "electron-context-menu": "^4.0.4",
     "electron-settings": "^4.0.4",
     "electron-store": "^10.0.0",
-    "electron-updater": "^6.1.7",
+    "electron-updater": "^6.3.9",
     "jotai": "^2.10.3",
     "lucide-react": "^0.468.0",
     "motion": "^11.13.1",

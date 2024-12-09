@@ -7,40 +7,56 @@ import { ElectronBlocker } from '@ghostery/adblocker-electron'
 import fetch from 'cross-fetch' // required 'fetch'
 import Store from 'electron-store'
 import { setAsDefaultBrowserLinux } from './linux-utils'
+import electronUpdater, { type AppUpdater } from 'electron-updater';
+
 
 const isMac = process.platform === 'darwin'
 
 const store = new Store()
 
+export function getAutoUpdater(): AppUpdater {
+  // Using destructuring to access autoUpdater due to the CommonJS module of 'electron-updater'.
+  // It is a workaround for ESM compatibility issues, see https://github.com/electron-userland/electron-builder/issues/7976.
+  const { autoUpdater } = electronUpdater;
+  return autoUpdater;
+}
+
 const template = [
   // { role: 'appMenu' }
   ...(isMac
     ? [
-        {
-          label: app.name,
-          submenu: [
-            { role: 'about' },
-            { type: 'separator' },
-            {
-              label: 'Settings',
-              accelerator: 'CmdOrCtrl+,',
-              click: (menuItem, browserWindow) => {
-                if (browserWindow) {
-                  browserWindow.webContents.send('show-settings')
-                }
+      {
+        label: app.name,
+        submenu: [
+          { role: 'about' },
+          { type: 'separator' },
+          {
+            label: 'Settings',
+            accelerator: 'CmdOrCtrl+,',
+            click: (menuItem, browserWindow) => {
+              if (browserWindow) {
+                browserWindow.webContents.send('show-settings')
               }
-            },
-            { type: 'separator' },
-            { role: 'services' },
-            { type: 'separator' },
-            { role: 'hide' },
-            { role: 'hideOthers' },
-            { role: 'unhide' },
-            { type: 'separator' },
-            { role: 'quit' }
-          ]
-        }
-      ]
+            }
+          },
+          {
+            label: 'Check for updates',
+            click: () => {
+              const autoUpdater = getAutoUpdater();
+              autoUpdater.checkForUpdatesAndNotify();
+            }
+          },
+          { type: 'separator' },
+          { role: 'services' },
+          { type: 'separator' },
+          { role: 'hide' },
+          { role: 'hideOthers' },
+          { role: 'unhide' },
+          { type: 'separator' },
+          { role: 'quit' }
+        ]
+      }
+    ]
     : []),
   // { role: 'fileMenu' }
   {
@@ -140,15 +156,15 @@ const template = [
       { role: 'paste' },
       ...(isMac
         ? [
-            { role: 'pasteAndMatchStyle' },
-            { role: 'delete' },
-            { role: 'selectAll' },
-            { type: 'separator' },
-            {
-              label: 'Speech',
-              submenu: [{ role: 'startSpeaking' }, { role: 'stopSpeaking' }]
-            }
-          ]
+          { role: 'pasteAndMatchStyle' },
+          { role: 'delete' },
+          { role: 'selectAll' },
+          { type: 'separator' },
+          {
+            label: 'Speech',
+            submenu: [{ role: 'startSpeaking' }, { role: 'stopSpeaking' }]
+          }
+        ]
         : [{ role: 'delete' }, { type: 'separator' }, { role: 'selectAll' }]),
       {
         label: 'Find',
@@ -378,6 +394,10 @@ async function createWindow(): Promise<void> {
 app.whenReady().then(async () => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
+
+  // Check for updates
+  const autoUpdater = getAutoUpdater();
+  autoUpdater.checkForUpdatesAndNotify();
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
   // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
@@ -441,7 +461,7 @@ app.whenReady().then(async () => {
 
   createWindow()
 
-  app.on('activate', function () {
+  app.on('activate', function() {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
