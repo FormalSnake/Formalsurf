@@ -450,11 +450,9 @@ app.whenReady().then(async () => {
 
 app.on('web-contents-created', (e, contents) => {
   if (contents.getType() == 'webview') {
-    ElectronBlocker.fromLists(fetch, ['https://easylist.to/easylist/easylist.txt']).then(
-      (blocker) => {
-        blocker.enableBlockingInSession(contents.session)
-      }
-    )
+    ElectronBlocker.fromPrebuiltAdsAndTracking(fetch).then((blocker) => {
+      blocker.enableBlockingInSession(contents.session)
+    })
     contents.setVisualZoomLevelLimits(1, 4)
 
     // set context menu in webview contextMenu({ window: contents, });
