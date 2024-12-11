@@ -356,3 +356,24 @@
 +/code I just see "Processing content..." and no stream
 +ing, nor do I ever get a result USE GPT-4o
 +
+
+# 2024-12-11 22:00:49.063597
++/code REVERT IT TO gpt-4o IT IS BETTER THAN NORMAL 4
+
+# 2024-12-11 22:03:14.443340
++/code remove the whole GPT implementation, and use mozilla's readability.js instead
+
+# 2024-12-11 22:04:30.638512
++/code remove the whole GPT implementation
+
+# 2024-12-11 22:05:38.107303
++/code Now implement readability.js
+
+# 2024-12-11 22:06:17.195839
++n
+
+# 2024-12-11 22:07:35.492891
++/code the webview's injected JS cannot access the readability API, instead you must have the parsedContent variable just return the document, and then reader.parse the variable
+
+# 2024-12-11 22:08:56.008604
++/commit
