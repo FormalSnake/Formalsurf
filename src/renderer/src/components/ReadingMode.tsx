@@ -23,15 +23,15 @@ export const ReadingMode: React.FC<ReadingModeProps> = ({
             return document.documentElement.outerHTML;
           })()
         `);
-        
+
         // Create a DOM parser
         const parser = new DOMParser();
         const doc = parser.parseFromString(documentHtml, 'text/html');
-        
+
         // Create a new Readability object and parse the content
         const reader = new Readability(doc);
         const article = reader.parse();
-        
+
         setContent(article ? article.content : 'Could not parse the content');
       } catch (error) {
         console.error('Error processing content:', error);
