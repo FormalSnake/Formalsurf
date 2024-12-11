@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Search, ArrowUp, ArrowDown, Bot } from 'lucide-react'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
+import ReactMarkdown from 'react-markdown'
 
 export const findInPageVisibleAtom = atom(false)
 
@@ -154,7 +155,9 @@ export const FindInPage: React.FC<FindInPageProps> = ({ webviewRef }) => {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -10, opacity: 0 }}
         >
-          <p className="whitespace-pre-wrap text-sm">{aiResponse}</p>
+          <ReactMarkdown className="prose prose-sm dark:prose-invert max-w-none">
+            {aiResponse}
+          </ReactMarkdown>
         </motion.div>
       )}
     </AnimatePresence>
