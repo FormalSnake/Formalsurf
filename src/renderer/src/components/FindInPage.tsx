@@ -51,7 +51,7 @@ export const FindInPage: React.FC<FindInPageProps> = ({ webviewRef }) => {
           messages: [
             {
               role: "system",
-              content: `You are a helpful AI assistant. The user is browsing a page titled "${title}". Here is the page content: ${truncatedContent}`
+              content: `You are a helpful AI assistant. Provide concise responses using bullet points where appropriate. Keep explanations brief and to the point. The user is browsing a page titled "${title}". Here is the page content: ${truncatedContent}`
             },
             {
               role: "user",
