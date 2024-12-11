@@ -38,7 +38,7 @@ export const FindInPage: React.FC<FindInPageProps> = ({ webviewRef }) => {
       const title = await webviewRef.current.getTitle()
 
       // Truncate content if too long (OpenAI has token limits)
-      const truncatedContent = pageContent.substring(0, 3000) + 
+      const truncatedContent = pageContent.substring(0, 3000) +
         (pageContent.length > 3000 ? '...' : '')
 
       setAIResponse('')
@@ -75,7 +75,7 @@ export const FindInPage: React.FC<FindInPageProps> = ({ webviewRef }) => {
 
         const chunk = decoder.decode(value)
         const lines = chunk.split('\n')
-        
+
         for (const line of lines) {
           if (line.startsWith('data: ') && line !== 'data: [DONE]') {
             try {
@@ -148,7 +148,7 @@ export const FindInPage: React.FC<FindInPageProps> = ({ webviewRef }) => {
           <Input
             ref={inputRef}
             value={searchTerm}
-            className="w-80 ring-0 outline-none border-none focus-visible:ring-offset-0 focus-visible:ring-0"
+            className="w-44 ring-0 outline-none border-none focus-visible:ring-offset-0 focus-visible:ring-0"
             onChange={(e) => setSearchTerm(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Find in page..."
