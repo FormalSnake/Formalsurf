@@ -11,12 +11,13 @@ export const ReadingMode: React.FC<ReadingModeProps> = ({
   webviewRef
 }) => {
   const [content, setContent] = useState<string>('')
-  const [isLoading, setIsLoading] = useState(false)
+  const [isProcessing, setIsProcessing] = useState(false)
 
   useEffect(() => {
     const extractContent = async () => {
       if (!webviewRef.current) return;
-      setIsLoading(true);
+      setIsProcessing(true);
+      setContent("<p>Processing content...</p>");
 
       try {
         // Get OpenAI API key
@@ -88,14 +89,39 @@ export const ReadingMode: React.FC<ReadingModeProps> = ({
           })
         });
 
-        const data = await response.json();
-        const processedContent = data.choices[0].message.content;
-        setContent(processedContent);
+        const reader = response.body?.getReader()
+        const decoder = new TextDecoder()
+
+        if (!reader) throw new Error('No reader available')
+
+        let accumulatedContent = ''
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+
+          const chunk = decoder.decode(value)
+          const lines = chunk.split('\n')
+
+          for (const line of lines) {
+            if (line.startsWith('data: ') && line !== 'data: [DONE]') {
+              try {
+                const json = JSON.parse(line.slice(6))
+                const content = json.choices[0]?.delta?.content
+                if (content) {
+                  accumulatedContent += content
+                  setContent(accumulatedContent)
+                }
+              } catch (e) {
+                console.error('Error parsing JSON:', e)
+              }
+            }
+          }
+        }
       } catch (error) {
         console.error('Error processing content:', error);
         setContent("<p>Error processing content. Please try again.</p>");
       } finally {
-        setIsLoading(false);
+        setIsProcessing(false);
       }
     };
 
@@ -103,17 +129,12 @@ export const ReadingMode: React.FC<ReadingModeProps> = ({
     // Clear content when component unmounts
     return () => {
       setContent('');
-      setIsLoading(false);
+      setIsProcessing(false);
     };
   }, [webviewRef]);
 
   return (
     <div className="absolute inset-0 bg-white dark:bg-black overflow-auto">
-      {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/10">
-          <Loader2 className="animate-spin" />
-        </div>
-      )}
       <div className="max-w-2xl mx-auto py-8 px-4">
         <div className="mb-8 text-center">
           <h2 className="text-2xl font-bold">Reader Mode</h2>
