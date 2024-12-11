@@ -41,6 +41,7 @@ export const FindInPage: React.FC<FindInPageProps> = ({ webviewRef }) => {
       const truncatedContent = pageContent.substring(0, 3000) + 
         (pageContent.length > 3000 ? '...' : '')
 
+      setAIResponse('')
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -49,6 +50,7 @@ export const FindInPage: React.FC<FindInPageProps> = ({ webviewRef }) => {
         },
         body: JSON.stringify({
           model: "gpt-4o",
+          stream: true,
           messages: [
             {
               role: "system",
@@ -62,8 +64,32 @@ export const FindInPage: React.FC<FindInPageProps> = ({ webviewRef }) => {
         })
       })
 
-      const data = await response.json()
-      setAIResponse(data.choices[0].message.content)
+      const reader = response.body?.getReader()
+      const decoder = new TextDecoder()
+
+      if (!reader) throw new Error('No reader available')
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        const chunk = decoder.decode(value)
+        const lines = chunk.split('\n')
+        
+        for (const line of lines) {
+          if (line.startsWith('data: ') && line !== 'data: [DONE]') {
+            try {
+              const json = JSON.parse(line.slice(6))
+              const content = json.choices[0]?.delta?.content
+              if (content) {
+                setAIResponse(prev => prev + content)
+              }
+            } catch (e) {
+              console.error('Error parsing JSON:', e)
+            }
+          }
+        }
+      }
     } catch (error) {
       setAIResponse("Sorry, there was an error processing your request.")
       console.error(error)
