@@ -49,3 +49,45 @@
 
 # 2024-12-11 16:26:20.806927
 +/commit
+
+# 2024-12-11 16:26:36.620057
++/add src/renderer/src/components/FindInPage.tsx
+
+# 2024-12-11 16:27:05.036486
++/code Instead of sending the URL to the AI, convert the URL's webpage to text and send that
+
+# 2024-12-11 16:27:46.393150
++/code Change it back to 4o
+
+# 2024-12-11 16:30:07.898226
++/code Edit the prompt so that the AI returns short summaries and bullet points if needed
+
+# 2024-12-11 16:30:50.266429
++/code It always does bullet points now
+
+# 2024-12-11 16:33:09.406132
++/code Awesome! Now make it so that the div that shows the answer handles markdown
+
+# 2024-12-11 16:33:25.407517
++y
+
+# 2024-12-11 16:33:25.413869
++/run bun add react-markdown
+
+# 2024-12-11 16:33:25.414053
++/run bun add react-markdown
+
+# 2024-12-11 16:33:33.757985
++n
+
+# 2024-12-11 16:33:36.149563
++/run bun add -D @tailwindcss/typography
+
+# 2024-12-11 16:33:36.149840
++/run bun add -D @tailwindcss/typography
+
+# 2024-12-11 16:33:39.994251
++n
+
+# 2024-12-11 19:08:44.415787
++/commit
