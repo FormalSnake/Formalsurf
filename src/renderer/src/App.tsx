@@ -33,30 +33,7 @@ function App(): JSX.Element {
     setFindInPageVisible((prev) => !prev)
   }
 
-  const [theme, setTheme] = React.useState<'dark' | 'light' | 'system'>('system')
   const [homeOpen, setHomeOpen] = useAtom(homeOpenAtom)
-
-  React.useEffect(() => {
-    // @ts-ignore
-    window.api
-      .getSettings('theme')
-      .then((savedTheme: any) => {
-        if (savedTheme) {
-          setTheme(savedTheme)
-        }
-      })
-      .catch((error: any) => {
-        console.error('Error fetching theme setting:', error)
-      })
-
-    // Listen for theme changes
-    // @ts-ignore
-    window.api.onSettingChanged((event: any, key: string, value: any) => {
-      if (key === 'theme') {
-        setTheme(value || 'system')
-      }
-    })
-  }, [])
 
   useEffect(() => {
     //@ts-ignore
@@ -157,9 +134,8 @@ function App(): JSX.Element {
   }, [])
 
   return (
-    <ThemeProvider defaultTheme={theme}>
-      <div className="min-h-screen bg-background">
-        <BaseLayout>
+    <div className="min-h-screen bg-background">
+      <BaseLayout>
           <div className="w-full h-full">
             {homeOpen && <Home />}
             {tabs.map((tab) => (
@@ -176,9 +152,8 @@ function App(): JSX.Element {
               </div>
             )}
           </div>
-        </BaseLayout>
-      </div>
-    </ThemeProvider>
+      </BaseLayout>
+    </div>
   )
 }
 
