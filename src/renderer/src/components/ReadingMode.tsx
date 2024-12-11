@@ -23,11 +23,34 @@ export const ReadingMode: React.FC<ReadingModeProps> = ({
 
           // Get main content
           const article = document.querySelector('article') || document.querySelector('main') || document.body;
-
-          // Extract text content
-          const content = article.innerText;
-
-          return content;
+          
+          // Clone the content to avoid modifying the original
+          const cleanContent = article.cloneNode(true);
+          
+          // Function to clean an element
+          function cleanElement(element) {
+            // Remove all style attributes
+            element.removeAttribute('style');
+            element.removeAttribute('class');
+            
+            // Keep only essential attributes for links
+            if (element.tagName === 'A') {
+              const href = element.getAttribute('href');
+              element.setAttribute('target', '_blank');
+              element.setAttribute('rel', 'noopener noreferrer');
+              element.setAttribute('href', href);
+            }
+            
+            // Clean all child elements
+            Array.from(element.children).forEach(child => {
+              cleanElement(child);
+            });
+          }
+          
+          cleanElement(cleanContent);
+          
+          // Convert the cleaned content to a string
+          return cleanContent.innerHTML;
         })()
       `);
       setContent(result);
@@ -47,15 +70,10 @@ export const ReadingMode: React.FC<ReadingModeProps> = ({
             Press {shortcut} to exit reader mode
           </p>
         </div>
-        <article className="prose prose-neutral dark:prose-invert max-w-none">
-          {content.split('\n').map((paragraph, index) => (
-            paragraph.trim() && (
-              <p key={index}>
-                {paragraph}
-              </p>
-            )
-          ))}
-        </article>
+        <article 
+          className="prose prose-neutral dark:prose-invert max-w-none"
+          dangerouslySetInnerHTML={{ __html: content }}
+        />
       </div>
     </div>
   )
