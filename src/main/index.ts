@@ -233,6 +233,15 @@ const template = [
             browserWindow.webContents.send('find')
           }
         }
+      },
+      {
+        label: 'Reading Mode',
+        accelerator: 'CmdOrCtrl+Alt+R',
+        click: (menuItem, browserWindow) => {
+          if (browserWindow) {
+            browserWindow.webContents.send('toggle-reading-mode')
+          }
+        }
       }
     ]
   },
