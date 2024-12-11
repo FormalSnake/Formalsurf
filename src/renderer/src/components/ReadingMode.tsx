@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { Loader2 } from 'lucide-react'
 
 interface ReadingModeProps {
   shortcut?: string;
@@ -10,12 +11,24 @@ export const ReadingMode: React.FC<ReadingModeProps> = ({
   webviewRef
 }) => {
   const [content, setContent] = useState<string>('')
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     const extractContent = async () => {
       if (!webviewRef.current) return;
+      setIsLoading(true);
 
-      const result = await webviewRef.current.executeJavaScript(`
+      try {
+        // Get OpenAI API key
+        // @ts-ignore
+        const apiKey = await window.api.getSettings('openAIKey')
+        if (!apiKey) {
+          setContent("<p>Please set your OpenAI API key in settings first</p>");
+          return;
+        }
+
+        // Get raw content
+        const rawContent = await webviewRef.current.executeJavaScript(`
         (function() {
           // Remove unwanted elements
           const elementsToRemove = document.querySelectorAll('header, footer, nav, aside, iframe, script, style, .ad, .ads, .advertisement, [class*="social"], [class*="share"], [class*="popup"], [class*="overlay"], [class*="banner"], [class*="cookie"]');
@@ -53,16 +66,54 @@ export const ReadingMode: React.FC<ReadingModeProps> = ({
           return cleanContent.innerHTML;
         })()
       `);
-      setContent(result);
+        // Process with GPT
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          },
+          body: JSON.stringify({
+            model: "gpt-4",
+            messages: [
+              {
+                role: "system",
+                content: "You are a helpful assistant that processes web content into clean, readable HTML. Preserve important headings, links, and structure. Remove ads, navigation, and unnecessary elements. Format the content for optimal reading."
+              },
+              {
+                role: "user",
+                content: `Please process this HTML content into clean, readable format: ${rawContent}`
+              }
+            ]
+          })
+        });
+
+        const data = await response.json();
+        const processedContent = data.choices[0].message.content;
+        setContent(processedContent);
+      } catch (error) {
+        console.error('Error processing content:', error);
+        setContent("<p>Error processing content. Please try again.</p>");
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     extractContent();
     // Clear content when component unmounts
-    return () => setContent('');
+    return () => {
+      setContent('');
+      setIsLoading(false);
+    };
   }, [webviewRef]);
 
   return (
     <div className="absolute inset-0 bg-white dark:bg-black overflow-auto">
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/10">
+          <Loader2 className="animate-spin" />
+        </div>
+      )}
       <div className="max-w-2xl mx-auto py-8 px-4">
         <div className="mb-8 text-center">
           <h2 className="text-2xl font-bold">Reader Mode</h2>
