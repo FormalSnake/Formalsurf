@@ -47,15 +47,15 @@ export const ReadingMode: React.FC<ReadingModeProps> = ({
             Press {shortcut} to exit reader mode
           </p>
         </div>
-        <div className="prose prose-sm dark:prose-invert max-w-none">
+        <article className="prose prose-quoteless prose-neutral dark:prose-invert max-w-none">
           {content.split('\n').map((paragraph, index) => (
             paragraph.trim() && (
-              <p key={index} className="mb-4">
+              <p key={index}>
                 {paragraph}
               </p>
             )
           ))}
-        </div>
+        </article>
       </div>
     </div>
   )
