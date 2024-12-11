@@ -4,8 +4,6 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Search, ArrowUp, ArrowDown, Bot } from 'lucide-react'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from './ui/dialog'
-import { Textarea } from './ui/textarea'
 
 export const findInPageVisibleAtom = atom(false)
 
@@ -17,15 +15,12 @@ export const FindInPage: React.FC<FindInPageProps> = ({ webviewRef }) => {
   const [isVisible, setIsVisible] = useAtom(findInPageVisibleAtom)
   const [searchTerm, setSearchTerm] = useState('')
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [isAIDialogOpen, setIsAIDialogOpen] = useState(false)
   const [aiResponse, setAIResponse] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [question, setQuestion] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const handleAskAI = async () => {
-    if (!webviewRef.current) return
-    
+  const handleAskAI = async (question: string) => {
+    if (!webviewRef.current || !question.trim()) return
     setIsLoading(true)
     try {
       // @ts-ignore
@@ -133,40 +128,28 @@ export const FindInPage: React.FC<FindInPageProps> = ({ webviewRef }) => {
           <Button size="icon" variant={'ghost'} onClick={handleNext} className="min-w-10">
             <ArrowDown />
           </Button>
-          <Button size="icon" variant={'ghost'} onClick={() => setIsAIDialogOpen(true)} className="min-w-10">
+          <Button 
+            size="icon" 
+            variant={'ghost'} 
+            onClick={() => handleAskAI(searchTerm)}
+            disabled={isLoading} 
+            className="min-w-10"
+          >
             <Bot />
           </Button>
         </motion.div>
       )}
 
-      <Dialog open={isAIDialogOpen} onOpenChange={setIsAIDialogOpen}>
-        <DialogContent>
-          <DialogTitle>Ask AI about this page</DialogTitle>
-          <DialogDescription>
-            Ask a question about the current webpage
-          </DialogDescription>
-          <div className="space-y-4">
-            <Textarea 
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              placeholder="What would you like to know?"
-              className="min-h-[100px]"
-            />
-            <Button 
-              onClick={handleAskAI}
-              disabled={isLoading || !question.trim()}
-              className="w-full"
-            >
-              {isLoading ? "Thinking..." : "Ask AI"}
-            </Button>
-            {aiResponse && (
-              <div className="mt-4 p-4 rounded-lg bg-muted">
-                <p className="whitespace-pre-wrap">{aiResponse}</p>
-              </div>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
+      {aiResponse && (
+        <motion.div
+          className="find-in-page-response bg-popover border-border border fixed top-20 right-4 p-4 rounded-lg max-w-[400px]"
+          initial={{ y: -10, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -10, opacity: 0 }}
+        >
+          <p className="whitespace-pre-wrap text-sm">{aiResponse}</p>
+        </motion.div>
+      )}
     </AnimatePresence>
   )
 }
