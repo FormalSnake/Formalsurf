@@ -35,15 +35,18 @@ export default function BaseLayout({ children }: { children: React.ReactNode }) 
   return (
     <ThemeProvider defaultTheme={theme}>
       <SidebarProvider>
-      <AppSidebar />
-      <NewTabDialog />
-      <SidebarInset className="overflow-hidden">
-        <TabProvider>
-          <SettingsDialog />
+        <AppSidebar />
+        <NewTabDialog />
+        <SidebarInset className="overflow-hidden">
+          <TabProvider>
+            <SettingsDialog />
 
-          {children}
-        </TabProvider>
-      </SidebarInset>
-    </SidebarProvider>
+            <div className="min-h-screen bg-background">
+              {children}
+            </div>
+          </TabProvider>
+        </SidebarInset>
+      </SidebarProvider>
+    </ThemeProvider>
   )
 }

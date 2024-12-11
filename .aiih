@@ -100,3 +100,24 @@
 
 # 2024-12-11 19:14:21.073411
 +/commit
+
+# 2024-12-11 19:14:54.975812
++/add src/renderer/src/components/settings-dialog.tsx
+
+# 2024-12-11 19:15:05.102470
++/add src/renderer/src/App.tsx
+
+# 2024-12-11 19:15:14.911975
++/add src/renderer/src/Layout.tsx
+
+# 2024-12-11 19:15:49.188228
++/code When I switch the theme on system level, the app doesn't switch themes automatically despite it being on "System", it only switches if i reload the app
+
+# 2024-12-11 19:16:26.974103
++/undo
+
+# 2024-12-11 19:17:16.153481
++/code Move the ThemeProvider to be in the layout, and put the layout at the top level
+
+# 2024-12-11 19:19:39.669395
++/commit

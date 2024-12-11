@@ -40,7 +40,7 @@ function App(): JSX.Element {
     window.api.handle(
       'close-active-tab',
       (event: any, data: any) =>
-        function (event: any, data: any) {
+        function(event: any, data: any) {
           console.log('close-active-tab')
           closeTab()
           // remove api handler
@@ -54,7 +54,7 @@ function App(): JSX.Element {
     window.api.handle(
       'new-tab',
       (event: any, data: any) =>
-        function (event: any, data: any) {
+        function(event: any, data: any) {
           console.log('new-tab')
           setIsUpdate(false)
           setTabDialogOpen(true)
@@ -72,7 +72,7 @@ function App(): JSX.Element {
     window.api.handle(
       'toggle-sidebar',
       (event: any, data: any) =>
-        function (event: any, data: any) {
+        function(event: any, data: any) {
           console.log('toggle-sidebar')
           setSidebarOpen((open) => !open)
           console.log(sidebarOpen)
@@ -87,7 +87,7 @@ function App(): JSX.Element {
     window.api.handle(
       'open-url-bar',
       (event: any, data: any) =>
-        function (event: any, data: any) {
+        function(event: any, data: any) {
           console.log('open-url-bar')
           setIsUpdate(true)
           setTabDialogOpen(true)
@@ -104,7 +104,7 @@ function App(): JSX.Element {
     window.api.handle(
       'find',
       (event: any, data: any) =>
-        function (event: any, data: any) {
+        function(event: any, data: any) {
           console.log('find')
           toggleFindInPage()
           // Pass true to indicate updating an existing tab
@@ -134,26 +134,24 @@ function App(): JSX.Element {
   }, [])
 
   return (
-    <div className="min-h-screen bg-background">
-      <BaseLayout>
-          <div className="w-full h-full">
-            {homeOpen && <Home />}
-            {tabs.map((tab) => (
-              <Tab key={tab.id} tab={tab} isActive={tab.isActive} />
-            ))}
-            {tabs.length === 0 && !homeOpen && (
-              <div className="w-full h-full flex justify-center items-center text-foreground">
-                <Particles className="absolute inset-0" quantity={100} ease={80} refresh />
-                <Meteors number={5} />
-                <div className="text-center z-10 mb-32 space-y-4">
-                  <BlurIn word="Formalsurf" className="text-sm font-bold" />
-                  <p>The vast universe is waiting for you to explore.</p>
-                </div>
-              </div>
-            )}
+    <BaseLayout>
+      <div className="w-full h-full">
+        {homeOpen && <Home />}
+        {tabs.map((tab) => (
+          <Tab key={tab.id} tab={tab} isActive={tab.isActive} />
+        ))}
+        {tabs.length === 0 && !homeOpen && (
+          <div className="w-full h-full flex justify-center items-center text-foreground">
+            <Particles className="absolute inset-0" quantity={100} ease={80} refresh />
+            <Meteors number={5} />
+            <div className="text-center z-10 mb-32 space-y-4">
+              <BlurIn word="Formalsurf" className="text-sm font-bold" />
+              <p>The vast universe is waiting for you to explore.</p>
+            </div>
           </div>
-      </BaseLayout>
-    </div>
+        )}
+      </div>
+    </BaseLayout>
   )
 }
 
