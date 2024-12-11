@@ -30,8 +30,15 @@ export const FindInPage: React.FC<FindInPageProps> = ({ webviewRef }) => {
         return
       }
 
-      const url = await webviewRef.current.getURL()
+      // Get page content
+      const pageContent = await webviewRef.current.executeJavaScript(`
+        document.body.innerText
+      `)
       const title = await webviewRef.current.getTitle()
+
+      // Truncate content if too long (OpenAI has token limits)
+      const truncatedContent = pageContent.substring(0, 3000) + 
+        (pageContent.length > 3000 ? '...' : '')
 
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -40,11 +47,11 @@ export const FindInPage: React.FC<FindInPageProps> = ({ webviewRef }) => {
           'Authorization': `Bearer ${apiKey}`
         },
         body: JSON.stringify({
-          model: "gpt-4o",
+          model: "gpt-4",
           messages: [
             {
               role: "system",
-              content: `You are a helpful AI assistant. The user is browsing: ${url} (${title})`
+              content: `You are a helpful AI assistant. The user is browsing a page titled "${title}". Here is the page content: ${truncatedContent}`
             },
             {
               role: "user",
