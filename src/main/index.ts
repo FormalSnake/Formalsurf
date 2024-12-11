@@ -18,6 +18,59 @@ export function getAutoUpdater(): AppUpdater {
   // Using destructuring to access autoUpdater due to the CommonJS module of 'electron-updater'.
   // It is a workaround for ESM compatibility issues, see https://github.com/electron-userland/electron-builder/issues/7976.
   const { autoUpdater } = electronUpdater;
+  
+  // Configure auto updater
+  autoUpdater.autoDownload = true;
+  autoUpdater.autoInstallOnAppQuit = true;
+
+  // Setup all event handlers
+  autoUpdater.on('checking-for-update', () => {
+    console.log('Checking for updates...');
+  });
+
+  autoUpdater.on('update-available', (info) => {
+    dialog.showMessageBox({
+      type: 'info',
+      title: 'Update Available',
+      message: `Version ${info.version} is available`,
+      detail: 'A new version is being downloaded. You will be notified when it is ready to install.',
+      buttons: ['OK']
+    });
+  });
+
+  autoUpdater.on('update-not-available', () => {
+    console.log('Update not available');
+  });
+
+  autoUpdater.on('error', (err) => {
+    console.error('Update error:', err);
+    dialog.showMessageBox({
+      type: 'error',
+      title: 'Update Error',
+      message: 'An error occurred while updating',
+      detail: err.message,
+      buttons: ['OK']
+    });
+  });
+
+  autoUpdater.on('download-progress', (progress) => {
+    console.log(`Download progress: ${progress.percent}%`);
+  });
+
+  autoUpdater.on('update-downloaded', () => {
+    dialog.showMessageBox({
+      type: 'info',
+      title: 'Update Ready',
+      message: 'A new version has been downloaded',
+      detail: 'The application will restart to install the update',
+      buttons: ['Restart Now', 'Later']
+    }).then((result) => {
+      if (result.response === 0) {
+        autoUpdater.quitAndInstall(false, true);
+      }
+    });
+  });
+
   return autoUpdater;
 }
 
@@ -41,9 +94,15 @@ const template = [
           },
           {
             label: 'Check for updates',
-            click: () => {
+            click: async () => {
               const autoUpdater = getAutoUpdater();
-              autoUpdater.checkForUpdatesAndNotify();
+              dialog.showMessageBox({
+                type: 'info',
+                title: 'Updates',
+                message: 'Checking for updates...',
+                buttons: ['OK']
+              });
+              await autoUpdater.checkForUpdates();
             }
           },
           { type: 'separator' },
@@ -395,9 +454,13 @@ app.whenReady().then(async () => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
 
-  // Check for updates
+  // Initialize and check for updates
   const autoUpdater = getAutoUpdater();
-  autoUpdater.checkForUpdatesAndNotify();
+  try {
+    await autoUpdater.checkForUpdates();
+  } catch (err) {
+    console.error('Error checking for updates:', err);
+  }
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
   // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
