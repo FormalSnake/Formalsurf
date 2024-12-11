@@ -23,16 +23,16 @@ export const ReadingMode: React.FC<ReadingModeProps> = ({
 
           // Get main content
           const article = document.querySelector('article') || document.querySelector('main') || document.body;
-          
+
           // Clone the content to avoid modifying the original
           const cleanContent = article.cloneNode(true);
-          
+
           // Function to clean an element
           function cleanElement(element) {
             // Remove all style attributes
             element.removeAttribute('style');
             element.removeAttribute('class');
-            
+
             // Keep only essential attributes for links
             if (element.tagName === 'A') {
               const href = element.getAttribute('href');
@@ -40,15 +40,15 @@ export const ReadingMode: React.FC<ReadingModeProps> = ({
               element.setAttribute('rel', 'noopener noreferrer');
               element.setAttribute('href', href);
             }
-            
+
             // Clean all child elements
             Array.from(element.children).forEach(child => {
               cleanElement(child);
             });
           }
-          
+
           cleanElement(cleanContent);
-          
+
           // Convert the cleaned content to a string
           return cleanContent.innerHTML;
         })()
@@ -62,7 +62,7 @@ export const ReadingMode: React.FC<ReadingModeProps> = ({
   }, [webviewRef]);
 
   return (
-    <div className="absolute inset-0 bg-background overflow-auto">
+    <div className="absolute inset-0 bg-white dark:bg-black overflow-auto">
       <div className="max-w-2xl mx-auto py-8 px-4">
         <div className="mb-8 text-center">
           <h2 className="text-2xl font-bold">Reader Mode</h2>
@@ -70,7 +70,7 @@ export const ReadingMode: React.FC<ReadingModeProps> = ({
             Press {shortcut} to exit reader mode
           </p>
         </div>
-        <article 
+        <article
           className="prose prose-neutral dark:prose-invert max-w-none"
           dangerouslySetInnerHTML={{ __html: content }}
         />
