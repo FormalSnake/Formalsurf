@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useAtom } from 'jotai'
 import { activeTabRefAtom, tabsAtom, useCreateNewTab } from '@/providers/TabProvider'
 import { readingModeTabsAtom } from '@/atoms/reading-mode'
+import { ReadingMode } from './ReadingMode'
 import { Button } from './ui/button'
 import { TriangleAlert, WifiOff } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -219,16 +220,7 @@ export const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean 
       {isActive && (
         <>
           <FindInPage webviewRef={ref} />
-          {isReadingMode && (
-            <div className="absolute inset-0 bg-background flex items-center justify-center">
-              <div className="text-center space-y-4">
-                <h2 className="text-2xl font-bold">Reader Mode</h2>
-                <p className="text-muted-foreground">
-                  Press Cmd/Ctrl+Alt+R to exit reader mode
-                </p>
-              </div>
-            </div>
-          )}
+          {isReadingMode && <ReadingMode />}
         </>
       )}
     </div>
