@@ -40,7 +40,7 @@ export const FindInPage: React.FC<FindInPageProps> = ({ webviewRef }) => {
           'Authorization': `Bearer ${apiKey}`
         },
         body: JSON.stringify({
-          model: "gpt-3.5-turbo",
+          model: "gpt-4o",
           messages: [
             {
               role: "system",
@@ -122,25 +122,25 @@ export const FindInPage: React.FC<FindInPageProps> = ({ webviewRef }) => {
           <Button size="icon" variant={'ghost'} onClick={handleSearch} className="min-w-10">
             <Search />
           </Button>
+          <Button
+            size="icon"
+            variant={'ghost'}
+            onClick={() => handleAskAI(searchTerm)}
+            disabled={isLoading}
+            className="min-w-10"
+          >
+            <Bot />
+          </Button>
           <Button size="icon" variant={'ghost'} onClick={handlePrevious} className="min-w-10">
             <ArrowUp />
           </Button>
           <Button size="icon" variant={'ghost'} onClick={handleNext} className="min-w-10">
             <ArrowDown />
           </Button>
-          <Button 
-            size="icon" 
-            variant={'ghost'} 
-            onClick={() => handleAskAI(searchTerm)}
-            disabled={isLoading} 
-            className="min-w-10"
-          >
-            <Bot />
-          </Button>
         </motion.div>
       )}
 
-      {aiResponse && (
+      {isVisible && aiResponse && (
         <motion.div
           className="find-in-page-response bg-popover border-border border fixed top-20 right-4 p-4 rounded-lg max-w-[400px]"
           initial={{ y: -10, opacity: 0 }}

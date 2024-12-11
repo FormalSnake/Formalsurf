@@ -48,8 +48,7 @@
     "lucide-react": "^0.468.0",
     "motion": "^11.13.1",
     "tailwind-merge": "^2.5.5",
-    "tailwindcss-animate": "^1.0.7",
-    "uuid": "^11.0.3"
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^2.0.0",

@@ -31,3 +31,21 @@
 
 # 2024-12-11 11:47:07.290121
 +/commit
+
+# 2024-12-11 13:01:55.392770
++/add src/renderer/src/components/FindInPage.tsx
+
+# 2024-12-11 13:03:12.488779
++/add src/renderer/src/components/settings-dialog.tsx
+
+# 2024-12-11 13:03:20.810463
++/code Make it so that there is an AI button next to
++ the find button which sends a message to the chatGPT
++ API with the URL of the page, so that the user can a
++sk question. The API key is stored in a setting
+
+# 2024-12-11 13:04:59.163073
++/code Works perfectly! But do not open a dialog, the question is already in the SearchTerm. The answer must appear under the existing input
+
+# 2024-12-11 16:26:20.806927
++/commit
