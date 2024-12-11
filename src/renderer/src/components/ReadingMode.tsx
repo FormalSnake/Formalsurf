@@ -13,8 +13,10 @@ export const ReadingMode: React.FC<ReadingModeProps> = ({
   const [content, setContent] = useState<string>('')
 
   useEffect(() => {
-    if (activeTab) {
-      activeTab.executeJavaScript(`
+    const extractContent = async () => {
+      if (!activeTab) return;
+      
+      const result = await activeTab.executeJavaScript(`
         (function() {
           // Remove unwanted elements
           const elementsToRemove = document.querySelectorAll('header, footer, nav, aside, iframe, script, style, .ad, .ads, .advertisement, [class*="social"], [class*="share"], [class*="popup"], [class*="overlay"], [class*="banner"], [class*="cookie"]');
@@ -28,10 +30,13 @@ export const ReadingMode: React.FC<ReadingModeProps> = ({
           
           return content;
         })()
-      `).then((extractedContent: string) => {
-        setContent(extractedContent);
-      });
-    }
+      `);
+      setContent(result);
+    };
+
+    extractContent();
+    // Clear content when component unmounts
+    return () => setContent('');
   }, [activeTab]);
 
   return (
