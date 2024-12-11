@@ -1,22 +1,21 @@
 import React, { useEffect, useState } from 'react'
-import { useAtom } from 'jotai'
-import { activeTabRefAtom } from '@/providers/TabProvider'
 
 interface ReadingModeProps {
-  shortcut?: string
+  shortcut?: string;
+  webviewRef: React.RefObject<WebviewElement>;
 }
 
 export const ReadingMode: React.FC<ReadingModeProps> = ({ 
-  shortcut = 'Cmd/Ctrl+Alt+Shift+R'
+  shortcut = 'Cmd/Ctrl+Alt+Shift+R',
+  webviewRef
 }) => {
-  const [activeTab] = useAtom(activeTabRefAtom)
   const [content, setContent] = useState<string>('')
 
   useEffect(() => {
     const extractContent = async () => {
-      if (!activeTab) return;
+      if (!webviewRef.current) return;
       
-      const result = await activeTab.executeJavaScript(`
+      const result = await webviewRef.current.executeJavaScript(`
         (function() {
           // Remove unwanted elements
           const elementsToRemove = document.querySelectorAll('header, footer, nav, aside, iframe, script, style, .ad, .ads, .advertisement, [class*="social"], [class*="share"], [class*="popup"], [class*="overlay"], [class*="banner"], [class*="cookie"]');
