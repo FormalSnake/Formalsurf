@@ -75,7 +75,7 @@ export const ReadingMode: React.FC<ReadingModeProps> = ({
             'Authorization': `Bearer ${apiKey}`
           },
           body: JSON.stringify({
-            model: "gpt-4o",
+            model: "gpt-4",
             messages: [
               {
                 role: "system",
@@ -89,34 +89,18 @@ export const ReadingMode: React.FC<ReadingModeProps> = ({
           })
         });
 
-        const reader = response.body?.getReader()
-        const decoder = new TextDecoder()
-
-        if (!reader) throw new Error('No reader available')
-
-        let accumulatedContent = ''
-        while (true) {
-          const { done, value } = await reader.read()
-          if (done) break
-
-          const chunk = decoder.decode(value)
-          const lines = chunk.split('\n')
-
-          for (const line of lines) {
-            if (line.startsWith('data: ') && line !== 'data: [DONE]') {
-              try {
-                const json = JSON.parse(line.slice(6))
-                const content = json.choices[0]?.delta?.content
-                if (content) {
-                  accumulatedContent += content
-                  setContent(accumulatedContent)
-                }
-              } catch (e) {
-                console.error('Error parsing JSON:', e)
-              }
-            }
-          }
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
+        
+        const data = await response.json();
+        const processedContent = data.choices[0]?.message?.content;
+        
+        if (!processedContent) {
+          throw new Error('No content received from GPT');
+        }
+
+        setContent(processedContent);
       } catch (error) {
         console.error('Error processing content:', error);
         setContent("<p>Error processing content. Please try again.</p>");
