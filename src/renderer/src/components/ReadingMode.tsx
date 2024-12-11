@@ -18,23 +18,21 @@ export const ReadingMode: React.FC<ReadingModeProps> = ({
       setContent("<p>Processing content...</p>");
 
       try {
-        const parsedContent = await webviewRef.current.executeJavaScript(`
+        const documentHtml = await webviewRef.current.executeJavaScript(`
           (function() {
-            // Create a clone of the document
-            const documentClone = document.cloneNode(true);
-            
-            // Create a new Readability object
-            const reader = new Readability(documentClone);
-            
-            // Parse the content
-            const article = reader.parse();
-            
-            // Return the article content if available, otherwise return an error message
-            return article ? article.content : 'Could not parse the content';
+            return document.documentElement.outerHTML;
           })()
         `);
         
-        setContent(parsedContent);
+        // Create a DOM parser
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(documentHtml, 'text/html');
+        
+        // Create a new Readability object and parse the content
+        const reader = new Readability(doc);
+        const article = reader.parse();
+        
+        setContent(article ? article.content : 'Could not parse the content');
       } catch (error) {
         console.error('Error processing content:', error);
         setContent("<p>Error processing content. Please try again.</p>");
