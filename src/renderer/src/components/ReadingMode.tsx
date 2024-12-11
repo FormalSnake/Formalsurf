@@ -36,7 +36,7 @@ export const ReadingMode: React.FC<ReadingModeProps> = ({
     extractContent();
     // Clear content when component unmounts
     return () => setContent('');
-  }, [activeTab]);
+  }, [webviewRef]);
 
   return (
     <div className="absolute inset-0 bg-background overflow-auto">
