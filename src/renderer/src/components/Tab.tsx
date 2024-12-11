@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useAtom } from 'jotai'
 import { activeTabRefAtom, tabsAtom, useCreateNewTab } from '@/providers/TabProvider'
-import { isReadingModeAtom } from '@/atoms/reading-mode'
+import { readingModeTabsAtom } from '@/atoms/reading-mode'
 import { Button } from './ui/button'
 import { TriangleAlert, WifiOff } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -26,11 +26,17 @@ export const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean 
 
   const [targetUrlOpen, setTargetUrlOpen] = useState(false)
   const [targetUrl, setTargetUrl] = useState('')
-  const [isReadingMode, setIsReadingMode] = useAtom(isReadingModeAtom)
+  const [readingModeTabs, setReadingModeTabs] = useAtom(readingModeTabsAtom)
+  const isReadingMode = readingModeTabs[tab.id] || false
 
   useEffect(() => {
     const handleReadingMode = () => {
-      setIsReadingMode(prev => !prev)
+      if (isActive) {
+        setReadingModeTabs(prev => ({
+          ...prev,
+          [tab.id]: !prev[tab.id]
+        }))
+      }
     }
 
     window.electron.ipcRenderer.on('toggle-reading-mode', handleReadingMode)

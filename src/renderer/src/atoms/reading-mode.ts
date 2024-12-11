@@ -1,3 +1,3 @@
 import { atom } from 'jotai'
 
-export const isReadingModeAtom = atom(false)
+export const readingModeTabsAtom = atom<Record<string, boolean>>({})
