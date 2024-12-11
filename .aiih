@@ -4,3 +4,30 @@
 
 # 2024-12-11 10:36:30.525084
 +/code In the General, add a ShadCN input for an OpenAI API key.
+
+# 2024-12-11 10:38:16.411933
++/code Move the find in page to a separate component file in the components folder
+
+# 2024-12-11 10:38:27.361715
++/add src/renderer/src/App.tsx
+
+# 2024-12-11 10:38:36.693720
++/code Move the find in page to a separate component file in the components folder
+
+# 2024-12-11 11:41:23.761952
++/code Also please move the Tab component to a separate file.
+
+# 2024-12-11 11:44:08.530970
++/add src/main/index.ts
+
+# 2024-12-11 11:44:17.130629
++/add electron-builder.yml
+
+# 2024-12-11 11:44:31.466823
++/ask Is auto-update setup correctly?
+
+# 2024-12-11 11:45:31.103923
++/code Implement your changes
+
+# 2024-12-11 11:47:07.290121
++/commit
