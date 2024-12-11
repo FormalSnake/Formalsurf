@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useAtom } from 'jotai'
 import { activeTabRefAtom, tabsAtom, useCreateNewTab } from '@/providers/TabProvider'
+import { isReadingModeAtom } from '@/atoms/reading-mode'
 import { Button } from './ui/button'
 import { TriangleAlert, WifiOff } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -25,6 +26,18 @@ export const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean 
 
   const [targetUrlOpen, setTargetUrlOpen] = useState(false)
   const [targetUrl, setTargetUrl] = useState('')
+  const [isReadingMode, setIsReadingMode] = useAtom(isReadingModeAtom)
+
+  useEffect(() => {
+    const handleReadingMode = () => {
+      setIsReadingMode(prev => !prev)
+    }
+
+    window.electron.ipcRenderer.on('toggle-reading-mode', handleReadingMode)
+    return () => {
+      window.electron.ipcRenderer.removeListener('toggle-reading-mode', handleReadingMode)
+    }
+  }, [setIsReadingMode])
 
   useEffect(() => {
     const webview = ref.current
@@ -197,7 +210,21 @@ export const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean 
           </div>
         </div>
       )}
-      {isActive && <FindInPage webviewRef={ref} />}
+      {isActive && (
+        <>
+          <FindInPage webviewRef={ref} />
+          {isReadingMode && (
+            <div className="absolute inset-0 bg-background flex items-center justify-center">
+              <div className="text-center space-y-4">
+                <h2 className="text-2xl font-bold">Reader Mode</h2>
+                <p className="text-muted-foreground">
+                  Press Cmd/Ctrl+Alt+R to exit reader mode
+                </p>
+              </div>
+            </div>
+          )}
+        </>
+      )}
     </div>
   )
 })
