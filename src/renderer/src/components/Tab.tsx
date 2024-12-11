@@ -33,10 +33,17 @@ export const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean 
   useEffect(() => {
     const handleReadingMode = () => {
       if (isActive) {
-        setReadingModeTabs(prev => ({
-          ...prev,
-          [tab.id]: !prev[tab.id]
-        }))
+        setReadingModeTabs(prev => {
+          const newState = {
+            ...prev,
+            [tab.id]: !prev[tab.id]
+          };
+          // If we're disabling reading mode, refresh the tab
+          if (prev[tab.id] && !newState[tab.id] && ref.current) {
+            ref.current.reload();
+          }
+          return newState;
+        });
       }
     }
 
