@@ -5,7 +5,7 @@ interface ReadingModeProps {
   webviewRef: React.RefObject<WebviewElement>;
 }
 
-export const ReadingMode: React.FC<ReadingModeProps> = ({ 
+export const ReadingMode: React.FC<ReadingModeProps> = ({
   shortcut = 'Cmd/Ctrl+Alt+Shift+R',
   webviewRef
 }) => {
@@ -14,7 +14,7 @@ export const ReadingMode: React.FC<ReadingModeProps> = ({
   useEffect(() => {
     const extractContent = async () => {
       if (!webviewRef.current) return;
-      
+
       const result = await webviewRef.current.executeJavaScript(`
         (function() {
           // Remove unwanted elements
@@ -23,10 +23,10 @@ export const ReadingMode: React.FC<ReadingModeProps> = ({
 
           // Get main content
           const article = document.querySelector('article') || document.querySelector('main') || document.body;
-          
+
           // Extract text content
           const content = article.innerText;
-          
+
           return content;
         })()
       `);
@@ -47,7 +47,7 @@ export const ReadingMode: React.FC<ReadingModeProps> = ({
             Press {shortcut} to exit reader mode
           </p>
         </div>
-        <article className="prose prose-quoteless prose-neutral dark:prose-invert max-w-none">
+        <article className="prose prose-neutral dark:prose-invert max-w-none">
           {content.split('\n').map((paragraph, index) => (
             paragraph.trim() && (
               <p key={index}>
