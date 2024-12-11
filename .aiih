@@ -1,0 +1,6 @@
+
+# 2024-12-11 10:35:50.453849
++/add src/renderer/src/components/settings-dialog.tsx
+
+# 2024-12-11 10:36:30.525084
++/code In the General, add a ShadCN input for an OpenAI API key.
