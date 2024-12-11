@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import {
   Dialog,
   DialogContent,
@@ -79,6 +80,7 @@ export function SettingsDialog() {
 
   const [searchEngineOpen, setSearchEngineOpen] = React.useState(false)
   const [searchEngine, setSearchEngine] = React.useState('')
+  const [openAIKey, setOpenAIKey] = React.useState('')
   const isInitialMount = React.useRef(true)
 
   React.useEffect(() => {
@@ -107,6 +109,16 @@ export function SettingsDialog() {
       })
       .catch((error: any) => {
         console.error('Error fetching search engine setting:', error)
+      })
+
+    // @ts-ignore
+    window.api
+      .getSettings('openAIKey')
+      .then((data: any) => {
+        setOpenAIKey(data || '')
+      })
+      .catch((error: any) => {
+        console.error('Error fetching OpenAI key setting:', error)
       })
   }, [open, activePage])
 
@@ -162,7 +174,7 @@ export function SettingsDialog() {
               Customize your {activePage} settings here.
             </p>
             {activePage === 'General' && (
-              <div className="mt-4">
+              <div className="mt-4 space-y-4">
                 <p className="text-sm text-muted-foreground mb-1">Search Engine</p>
                 <Popover open={searchEngineOpen} onOpenChange={setSearchEngineOpen}>
                   <PopoverTrigger asChild>
@@ -207,6 +219,27 @@ export function SettingsDialog() {
                     </Command>
                   </PopoverContent>
                 </Popover>
+                <div className="mt-4">
+                  <p className="text-sm text-muted-foreground mb-1">OpenAI API Key</p>
+                  <Input
+                    type="password"
+                    value={openAIKey}
+                    onChange={(e) => {
+                      const newValue = e.target.value;
+                      setOpenAIKey(newValue);
+                      // @ts-ignore
+                      window.api.changeSetting('openAIKey', newValue)
+                        .catch((error: any) => {
+                          console.error('Error saving OpenAI key:', error)
+                        });
+                    }}
+                    placeholder="sk-..."
+                    className="w-[300px]"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Your API key will be stored securely and used for AI features
+                  </p>
+                </div>
               </div>
             )}
             {activePage === 'Appearance' && (
