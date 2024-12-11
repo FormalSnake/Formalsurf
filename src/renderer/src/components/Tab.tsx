@@ -43,7 +43,7 @@ export const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean 
     return () => {
       window.electron.ipcRenderer.removeListener('toggle-reading-mode', handleReadingMode)
     }
-  }, [setIsReadingMode])
+  }, [setReadingModeTabs, isActive, tab.id])
 
   useEffect(() => {
     const webview = ref.current
