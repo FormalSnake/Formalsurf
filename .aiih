@@ -121,3 +121,238 @@
 
 # 2024-12-11 19:19:39.669395
 +/commit
+
+# 2024-12-11 21:31:52.346007
++/clear
+
+# 2024-12-11 21:31:59.333927
++/add src/renderer/src/components/app-sidebar.tsx
+
+# 2024-12-11 21:32:13.651728
++/add src/renderer/src/components/FindInPage.tsx
+
+# 2024-12-11 21:32:41.430842
++/add src/main/index.ts
+
+# 2024-12-11 21:33:04.181654
++/code Can you please create a shortcut to trigger "reading mode" using an IPC call in the index.ts?
+
+# 2024-12-11 21:33:27.037148
++/code Can you please create a shortcut to trigger "reading mode" using an IPC call in the index.ts? ONLY EDIT INDEX.TS
+
+# 2024-12-11 21:35:05.202293
++/code Awesome! Now, when the reading mode is triggered it must do a jotai isenabled state, and must hide the webview of the active tab with a div that says "reader mode"
+
+# 2024-12-11 21:37:46.409333
++/code I only want reader mode to be activated with the current tab, so when I switch tabs it must go back to their webview, and if i switch to the tab with reader mode enabled it shows it again
+
+# 2024-12-11 21:38:12.541262
++/code ncaught ReferenceError: setIsReadingMode is not defined
++    at Tab.tsx:46:7
++    at renderWithHooks (chunk-KDCVS43I.js?v=396b68dd:11596:26)
++    at updateFunctionComponent (chunk-KDCVS43I.js?v=396b68dd:14630:28)
++    at updateSimpleMemoComponent (chunk-KDCVS43I.js?v=396b68dd:14511:18)
++    at updateMemoComponent (chunk-KDCVS43I.js?v=396b68dd:14414:22)
++    at beginWork (chunk-KDCVS43I.js?v=396b68dd:16025:22)
++    at HTMLUnknownElement.callCallback2 (chunk-KDCVS43I.js?v=396b68dd:3680:22)
++    at Object.invokeGuardedCallbackDev (chunk-KDCVS43I.js?v=396b68dd:3705:24)
++    at invokeGuardedCallback (chunk-KDCVS43I.js?v=396b68dd:3739:39)
++    at beginWork$1 (chunk-KDCVS43I.js?v=396b68dd:19818:15)
++2chunk-KDCVS43I.js?v=396b68dd:14080 The above error occurred in one of your React components:
++
++    at http://localhost:5173/src/components/Tab.tsx?t=1733953076458:27:45
++    at div
++    at div
++    at TabProvider (http://localhost:5173/src/providers/TabProvider.tsx:65:31)
++    at main
++    at _c9 (http://localhost:5173/src/components/ui/sidebar.tsx:409:12)
++    at div
++    at Provider (http://localhost:5173/@fs/Users/kyandesutter/Developer/formalsurf-refactor/node_modules/.vite/deps/chunk-PWONFZYQ.js?v=396b68dd:58:15)
++    at TooltipProvider (http://localhost:5173/@fs/Users/kyandesutter/Developer/formalsurf-refactor/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=396b68dd:83:5)
++    at http://localhost:5173/src/components/ui/sidebar.tsx:51:7
++    at ThemeProvider (http://localhost:5173/src/components/theme-provider.tsx:24:33)
++    at BaseLayout (http://localhost:5173/src/Layout.tsx?t=1733944745947:25:38)
++    at App (http://localhost:5173/src/App.tsx?t=1733953076458:32:27)
++
++Consider adding an error boundary to your tree to customize error handling behavior.
++Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
++logCapturedError @ chunk-KDCVS43I.js?v=396b68dd:14080
++Show 1 more frame
++Show less
++chunk-KDCVS43I.js?v=396b68dd:19466 Uncaught ReferenceError: setIsReadingMode is not defined
++    at Tab.tsx:46:7
++    at renderWithHooks (chunk-KDCVS43I.js?v=396b68dd:11596:26)
++    at updateFunctionComponent (chunk-KDCVS43I.js?v=396b68dd:14630:28)
++    at updateSimpleMemoComponent (chunk-KDCVS43I.js?v=396b68dd:14511:18)
++    at updateMemoComponent (chunk-KDCVS43I.js?v=396b68dd:14414:22)
++    at beginWork (chunk-KDCVS43I.js?v=396b68dd:16025:22)
++    at beginWork$1 (chunk-KDCVS43I.js?v=396b68dd:19806:22)
++    at performUnitOfWork (chunk-KDCVS43I.js?v=396b68dd:19251:20)
++    at workLoopSync (chunk-KDCVS43I.js?v=396b68dd:19190:13)
++    at renderRootSync (chunk-KDCVS43I.js?v=396b68dd:19169:15)
+
+# 2024-12-11 21:38:15.577285
++n
+
+# 2024-12-11 21:40:06.052515
++/code Awesome! Now put the reading mode view inside of a component in a new file
+
+# 2024-12-11 21:40:49.981286
++/code Now make reader mode actually extract text from the website in it's tab
+
+# 2024-12-11 21:42:11.010295
++/code If I switch back to the tab, the reader mode shows the content of the tab i came from despite that tab not having reader mode enabled
+
+# 2024-12-11 21:43:31.975552
++/code It still breaks when switching tabs. The reading mode must keep in track from what tab the reading mode was enabled from, and only modify that webview
+
+# 2024-12-11 21:44:15.015588
++/code reading mode breaks now! Uncaught ReferenceError: activeTab is not defined
++    at ReadingMode (ReadingMode.tsx:39:7)
++    at renderWithHooks (chunk-KDCVS43I.js?v=396b68dd:11596:26)
++    at mountIndeterminateComponent (chunk-KDCVS43I.js?v=396b68dd:14974:21)
++    at beginWork (chunk-KDCVS43I.js?v=396b68dd:15962:22)
++    at HTMLUnknownElement.callCallback2 (chunk-KDCVS43I.js?v=396b68dd:3680:22)
++    at Object.invokeGuardedCallbackDev (chunk-KDCVS43I.js?v=396b68dd:3705:24)
++    at invokeGuardedCallback (chunk-KDCVS43I.js?v=396b68dd:3739:39)
++    at beginWork$1 (chunk-KDCVS43I.js?v=396b68dd:19818:15)
++    at performUnitOfWork (chunk-KDCVS43I.js?v=396b68dd:19251:20)
++    at workLoopSync (chunk-KDCVS43I.js?v=396b68dd:19190:13)
++ReadingMode @ ReadingMode.tsx:39
++renderWithHooks @ chunk-KDCVS43I.js?v=396b68dd:11596
++mountIndeterminateComponent @ chunk-KDCVS43I.js?v=396b68dd:14974
++beginWork @ chunk-KDCVS43I.js?v=396b68dd:15962
++callCallback2 @ chunk-KDCVS43I.js?v=396b68dd:3680
++invokeGuardedCallbackDev @ chunk-KDCVS43I.js?v=396b68dd:3705
++invokeGuardedCallback @ chunk-KDCVS43I.js?v=396b68dd:3739
++beginWork$1 @ chunk-KDCVS43I.js?v=396b68dd:19818
++performUnitOfWork @ chunk-KDCVS43I.js?v=396b68dd:19251
++workLoopSync @ chunk-KDCVS43I.js?v=396b68dd:19190
++renderRootSync @ chunk-KDCVS43I.js?v=396b68dd:19169
++performConcurrentWorkOnRoot @ chunk-KDCVS43I.js?v=396b68dd:18728
++workLoop @ chunk-KDCVS43I.js?v=396b68dd:197
++flushWork @ chunk-KDCVS43I.js?v=396b68dd:176
++performWorkUntilDeadline @ chunk-KDCVS43I.js?v=396b68dd:384
++processImmediate @ node:internal/timers:483
++Show 14 more frames
++Show less
++ReadingMode.tsx:39 Uncaught ReferenceError: activeTab is not defined
++    at ReadingMode (ReadingMode.tsx:39:7)
++    at renderWithHooks (chunk-KDCVS43I.js?v=396b68dd:11596:26)
++    at mountIndeterminateComponent (chunk-KDCVS43I.js?v=396b68dd:14974:21)
++    at beginWork (chunk-KDCVS43I.js?v=396b68dd:15962:22)
++    at HTMLUnknownElement.callCallback2 (chunk-KDCVS43I.js?v=396b68dd:3680:22)
++    at Object.invokeGuardedCallbackDev (chunk-KDCVS43I.js?v=396b68dd:3705:24)
++    at invokeGuardedCallback (chunk-KDCVS43I.js?v=396b68dd:3739:39)
++    at beginWork$1 (chunk-KDCVS43I.js?v=396b68dd:19818:15)
++    at performUnitOfWork (chunk-KDCVS43I.js?v=396b68dd:19251:20)
++    at workLoopSync (chunk-KDCVS43I.js?v=396b68dd:19190:13)
++ReadingMode @ ReadingMode.tsx:39
++renderWithHooks @ chunk-KDCVS43I.js?v=396b68dd:11596
++mountIndeterminateComponent @ chunk-KDCVS43I.js?v=396b68dd:14974
++beginWork @ chunk-KDCVS43I.js?v=396b68dd:15962
++callCallback2 @ chunk-KDCVS43I.js?v=396b68dd:3680
++invokeGuardedCallbackDev @ chunk-KDCVS43I.js?v=396b68dd:3705
++invokeGuardedCallback @ chunk-KDCVS43I.js?v=396b68dd:3739
++beginWork$1 @ chunk-KDCVS43I.js?v=396b68dd:19818
++performUnitOfWork @ chunk-KDCVS43I.js?v=396b68dd:19251
++workLoopSync @ chunk-KDCVS43I.js?v=396b68dd:19190
++renderRootSync @ chunk-KDCVS43I.js?v=396b68dd:19169
++recoverFromConcurrentError @ chunk-KDCVS43I.js?v=396b68dd:18786
++performConcurrentWorkOnRoot @ chunk-KDCVS43I.js?v=396b68dd:18734
++workLoop @ chunk-KDCVS43I.js?v=396b68dd:197
++flushWork @ chunk-KDCVS43I.js?v=396b68dd:176
++performWorkUntilDeadline @ chunk-KDCVS43I.js?v=396b68dd:384
++processImmediate @ node:internal/timers:483
++Show 15 more frames
++Show less
++node:internal/timers:483 The above error occurred in the <ReadingMode> component:
++
++    at ReadingMode (http://localhost:5173/src/components/ReadingMode.tsx?t=1733953424251:20:3)
++    at div
++    at http://localhost:5173/src/components/Tab.tsx?t=1733953438181:28:45
++    at div
++    at div
++    at TabProvider (http://localhost:5173/src/providers/TabProvider.tsx:65:31)
++    at main
++    at _c9 (http://localhost:5173/src/components/ui/sidebar.tsx:409:12)
++    at div
++    at Provider (http://localhost:5173/@fs/Users/kyandesutter/Developer/formalsurf-refactor/node_modules/.vite/deps/chunk-PWONFZYQ.js?v=396b68dd:58:15)
++    at TooltipProvider (http://localhost:5173/@fs/Users/kyandesutter/Developer/formalsurf-refactor/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=396b68dd:83:5)
++    at http://localhost:5173/src/components/ui/sidebar.tsx:51:7
++    at ThemeProvider (http://localhost:5173/src/components/theme-provider.tsx:24:33)
++    at BaseLayout (http://localhost:5173/src/Layout.tsx?t=1733944745947:25:38)
++    at App (http://localhost:5173/src/App.tsx?t=1733953438181:32:27)
++
++Consider adding an error boundary to your tree to customize error handling behavior.
++Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
++logCapturedError @ chunk-KDCVS43I.js?v=396b68dd:14080
++update.callback @ chunk-KDCVS43I.js?v=396b68dd:14100
++callCallback @ chunk-KDCVS43I.js?v=396b68dd:11296
++commitUpdateQueue @ chunk-KDCVS43I.js?v=396b68dd:11313
++commitLayoutEffectOnFiber @ chunk-KDCVS43I.js?v=396b68dd:17141
++commitLayoutMountEffects_complete @ chunk-KDCVS43I.js?v=396b68dd:18030
++commitLayoutEffects_begin @ chunk-KDCVS43I.js?v=396b68dd:18019
++commitLayoutEffects @ chunk-KDCVS43I.js?v=396b68dd:17970
++commitRootImpl @ chunk-KDCVS43I.js?v=396b68dd:19406
++commitRoot @ chunk-KDCVS43I.js?v=396b68dd:19330
++finishConcurrentRender @ chunk-KDCVS43I.js?v=396b68dd:18813
++performConcurrentWorkOnRoot @ chunk-KDCVS43I.js?v=396b68dd:18768
++workLoop @ chunk-KDCVS43I.js?v=396b68dd:197
++flushWork @ chunk-KDCVS43I.js?v=396b68dd:176
++performWorkUntilDeadline @ chunk-KDCVS43I.js?v=396b68dd:384
++processImmediate @ node:internal/timers:483
++Show 15 more frames
++Show less
++chunk-KDCVS43I.js?v=396b68dd:19466 Uncaught ReferenceError: activeTab is not defined
++    at ReadingMode (ReadingMode.tsx:39:7)
++    at renderWithHooks (chunk-KDCVS43I.js?v=396b68dd:11596:26)
++    at mountIndeterminateComponent (chunk-KDCVS43I.js?v=396b68dd:14974:21)
++    at beginWork (chunk-KDCVS43I.js?v=396b68dd:15962:22)
++    at beginWork$1 (chunk-KDCVS43I.js?v=396b68dd:19806:22)
++    at performUnitOfWork (chunk-KDCVS43I.js?v=396b68dd:19251:20)
++    at workLoopSync (chunk-KDCVS43I.js?v=396b68dd:19190:13)
++    at renderRootSync (chunk-KDCVS43I.js?v=396b68dd:19169:15)
++    at recoverFromConcurrentError (chunk-KDCVS43I.js?v=396b68dd:18786:28)
++    at performConcurrentWorkOnRoot (chunk-KDCVS43I.js?v=396b68dd:18734:30)
+
+# 2024-12-11 21:44:19.866173
++S
+
+# 2024-12-11 21:45:19.749393
++/code That works amazingly! Now, if I go out of reading mode it must refresh the tab due to the injected JS breaking the page
+
+# 2024-12-11 21:46:21.944847
++/code Awesome! Now make it so that like the FindInPage, the reading mode uses prose
+
+# 2024-12-11 21:47:57.054156
++/code If possible, the reading view must still display headings, links, etc. if it was on the original page too
+
+# 2024-12-11 21:51:10.881311
++/code Make the reader view automatically ignore headers, footers
+
+# 2024-12-11 21:52:49.719301
++/undo
+
+# 2024-12-11 21:53:58.051085
++/code Can it theoretically get the cleaontent.innerHTML, send it to the GPT API, and display that?
+
+# 2024-12-11 21:55:44.965502
++/code Make it use streaming instead of a loading spinner
+
+# 2024-12-11 21:58:24.133265
++/code I just see "Processing content..." and no streaming, nor do I ever get a result
+
+# 2024-12-11 21:58:39.396112
++/code I just see "Processing content..." and no streaming, nor do I ever get a result USE GPT-4o
+
+# 2024-12-11 21:59:50.102842
++/add src/renderer/src/atoms/reading-mode.ts
+
+# 2024-12-11 21:59:54.629925
++/add src/renderer/src/components/ReadingMode.tsx
+
+# 2024-12-11 21:59:57.335586
++/code I just see "Processing content..." and no stream
++ing, nor do I ever get a result USE GPT-4o
++

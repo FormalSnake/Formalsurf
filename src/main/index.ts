@@ -236,7 +236,7 @@ const template = [
       },
       {
         label: 'Reading Mode',
-        accelerator: 'CmdOrCtrl+Alt+R',
+        accelerator: 'CmdOrCtrl+Alt+Shift+R',
         click: (menuItem, browserWindow) => {
           if (browserWindow) {
             browserWindow.webContents.send('toggle-reading-mode')
