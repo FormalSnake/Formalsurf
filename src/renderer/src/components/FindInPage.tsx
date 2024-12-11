@@ -148,7 +148,7 @@ export const FindInPage: React.FC<FindInPageProps> = ({ webviewRef }) => {
           <Input
             ref={inputRef}
             value={searchTerm}
-            className=" ring-0 outline-none border-none focus-visible:ring-offset-0 focus-visible:ring-0"
+            className="w-80 ring-0 outline-none border-none focus-visible:ring-offset-0 focus-visible:ring-0"
             onChange={(e) => setSearchTerm(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Find in page..."
