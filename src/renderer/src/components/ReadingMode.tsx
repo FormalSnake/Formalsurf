@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Readability } from '@mozilla/readability'
+import { extractReadableContent } from '../lib/readability-utils'
 
 interface ReadingModeProps {
   shortcut?: string;
@@ -17,26 +17,8 @@ export const ReadingMode: React.FC<ReadingModeProps> = ({
       if (!webviewRef.current) return;
       setContent("<p>Processing content...</p>");
 
-      try {
-        const documentHtml = await webviewRef.current.executeJavaScript(`
-          (function() {
-            return document.documentElement.outerHTML;
-          })()
-        `);
-
-        // Create a DOM parser
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(documentHtml, 'text/html');
-
-        // Create a new Readability object and parse the content
-        const reader = new Readability(doc);
-        const article = reader.parse();
-
-        setContent(article ? article.content : 'Could not parse the content');
-      } catch (error) {
-        console.error('Error processing content:', error);
-        setContent("<p>Error processing content. Please try again.</p>");
-      }
+      const extractedContent = await extractReadableContent(webviewRef.current);
+      setContent(extractedContent);
     };
 
     extractContent();
