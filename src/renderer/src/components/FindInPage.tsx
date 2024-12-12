@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { atom, useAtom } from 'jotai'
+import { extractReadableContent } from '../lib/readability-utils'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Search, ArrowUp, ArrowDown, Bot } from 'lucide-react'
 import { Button } from './ui/button'
@@ -31,15 +32,14 @@ export const FindInPage: React.FC<FindInPageProps> = ({ webviewRef }) => {
         return
       }
 
-      // Get page content
-      const pageContent = await webviewRef.current.executeJavaScript(`
-        document.body.innerText
-      `)
+      // Get readable content
+      const readableContent = await extractReadableContent(webviewRef.current)
       const title = await webviewRef.current.getTitle()
 
-      // Truncate content if too long (OpenAI has token limits)
-      const truncatedContent = pageContent.substring(0, 3000) +
-        (pageContent.length > 3000 ? '...' : '')
+      // Strip HTML tags and truncate if needed
+      const strippedContent = readableContent.replace(/<[^>]*>/g, ' ')
+      const truncatedContent = strippedContent.substring(0, 3000) +
+        (strippedContent.length > 3000 ? '...' : '')
 
       setAIResponse('')
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
