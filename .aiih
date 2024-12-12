@@ -377,3 +377,15 @@
 
 # 2024-12-11 22:08:56.008604
 +/commit
+
+# 2024-12-12 09:19:23.204133
++/add src/renderer/src/components/ReadingMode.tsx
+
+# 2024-12-12 09:19:43.186937
++/code Can you please put the extract content into a reusable function in src/lib/?
+
+# 2024-12-12 09:20:49.180278
++/add src/renderer/src/components/FindInPage.tsx
+
+# 2024-12-12 09:21:32.370787
++/code Now, reuse the extractreadablecontent function inside of the findinpage AI feature, so that instead of sending the whole page it just sends the readable content
