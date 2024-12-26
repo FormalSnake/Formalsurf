@@ -362,7 +362,7 @@ if (url && !url.startsWith('-') && url !== '.' && url !== './') {
 async function setupExtensions(): Promise<void> {
   // Create a persistent partition that all webviews will share
   const sharedSession = session.fromPartition('persist:webview')
-  
+
   // Install extensions to the shared session
   await installChromeWebStore({ session: sharedSession })
 
@@ -574,12 +574,12 @@ app.whenReady().then(async () => {
 app.on('web-contents-created', async (e, contents) => {
   if (contents.getType() == 'webview') {
     const existingWindow = BrowserWindow.getAllWindows()[0]
-    
+
     // Ensure webview uses the shared persistent session
-    contents.session = session.fromPartition('persist:webview')
-    
+    // contents.session = session.fromPartition('persist:webview')
+
     contents.setVisualZoomLevelLimits(1, 4)
-    
+
     // Add extension support to the webview using the shared session
     const extensions = new ElectronChromeExtensions({
       license: "GPL-3.0",
