@@ -588,23 +588,13 @@ app.on('web-contents-created', async (e, contents) => {
     extensions.addTab(contents, existingWindow)
 
     // Set up context menu with proper session
-    contents.on("context-menu", (e, params) => {
+    contents.on("context-menu", (event, params) => {
       const menu = buildChromeContextMenu({
         params,
         webContents: contents,
-        openLink: (url, disposition) => {
-          if (disposition === 'foreground-tab') {
-            existingWindow.webContents.send('open-url', url)
-          }
-          else if (disposition === 'background-tab') {
-            existingWindow.webContents.send('open-url', url)
-          }
-          else if (disposition === 'new-window') {
-            existingWindow.webContents.send('open-url', url)
-          }
-          else {
-            existingWindow.webContents.send('open-url', url)
-          }
+        extensionMenuItems: extensions.getContextMenuItems(contents, params),
+        openLink: (url: string) => {
+          existingWindow.webContents.send('open-url', url)
         }
       })
       menu.popup()
