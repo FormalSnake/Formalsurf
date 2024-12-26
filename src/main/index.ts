@@ -358,11 +358,8 @@ if (url && !url.startsWith('-') && url !== '.' && url !== './') {
 }
 
 
-// Create a shared session that will be used across all webviews
-const sharedSession = session.fromPartition('persist:webview')
-
 // Set up extensions before creating any windows
-async function setupExtensions(): Promise<void> {
+async function setupExtensions(sharedSession: Electron.Session): Promise<void> {
   // Install extensions to the shared session
   await installChromeWebStore({ session: sharedSession })
 
@@ -379,6 +376,9 @@ async function setupExtensions(): Promise<void> {
   // Check for extension updates
   await updateExtensions()
 }
+
+// Store shared session as a module-level variable
+let sharedSession: Electron.Session
 
 async function createWindow(): Promise<void> {
   // Create the browser window.
@@ -489,8 +489,11 @@ app.whenReady().then(async () => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.formalsnake')
 
+  // Create shared session after app is ready
+  sharedSession = session.fromPartition('persist:webview')
+
   // Set up extensions first
-  await setupExtensions()
+  await setupExtensions(sharedSession)
 
   // Initialize and check for updates
   const autoUpdater = getAutoUpdater();
