@@ -358,11 +358,11 @@ if (url && !url.startsWith('-') && url !== '.' && url !== './') {
 }
 
 
+// Create a shared session that will be used across all webviews
+const sharedSession = session.fromPartition('persist:webview')
+
 // Set up extensions before creating any windows
 async function setupExtensions(): Promise<void> {
-  // Create a persistent partition that all webviews will share
-  const sharedSession = session.fromPartition('persist:webview')
-
   // Install extensions to the shared session
   await installChromeWebStore({ session: sharedSession })
 
@@ -378,8 +378,6 @@ async function setupExtensions(): Promise<void> {
 
   // Check for extension updates
   await updateExtensions()
-
-  return sharedSession
 }
 
 async function createWindow(): Promise<void> {
@@ -574,20 +572,20 @@ app.whenReady().then(async () => {
 app.on('web-contents-created', async (e, contents) => {
   if (contents.getType() == 'webview') {
     const existingWindow = BrowserWindow.getAllWindows()[0]
-
-    // Ensure webview uses the shared persistent session
-    // contents.session = session.fromPartition('persist:webview')
-
+    
+    // Set zoom limits
     contents.setVisualZoomLevelLimits(1, 4)
-
-    // Add extension support to the webview using the shared session
+    
+    // Create extension handler with the shared session
     const extensions = new ElectronChromeExtensions({
       license: "GPL-3.0",
-      session: contents.session
+      session: sharedSession
     })
+    
+    // Add the tab to extension handler
     extensions.addTab(contents, existingWindow)
-
-    // Set up context menu with proper session
+    
+    // Set up context menu
     contents.on("context-menu", (event, params) => {
       const menu = buildChromeContextMenu({
         params,
