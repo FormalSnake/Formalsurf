@@ -377,8 +377,9 @@ async function setupExtensions(sharedSession: Electron.Session): Promise<void> {
   await updateExtensions()
 }
 
-// Store shared session as a module-level variable
+// Store shared session and extensions map as module-level variables
 let sharedSession: Electron.Session
+const initializedExtensions = new Map<string, ElectronChromeExtensions>()
 
 async function createWindow(): Promise<void> {
   // Create the browser window.
@@ -581,11 +582,15 @@ app.on('web-contents-created', async (e, contents) => {
     // Set zoom limits
     contents.setVisualZoomLevelLimits(1, 4)
 
-    // Create extension handler with the shared session
-    const extensions = new ElectronChromeExtensions({
-      license: "GPL-3.0",
-      session: sharedSession
-    })
+    // Get or create extension handler for the session
+    let extensions = initializedExtensions.get(sharedSession.id)
+    if (!extensions) {
+      extensions = new ElectronChromeExtensions({
+        license: "GPL-3.0",
+        session: sharedSession
+      })
+      initializedExtensions.set(sharedSession.id, extensions)
+    }
 
     // Add the tab to extension handler
     extensions.addTab(contents, existingWindow)
