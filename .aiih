@@ -410,3 +410,6 @@
 
 # 2024-12-26 17:45:33.346540
 +/code Why does the extension support not work well?
+
+# 2024-12-26 17:57:05.372978
++/code Why does it say "buildChromeContextMenu is not a function" in runtime, even though it seems to be correct in code?

@@ -10,7 +10,7 @@ import { setAsDefaultBrowserLinux } from './linux-utils'
 import electronUpdater, { type AppUpdater } from 'electron-updater';
 import { ElectronChromeExtensions } from 'electron-chrome-extensions'
 import { installChromeWebStore, installExtension, updateExtensions } from 'electron-chrome-web-store'
-import { buildContextMenu as buildChromeContextMenu } from 'electron-chrome-context-menu'
+import { buildChromeContextMenu } from 'electron-chrome-context-menu'
 
 const isMac = process.platform === 'darwin'
 
@@ -597,7 +597,18 @@ app.on('web-contents-created', async (e, contents) => {
         params,
         webContents: contents,
         openLink: (url, disposition) => {
-          contents.loadURL(url)
+          if (disposition === 'foreground-tab') {
+            existingWindow.webContents.send('open-url', url)
+          }
+          else if (disposition === 'background-tab') {
+            existingWindow.webContents.send('open-url', url)
+          }
+          else if (disposition === 'new-window') {
+            existingWindow.webContents.send('open-url', url)
+          }
+          else {
+            existingWindow.webContents.send('open-url', url)
+          }
         }
       })
       menu.popup()
