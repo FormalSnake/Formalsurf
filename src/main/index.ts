@@ -572,19 +572,19 @@ app.whenReady().then(async () => {
 app.on('web-contents-created', async (e, contents) => {
   if (contents.getType() == 'webview') {
     const existingWindow = BrowserWindow.getAllWindows()[0]
-    
+
     // Set zoom limits
     contents.setVisualZoomLevelLimits(1, 4)
-    
+
     // Create extension handler with the shared session
     const extensions = new ElectronChromeExtensions({
       license: "GPL-3.0",
       session: sharedSession
     })
-    
+
     // Add the tab to extension handler
     extensions.addTab(contents, existingWindow)
-    
+
     // Set up context menu
     contents.on("context-menu", (event, params) => {
       const menu = buildChromeContextMenu({
