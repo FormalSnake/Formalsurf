@@ -10,7 +10,7 @@ import { setAsDefaultBrowserLinux } from './linux-utils'
 import electronUpdater, { type AppUpdater } from 'electron-updater';
 import { ElectronChromeExtensions } from 'electron-chrome-extensions'
 import { installChromeWebStore, installExtension, updateExtensions } from 'electron-chrome-web-store'
-import buildChromeContextMenu from 'electron-chrome-context-menu'
+import { buildContextMenu as buildChromeContextMenu } from 'electron-chrome-context-menu'
 
 const isMac = process.platform === 'darwin'
 
