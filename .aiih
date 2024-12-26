@@ -389,3 +389,24 @@
 
 # 2024-12-12 09:21:32.370787
 +/code Now, reuse the extractreadablecontent function inside of the findinpage AI feature, so that instead of sending the whole page it just sends the readable content
+
+# 2024-12-26 17:19:41.360360
++/add src/main/index.ts
+
+# 2024-12-26 17:19:57.012318
++/add src/renderer/src/App.tsx
+
+# 2024-12-26 17:20:24.526254
++/code Please add chrome extension support using this package: electron-chrome-extensions I already installed it
+
+# 2024-12-26 17:20:58.957294
++N
+
+# 2024-12-26 17:26:02.087414
++/undo
+
+# 2024-12-26 17:45:19.123125
++/add src/main/index.ts
+
+# 2024-12-26 17:45:33.346540
++/code Why does the extension support not work well?

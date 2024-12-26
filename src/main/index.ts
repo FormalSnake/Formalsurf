@@ -10,6 +10,7 @@ import { setAsDefaultBrowserLinux } from './linux-utils'
 import electronUpdater, { type AppUpdater } from 'electron-updater';
 import { ElectronChromeExtensions } from 'electron-chrome-extensions'
 import { installChromeWebStore, installExtension, updateExtensions } from 'electron-chrome-web-store'
+import buildChromeContextMenu from 'electron-chrome-context-menu'
 
 const isMac = process.platform === 'darwin'
 
@@ -359,21 +360,25 @@ if (url && !url.startsWith('-') && url !== '.' && url !== './') {
 
 // Set up extensions before creating any windows
 async function setupExtensions(): Promise<void> {
-  const extensionSession = session.fromPartition('persist:browser')
-  
+  const extensionSession = session.fromPartition('persist:webview')
+  console.log('extensionSession', extensionSession)
   // Install extensions to the persistent session
   await installChromeWebStore({ session: extensionSession })
-  
+
   // Set up ad blocking
-  const blocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch)
-  blocker.enableBlockingInSession(extensionSession)
+  // const blocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch)
+  // blocker.enableBlockingInSession(extensionSession)
 
   // Install core extensions
+  // await installExtension('eimadpbcbfnmbkopoojfekhnkhdbieeh', {
+  //   session: extensionSession
+  // }) // Dark Reader
+
   await installExtension('fmkadmapgofadopljbjfkapdkoienihi', { // React Dev Tools
     loadExtensionOptions: { allowFileAccess: true },
     session: extensionSession
   })
-  
+
   await installExtension('ddkjiahejlhfcafbddmgiahcphecmpfh', { // uBlock Origin Lite
     session: extensionSession
   })
@@ -574,12 +579,12 @@ app.whenReady().then(async () => {
 app.on('web-contents-created', async (e, contents) => {
   if (contents.getType() == 'webview') {
     const existingWindow = BrowserWindow.getAllWindows()[0]
-    
+
     // Use the persistent session for webviews
-    contents.session = session.fromPartition('persist:browser')
-    
+    // contents.session = session.fromPartition('persist:browser')
+
     contents.setVisualZoomLevelLimits(1, 4)
-    
+
     // Add extension support to the webview
     const extensions = new ElectronChromeExtensions({
       license: "GPL-3.0",
@@ -587,21 +592,32 @@ app.on('web-contents-created', async (e, contents) => {
     })
     extensions.addTab(contents, existingWindow)
 
-    // set context menu in webview contextMenu({ window: contents, });
-    contextMenu({
-      window: contents,
-      prepend: (defaultActions, params, mainWindow) => [
-        // Can add custom right click actions here
-      ],
-      showInspectElement: true,
-      showSaveImageAs: true,
-      showSaveImage: true,
-      showCopyImageAddress: true,
-      showCopyImage: true,
-      showCopyVideoAddress: true,
-      showSaveVideo: true,
-      showSaveVideoAs: true
+    contents.on("context-menu", (e, params) => {
+      const menu = buildChromeContextMenu({
+        params,
+        webContents: contents,
+        openLink: (url, disposition) => {
+          contents.loadURL(url)
+        }
+      })
+      menu.popup()
     })
+
+    // set context menu in webview contextMenu({ window: contents, });
+    // contextMenu({
+    //   window: contents,
+    //   prepend: (defaultActions, params, mainWindow) => [
+    //     // Can add custom right click actions here
+    //   ],
+    //   showInspectElement: true,
+    //   showSaveImageAs: true,
+    //   showSaveImage: true,
+    //   showCopyImageAddress: true,
+    //   showCopyImage: true,
+    //   showCopyVideoAddress: true,
+    //   showSaveVideo: true,
+    //   showSaveVideoAs: true
+    // })
   }
 })
 
