@@ -573,7 +573,9 @@ app.whenReady().then(async () => {
 })
 
 app.on('web-contents-created', async (e, contents) => {
+  console.log('web-contents-created')
   if (contents.getType() == 'webview') {
+    console.log('webview created')
     const existingWindow = BrowserWindow.getAllWindows()[0]
 
     // Set zoom limits
