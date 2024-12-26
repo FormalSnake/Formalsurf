@@ -583,13 +583,13 @@ app.on('web-contents-created', async (e, contents) => {
     contents.setVisualZoomLevelLimits(1, 4)
 
     // Get or create extension handler for the session
-    let extensions = initializedExtensions.get(sharedSession.id)
+    let extensions = initializedExtensions.get('persist:webview')
     if (!extensions) {
       extensions = new ElectronChromeExtensions({
         license: "GPL-3.0",
         session: sharedSession
       })
-      initializedExtensions.set(sharedSession.id, extensions)
+      initializedExtensions.set('persist:webview', extensions)
     }
 
     // Add the tab to extension handler
