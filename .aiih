@@ -413,3 +413,34 @@
 
 # 2024-12-26 17:57:05.372978
 +/code Why does it say "buildChromeContextMenu is not a function" in runtime, even though it seems to be correct in code?
+
+# 2024-12-26 18:02:46.227951
++/code Why does the  context-menu only work on the first tab?
+
+# 2024-12-26 18:03:14.975172
++N
+
+# 2024-12-26 18:03:39.943593
++/code Now I get no context menu at all
+
+# 2024-12-26 18:04:03.646849
++N
+
+# 2024-12-26 18:05:54.631939
++/code This line breaks it all: contents.session = session.fromPartition('persist:webview'), when I remove it I get a context menu but only in the first created webview. When a new tab is opened there is no context menu
+
+# 2024-12-26 18:06:54.577570
++/code fmkadmapgofadopljbjfkapdkoienihi
+
+# 2024-12-26 18:07:06.326077
++/code TypeError: Session can only be received when app is ready
+
+# 2024-12-26 18:11:47.366158
++/code The context menu doesn't get added to new tabs in the end because the extensions are already initialized and throws this error: (node:29084) UnhandledPromiseRejectionWarning: Error: Extensions instance already exists for the given session
++Make it so that the extensions don't get initialized if they have been initialized already
+
+# 2024-12-26 18:12:37.061347
++/code Property 'id' does not exist on type 'Session'
+
+# 2024-12-26 18:12:54.309332
++n

@@ -115,7 +115,7 @@ export const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean 
       }
 
       const failLoadHandler = (event: any) => {
-        if (event.errorCode !== -3 && event.errorCode !== -27) {
+        if (event.errorCode !== -3 && event.errorCode !== -27 && event.errorCode !== -100) {
           setHasLoadFailed(true)
           setFailedLoadMessage(event.errorCode)
           setFailedLoadDescription(event.errorDescription)
@@ -192,7 +192,7 @@ export const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean 
         ref={ref}
         src={initialSrc.current}
         className={`w-full h-full bg-foreground ${hasLoadFailed ? 'hidden' : ''}`}
-        webpreferences="autoplayPolicy=user-gesture-required,defaultFontSize=16,contextIsolation=true,nodeIntegration=false,sandbox=true,webSecurity=true,enableCamera=true,enableMicrophone=true"
+        webpreferences="autoplayPolicy=user-gesture-required,defaultFontSize=16,contextIsolation=true,nodeIntegration=true,sandbox=true,webSecurity=true,enableCamera=true,enableMicrophone=true"
         allowpopups="true"
         partition="persist:webview"
         key={tab.id}

@@ -1,5 +1,11 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
+import { injectBrowserAction } from 'electron-chrome-extensions/dist/browser-action'
+
+// Inject <browser-action-list> element into our page
+// if (location.href === 'webui://browser-chrome.html') {
+injectBrowserAction()
+// }
 
 // Custom APIs for renderer
 const api = {
@@ -25,6 +31,7 @@ if (process.contextIsolated) {
     contextBridge.exposeInMainWorld('electron', electronAPI)
     contextBridge.exposeInMainWorld('api', api)
   } catch (error) {
+    console.log("not isolated")
     console.error(error)
   }
 } else {

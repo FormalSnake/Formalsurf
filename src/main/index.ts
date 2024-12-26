@@ -360,6 +360,7 @@ if (url && !url.startsWith('-') && url !== '.' && url !== './') {
 
 // Set up extensions before creating any windows
 async function setupExtensions(sharedSession: Electron.Session): Promise<void> {
+  console.log('setupExtensions', sharedSession)
   // Install extensions to the shared session
   await installChromeWebStore({ session: sharedSession })
 
@@ -369,7 +370,19 @@ async function setupExtensions(sharedSession: Electron.Session): Promise<void> {
     session: sharedSession
   })
 
+  await installExtension('gebbhagfogifgggkldgodflihgfeippi', { // Return YouTube Dislike
+    session: sharedSession
+  })
+
+  await installExtension('ponfpcnoihfmfllpaingbgckeeldkhle', {
+    session: sharedSession
+  }) // Youtube enhancer
+
   await installExtension('ddkjiahejlhfcafbddmgiahcphecmpfh', { // uBlock Origin Lite
+    session: sharedSession
+  })
+
+  await installExtension('eimadpbcbfnmbkopoojfekhnkhdbieeh', { // dark reader
     session: sharedSession
   })
 
@@ -380,6 +393,7 @@ async function setupExtensions(sharedSession: Electron.Session): Promise<void> {
 // Store shared session and extensions map as module-level variables
 let sharedSession: Electron.Session
 const initializedExtensions = new Map<string, ElectronChromeExtensions>()
+let browserSession: Electron.Session
 
 async function createWindow(): Promise<void> {
   // Create the browser window.
@@ -397,10 +411,12 @@ async function createWindow(): Promise<void> {
       sandbox: false,
       webviewTag: true,
       nodeIntegration: true,
-      contextIsolation: false
+      contextIsolation: false,
+      session: browserSession
     }
   })
 
+  // await installChromeWebStore({ session: session.defaultSession })
 
   // Set up permission handling
   mainWindow.webContents.session.setPermissionRequestHandler(
@@ -494,7 +510,11 @@ app.whenReady().then(async () => {
   sharedSession = session.fromPartition('persist:webview')
 
   // Set up extensions first
-  await setupExtensions(sharedSession)
+  if (sharedSession) {
+    console.log('sharedSession', sharedSession)
+    await setupExtensions(sharedSession)
+  }
+  // await setupExtensions(sharedSession)
 
   // Initialize and check for updates
   const autoUpdater = getAutoUpdater();
@@ -582,6 +602,8 @@ app.on('web-contents-created', async (e, contents) => {
     // Set zoom limits
     contents.setVisualZoomLevelLimits(1, 4)
 
+    await installChromeWebStore({ session: contents.session }).catch(() => console.log("yo", contents.session))
+
     // Get or create extension handler for the session
     let extensions = initializedExtensions.get('persist:webview')
     if (!extensions) {
@@ -607,22 +629,6 @@ app.on('web-contents-created', async (e, contents) => {
       })
       menu.popup()
     })
-
-    // set context menu in webview contextMenu({ window: contents, });
-    // contextMenu({
-    //   window: contents,
-    //   prepend: (defaultActions, params, mainWindow) => [
-    //     // Can add custom right click actions here
-    //   ],
-    //   showInspectElement: true,
-    //   showSaveImageAs: true,
-    //   showSaveImage: true,
-    //   showCopyImageAddress: true,
-    //   showCopyImage: true,
-    //   showCopyVideoAddress: true,
-    //   showSaveVideo: true,
-    //   showSaveVideoAs: true
-    // })
   }
 })
 

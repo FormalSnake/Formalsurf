@@ -223,32 +223,38 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar {...props} className="draglayer">
-      <div
-        className={cn(
-          'flex flex-row mt-2.5 justify-evenly nodraglayer',
-          process.platform === 'darwin' && 'ml-16'
-        )}
-      >
-        <AddTabButton onClick={handleAddTab} />
-        <SidebarTrigger />
-        <ActionButton
-          className="group/refresh"
-          onClick={() => handleAction('reload')}
-          Icon={RefreshCcw}
-          hoverClass="group-hover/refresh:rotate-180 ease-in-out transition-transform duration-200"
-        />
-        <ActionButton
-          className="group/goback"
-          onClick={() => handleAction('goBack')}
-          Icon={ArrowLeft}
-          hoverClass="group-hover/goback:translate-x-[-4px] ease-in-out transition-transform duration-200"
-        />
-        <ActionButton
-          className="group/goforward"
-          onClick={() => handleAction('goForward')}
-          Icon={ArrowRight}
-          hoverClass="group-hover/goforward:translate-x-1 ease-in-out transition-transform duration-200"
-        />
+      <div className="nodraglayer flex flex-col">
+        <div
+          className={cn(
+            'flex flex-row mt-2.5 justify-evenly nodraglayer',
+            process.platform === 'darwin' && 'ml-16'
+          )}
+        >
+          <AddTabButton onClick={handleAddTab} />
+          <SidebarTrigger />
+          <ActionButton
+            className="group/refresh"
+            onClick={() => handleAction('reload')}
+            Icon={RefreshCcw}
+            hoverClass="group-hover/refresh:rotate-180 ease-in-out transition-transform duration-200"
+          />
+          <ActionButton
+            className="group/goback"
+            onClick={() => handleAction('goBack')}
+            Icon={ArrowLeft}
+            hoverClass="group-hover/goback:translate-x-[-4px] ease-in-out transition-transform duration-200"
+          />
+          <ActionButton
+            className="group/goforward"
+            onClick={() => handleAction('goForward')}
+            Icon={ArrowRight}
+            hoverClass="group-hover/goforward:translate-x-1 ease-in-out transition-transform duration-200"
+          />
+        </div>
+        <div>
+          <browser-action-list partition="persist:webview"></browser-action-list>
+          {/* <browser-action-list></browser-action-list> */}
+        </div>
       </div>
       <SidebarContent className={`draglayer`}>
         <SidebarGroup className="nodraglayer">
