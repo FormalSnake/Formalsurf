@@ -357,6 +357,31 @@ if (url && !url.startsWith('-') && url !== '.' && url !== './') {
 }
 
 
+// Set up extensions before creating any windows
+async function setupExtensions(): Promise<void> {
+  const extensionSession = session.fromPartition('persist:browser')
+  
+  // Install extensions to the persistent session
+  await installChromeWebStore({ session: extensionSession })
+  
+  // Set up ad blocking
+  const blocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch)
+  blocker.enableBlockingInSession(extensionSession)
+
+  // Install core extensions
+  await installExtension('fmkadmapgofadopljbjfkapdkoienihi', { // React Dev Tools
+    loadExtensionOptions: { allowFileAccess: true },
+    session: extensionSession
+  })
+  
+  await installExtension('ddkjiahejlhfcafbddmgiahcphecmpfh', { // uBlock Origin Lite
+    session: extensionSession
+  })
+
+  // Check for extension updates
+  await updateExtensions()
+}
+
 async function createWindow(): Promise<void> {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -466,6 +491,9 @@ app.whenReady().then(async () => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.formalsnake')
 
+  // Set up extensions first
+  await setupExtensions()
+
   // Initialize and check for updates
   const autoUpdater = getAutoUpdater();
   try {
@@ -546,30 +574,18 @@ app.whenReady().then(async () => {
 app.on('web-contents-created', async (e, contents) => {
   if (contents.getType() == 'webview') {
     const existingWindow = BrowserWindow.getAllWindows()[0]
-
-    await installChromeWebStore({ session: contents.session })
-    ElectronBlocker.fromPrebuiltAdsAndTracking(fetch).then((blocker) => {
-      blocker.enableBlockingInSession(contents.session)
-    })
+    
+    // Use the persistent session for webviews
+    contents.session = session.fromPartition('persist:browser')
+    
     contents.setVisualZoomLevelLimits(1, 4)
+    
+    // Add extension support to the webview
     const extensions = new ElectronChromeExtensions({
       license: "GPL-3.0",
       session: contents.session,
     })
     extensions.addTab(contents, existingWindow)
-
-    // Install React Developer Tools with file:// access
-    await installExtension('fmkadmapgofadopljbjfkapdkoienihi', {
-      loadExtensionOptions: { allowFileAccess: true },
-    })
-
-    // Install uBlock Origin Lite to custom session
-    await installExtension('ddkjiahejlhfcafbddmgiahcphecmpfh', {
-      session: session.fromPartition('persist:browser'),
-    })
-
-    // Check and install updates for all loaded extensions
-    await updateExtensions()
 
     // set context menu in webview contextMenu({ window: contents, });
     contextMenu({
