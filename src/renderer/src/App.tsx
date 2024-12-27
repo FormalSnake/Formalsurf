@@ -29,6 +29,7 @@ function App(): JSX.Element {
   const [isUpdate, setIsUpdate] = useAtom(isUpdateAtom)
   const [activeTab, setActiveTab] = useAtom(activeTabRefAtom)
   const [, setFindInPageVisible] = useAtom(findInPageVisibleAtom)
+  const createNewTab = useCreateNewTab();
   const toggleFindInPage = () => {
     setFindInPageVisible((prev) => !prev)
   }
@@ -36,7 +37,6 @@ function App(): JSX.Element {
   const [homeOpen, setHomeOpen] = useAtom(homeOpenAtom)
 
   useEffect(() => {
-    const createNewTab = useCreateNewTab();
 
     // Handler for extension-initiated tab creation
     //@ts-ignore
