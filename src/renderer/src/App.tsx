@@ -37,28 +37,6 @@ function App(): JSX.Element {
   const [homeOpen, setHomeOpen] = useAtom(homeOpenAtom)
 
   useEffect(() => {
-
-    // Handler for extension-initiated tab creation
-    //@ts-ignore
-    window.api.handle('new-tab-from-extension', (event: any, url: string) => {
-      createNewTab({ url });
-    });
-
-    // Handler for extension-initiated tab selection
-    //@ts-ignore
-    window.api.handle('select-tab', (event: any, tabId: string) => {
-      const tab = tabs.find(t => t.id === tabId);
-      if (tab) {
-        setActiveTab(tab);
-      }
-    });
-
-    // Handler for extension-initiated tab removal
-    //@ts-ignore
-    window.api.handle('close-tab', (event: any, tabId: string) => {
-      closeTab(tabId);
-    });
-
     //@ts-ignore
     window.api.handle(
       'close-active-tab',
@@ -140,24 +118,20 @@ function App(): JSX.Element {
     )
 
     // Cleanup function to remove handlers
-    return () => {
-      handlers.forEach(({ channel }) => {
-        //@ts-ignore
-        window.api.removeHandler(channel);
-      });
-
-      // Clean up other handlers
-      [
-        'open-url',
-        'close-active-tab',
-        'toggle-sidebar',
-        'open-url-bar',
-        'find'
-      ].forEach(channel => {
-        //@ts-ignore
-        window.api.removeHandler(channel);
-      });
-    }
+    // return () => {
+    //   // @ts-ignore
+    //   window.api.removeHandler('open-url', handleOpenUrl)
+    //   // @ts-ignore
+    //   window.api.removeHandler('close-active-tab', closeTab)
+    //   // @ts-ignore
+    //   window.api.removeHandler('new-tab', setTabDialogOpen)
+    //   // @ts-ignore
+    //   window.api.removeHandler('toggle-sidebar', setSidebarOpen)
+    //   // @ts-ignore
+    //   window.api.removeHandler('open-url-bar', setTabDialogOpen)
+    //   // @ts-ignore
+    //   window.api.removeHandler('find', toggleFindInPage)
+    // }
   }, [])
 
   return (

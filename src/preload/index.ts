@@ -21,14 +21,6 @@ const api = {
   getSettings: (setting) => ipcRenderer.invoke('get-setting', setting),
   onSettingChanged: (callback: (event: any, key: string, value: any) => void) =>
     ipcRenderer.on('setting-changed', callback),
-  onNewTabFromExtension: (callback: (event: any, url: string) => void) =>
-    ipcRenderer.on('new-tab-from-extension', callback),
-  onSelectTab: (callback: (event: any, tabId: string) => void) =>
-    ipcRenderer.on('select-tab', callback),
-  onCloseTab: (callback: (event: any, tabId: string) => void) =>
-    ipcRenderer.on('close-tab', callback),
-  onCloseActiveTab: (callback: (event: any) => void) =>
-    ipcRenderer.on('close-active-tab', callback)
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

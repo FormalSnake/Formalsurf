@@ -504,3 +504,6 @@
 
 # 2024-12-27 06:17:23.349968
 +/code I think you must add the events we added to the preload
+
+# 2024-12-27 06:20:02.622594
++/code The event listeners we added, new-tab-from-extension, select-tab, close-tab, close-active-tab in the src/preload/index.ts DO NOT CHANGE ANYTHING ELSE
