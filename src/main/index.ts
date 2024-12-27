@@ -616,10 +616,20 @@ app.on('web-contents-created', async (e, contents) => {
         modulePath: path.join(__dirname, 'electron-chrome-extensions'),
 
         createTab: (details) => {
+          const window = BrowserWindow.getAllWindows()[0];
+          if (window) {
+            window.webContents.send('new-tab', details.url);
+          }
         },
         selectTab: (tab, browserWindow) => {
+          if (browserWindow) {
+            browserWindow.webContents.send('select-tab', tab.id);
+          }
         },
         removeTab: (tab, browserWindow) => {
+          if (browserWindow) {
+            browserWindow.webContents.send('close-tab', tab.id);
+          }
         },
 
         createWindow: (details) => {

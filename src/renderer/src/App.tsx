@@ -36,6 +36,29 @@ function App(): JSX.Element {
   const [homeOpen, setHomeOpen] = useAtom(homeOpenAtom)
 
   useEffect(() => {
+    const createNewTab = useCreateNewTab();
+
+    // Handler for extension-initiated tab creation
+    //@ts-ignore
+    window.api.handle('new-tab', (event: any, url: string) => {
+      createNewTab(url);
+    });
+
+    // Handler for extension-initiated tab selection
+    //@ts-ignore
+    window.api.handle('select-tab', (event: any, tabId: string) => {
+      const tab = tabs.find(t => t.id === tabId);
+      if (tab) {
+        setActiveTab(tab);
+      }
+    });
+
+    // Handler for extension-initiated tab removal
+    //@ts-ignore
+    window.api.handle('close-tab', (event: any, tabId: string) => {
+      closeTab(tabId);
+    });
+
     //@ts-ignore
     window.api.handle(
       'close-active-tab',
