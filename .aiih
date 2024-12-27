@@ -444,3 +444,40 @@
 
 # 2024-12-26 18:12:54.309332
 +n
+
+# 2024-12-27 06:01:51.636103
++N
+
+# 2024-12-27 06:02:25.204829
++D
+
+# 2024-12-27 06:03:02.097655
++/add src/main/index.ts
+
+# 2024-12-27 06:03:11.504624
++/add src/renderer/src/App.tsx
+
+# 2024-12-27 06:04:29.031326
++/add src/preload/index.ts
+
+# 2024-12-27 06:04:31.963030
++/code In the index.ts, I have a electronchromeextensions setup, but I want the
++ createtab and it's respective functions to work with my own tab system.
++
+
+# 2024-12-27 06:08:31.077388
++/add src/renderer/src/App.tsx
+
+# 2024-12-27 06:08:34.829340
++/add src/preload/index.d.ts
+
+# 2024-12-27 06:08:40.629142
++/add src/preload/index.ts
+
+# 2024-12-27 06:08:45.595390
++/add src/main/index.ts
+
+# 2024-12-27 06:08:55.551395
++/code In the index.ts, I have a electronchromeextensions setup, but I want the
++ createtab and it's respective functions to work with my own tab system.
++

@@ -41,7 +41,7 @@ function App(): JSX.Element {
     // Handler for extension-initiated tab creation
     //@ts-ignore
     window.api.handle('new-tab', (event: any, url: string) => {
-      createNewTab(url);
+      createNewTab({ url });
     });
 
     // Handler for extension-initiated tab selection
