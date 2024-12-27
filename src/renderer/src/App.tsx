@@ -40,7 +40,7 @@ function App(): JSX.Element {
 
     // Handler for extension-initiated tab creation
     //@ts-ignore
-    window.api.handle('new-tab', (event: any, url: string) => {
+    window.api.handle('new-tab-from-extension', (event: any, url: string) => {
       createNewTab({ url });
     });
 
@@ -145,7 +145,7 @@ function App(): JSX.Element {
         //@ts-ignore
         window.api.removeHandler(channel);
       });
-      
+
       // Clean up other handlers
       [
         'open-url',
