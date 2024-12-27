@@ -1,5 +1,5 @@
 import { app, shell, BrowserWindow, ipcMain, Menu, dialog, session } from 'electron'
-import { join } from 'path'
+import path, { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import contextMenu from 'electron-context-menu'
@@ -362,7 +362,10 @@ if (url && !url.startsWith('-') && url !== '.' && url !== './') {
 async function setupExtensions(sharedSession: Electron.Session): Promise<void> {
   console.log('setupExtensions', sharedSession)
   // Install extensions to the shared session
-  await installChromeWebStore({ session: sharedSession })
+  await installChromeWebStore({
+    session: sharedSession,
+    modulePath: path.join(__dirname, 'electron-chrome-web-store'),
+  })
 
   // Install core extensions
   await installExtension('fmkadmapgofadopljbjfkapdkoienihi', { // React Dev Tools
@@ -602,14 +605,27 @@ app.on('web-contents-created', async (e, contents) => {
     // Set zoom limits
     contents.setVisualZoomLevelLimits(1, 4)
 
-    await installChromeWebStore({ session: contents.session }).catch(() => console.log("yo", contents.session))
+    // await installChromeWebStore({ session: contents.session }).catch(() => console.log("yo", contents.session))
 
     // Get or create extension handler for the session
     let extensions = initializedExtensions.get('persist:webview')
     if (!extensions) {
       extensions = new ElectronChromeExtensions({
         license: "GPL-3.0",
-        session: sharedSession
+        session: sharedSession,
+        modulePath: path.join(__dirname, 'electron-chrome-extensions'),
+
+        createTab: (details) => {
+        },
+        selectTab: (tab, browserWindow) => {
+        },
+        removeTab: (tab, browserWindow) => {
+        },
+
+        createWindow: (details) => {
+        },
+        removeWindow: (browserWindow) => {
+        },
       })
       initializedExtensions.set('persist:webview', extensions)
     }
