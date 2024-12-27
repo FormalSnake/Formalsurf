@@ -140,20 +140,24 @@ function App(): JSX.Element {
     )
 
     // Cleanup function to remove handlers
-    // return () => {
-    //   // @ts-ignore
-    //   window.api.removeHandler('open-url', handleOpenUrl)
-    //   // @ts-ignore
-    //   window.api.removeHandler('close-active-tab', closeTab)
-    //   // @ts-ignore
-    //   window.api.removeHandler('new-tab', setTabDialogOpen)
-    //   // @ts-ignore
-    //   window.api.removeHandler('toggle-sidebar', setSidebarOpen)
-    //   // @ts-ignore
-    //   window.api.removeHandler('open-url-bar', setTabDialogOpen)
-    //   // @ts-ignore
-    //   window.api.removeHandler('find', toggleFindInPage)
-    // }
+    return () => {
+      handlers.forEach(({ channel }) => {
+        //@ts-ignore
+        window.api.removeHandler(channel);
+      });
+      
+      // Clean up other handlers
+      [
+        'open-url',
+        'close-active-tab',
+        'toggle-sidebar',
+        'open-url-bar',
+        'find'
+      ].forEach(channel => {
+        //@ts-ignore
+        window.api.removeHandler(channel);
+      });
+    }
   }, [])
 
   return (
