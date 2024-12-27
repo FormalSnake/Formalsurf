@@ -481,3 +481,26 @@
 +/code In the index.ts, I have a electronchromeextensions setup, but I want the
 + createtab and it's respective functions to work with my own tab system.
 +
+
+# 2024-12-27 06:12:52.086208
++/code The createNewTab = useCreateNewTab you added breaks react hook rules
+
+# 2024-12-27 06:14:44.998506
++/undo
+
+# 2024-12-27 06:15:42.035150
++/code I get this error now? chunk-KDCVS43I.js?v=aaf26cdb:14080 The above error occurred in the <App> component:
++
++    at App (http://localhost:5173/src/App.tsx:32:27)
++
++Consider adding an error boundary to your tree to customize error handling behavior.
++Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+# 2024-12-27 06:15:44.859865
++N
+
+# 2024-12-27 06:16:51.251607
++/undo
+
+# 2024-12-27 06:17:23.349968
++/code I think you must add the events we added to the preload
