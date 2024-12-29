@@ -26,15 +26,15 @@ export const FindInPage: React.FC<FindInPageProps> = ({ webviewRef }) => {
     setIsLoading(true)
     try {
       // @ts-ignore
-      const apiKey = await window.api.getSettings('openAIKey')
-      if (!apiKey) {
-        setAIResponse("Please set your OpenAI API key in settings first")
+      const apiUrl = await window.api.getSettings('ollamaURL')
+      if (!apiUrl) {
+        setAIResponse("Please set your ollama API url in settings first")
         return
       }
 
       // Get readable content
       const readableContent = await extractReadableContent(webviewRef.current)
-      const title = await webviewRef.current.getTitle()
+      const title = webviewRef.current.getTitle()
 
       // Strip HTML tags and truncate if needed
       const strippedContent = readableContent.replace(/<[^>]*>/g, ' ')
@@ -42,25 +42,15 @@ export const FindInPage: React.FC<FindInPageProps> = ({ webviewRef }) => {
         (strippedContent.length > 3000 ? '...' : '')
 
       setAIResponse('')
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      const response = await fetch(apiUrl + "api/generate", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`
         },
         body: JSON.stringify({
-          model: "gpt-4o",
-          stream: true,
-          messages: [
-            {
-              role: "system",
-              content: `You are a helpful AI assistant. Provide brief, clear responses. Use bullet points only when listing multiple items or steps. The user is browsing a page titled "${title}". Here is the page content: ${truncatedContent}`
-            },
-            {
-              role: "user",
-              content: question
-            }
-          ]
+          model: "llama3.2",
+          stream: false,
+          prompt: `You are a helpful AI assistant. Provide brief, clear responses. Use bullet points only when listing multiple items or steps. The user is browsing a page titled "${title}". Here is the page content: ${truncatedContent}`,
         })
       })
 
@@ -79,6 +69,7 @@ export const FindInPage: React.FC<FindInPageProps> = ({ webviewRef }) => {
         for (const line of lines) {
           if (line.startsWith('data: ') && line !== 'data: [DONE]') {
             try {
+              console.log(line)
               const json = JSON.parse(line.slice(6))
               const content = json.choices[0]?.delta?.content
               if (content) {
