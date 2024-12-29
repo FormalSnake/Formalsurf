@@ -80,7 +80,7 @@ export function SettingsDialog() {
 
   const [searchEngineOpen, setSearchEngineOpen] = React.useState(false)
   const [searchEngine, setSearchEngine] = React.useState('')
-  const [openAIKey, setOpenAIKey] = React.useState('')
+  const [ollamaURL, setOllamaURL] = React.useState('')
   const isInitialMount = React.useRef(true)
 
   React.useEffect(() => {
@@ -88,7 +88,7 @@ export function SettingsDialog() {
     window.api.handle(
       'show-settings',
       (event: any, data: any) =>
-        function (event: any, data: any) {
+        function(event: any, data: any) {
           console.log('show-settings')
           setOpen(!!!open)
           // remove api handler
@@ -113,12 +113,12 @@ export function SettingsDialog() {
 
     // @ts-ignore
     window.api
-      .getSettings('openAIKey')
+      .getSettings('ollamaURL')
       .then((data: any) => {
-        setOpenAIKey(data || '')
+        setOllamaURL(data || '')
       })
       .catch((error: any) => {
-        console.error('Error fetching OpenAI key setting:', error)
+        console.error('Error fetching ollama URL setting:', error)
       })
   }, [open, activePage])
 
@@ -220,24 +220,23 @@ export function SettingsDialog() {
                   </PopoverContent>
                 </Popover>
                 <div className="mt-4">
-                  <p className="text-sm text-muted-foreground mb-1">OpenAI API Key</p>
+                  <p className="text-sm text-muted-foreground mb-1">OLLama URL</p>
                   <Input
-                    type="password"
-                    value={openAIKey}
+                    value={ollamaURL}
                     onChange={(e) => {
                       const newValue = e.target.value;
-                      setOpenAIKey(newValue);
+                      setOllamaURL(newValue);
                       // @ts-ignore
-                      window.api.changeSetting('openAIKey', newValue)
+                      window.api.changeSetting('ollamaURL', newValue)
                         .catch((error: any) => {
-                          console.error('Error saving OpenAI key:', error)
+                          console.error('Error saving OLLama URL:', error)
                         });
                     }}
-                    placeholder="sk-..."
+                    placeholder="https://..."
                     className="w-[300px]"
                   />
                   <p className="text-xs text-muted-foreground mt-1">
-                    Your API key will be stored securely and used for AI features
+                    Your OLLama URL will provide AI features
                   </p>
                 </div>
               </div>

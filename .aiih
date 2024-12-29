@@ -389,3 +389,14 @@
 
 # 2024-12-12 09:21:32.370787
 +/code Now, reuse the extractreadablecontent function inside of the findinpage AI feature, so that instead of sending the whole page it just sends the readable content
+
+# 2024-12-29 18:27:50.809186
++/add src/renderer/src/components/FindInPage.tsx
+
+# 2024-12-29 18:28:43.725989
++/ask This AI call is with stream off and is now to an ollama server, not openAI. please refactor the response handling to not use streaming and display the response of the ollama API call instead
+
+# 2024-12-29 18:29:13.513922
++/code  This AI call is with stream off and is now to an ollama server, not openAI. please refactor th
++e response handling to not use streaming and display the response of the ollama API call instead
++
