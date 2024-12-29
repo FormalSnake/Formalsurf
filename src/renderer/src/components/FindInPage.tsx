@@ -54,32 +54,11 @@ export const FindInPage: React.FC<FindInPageProps> = ({ webviewRef }) => {
         })
       })
 
-      const reader = response.body?.getReader()
-      const decoder = new TextDecoder()
-
-      if (!reader) throw new Error('No reader available')
-
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-
-        const chunk = decoder.decode(value)
-        const lines = chunk.split('\n')
-
-        for (const line of lines) {
-          if (line.startsWith('data: ') && line !== 'data: [DONE]') {
-            try {
-              console.log(line)
-              const json = JSON.parse(line.slice(6))
-              const content = json.choices[0]?.delta?.content
-              if (content) {
-                setAIResponse(prev => prev + content)
-              }
-            } catch (e) {
-              console.error('Error parsing JSON:', e)
-            }
-          }
-        }
+      const data = await response.json()
+      if (data.response) {
+        setAIResponse(data.response)
+      } else {
+        setAIResponse("Received an invalid response from the AI service.")
       }
     } catch (error) {
       setAIResponse("Sorry, there was an error processing your request.")
