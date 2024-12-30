@@ -555,7 +555,7 @@ app.on('web-contents-created', (e, contents) => {
         webContents: contents,
         openLink: (url: string) => {
           existingWindow.webContents.send('open-url', url)
-        }
+        },
       })
       menu.popup()
     })
