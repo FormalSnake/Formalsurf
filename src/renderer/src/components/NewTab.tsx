@@ -13,6 +13,7 @@ import {
   CommandSeparator,
   CommandList
 } from './ui/command'
+import { historyAtom } from '@renderer/atoms/history'
 
 export const isNewTabDialogOpen = atom(false)
 export const tabBarUrl = atom('')
@@ -28,6 +29,7 @@ export function NewTabDialog() {
   const [isUpdate, setIsUpdate] = useAtom(isUpdateAtom)
   const updateTab = useUpdateTab()
   const [activeWebview] = useAtom(activeTabRefAtom)
+  const [history, setHistory] = useAtom(historyAtom)
 
   useEffect(() => {
     // @ts-ignore
@@ -218,6 +220,27 @@ export function NewTabDialog() {
               {value}
             </CommandItem>
           </CommandGroup>
+        )}
+        {history.length > 0 && (
+          <>
+            <CommandSeparator />
+            <CommandGroup heading="History">
+              {history
+                .filter((tab) => tab.title !== value)
+                .map((tab, index) => (
+                  <CommandItem
+                    onSelect={(value) => {
+                      setValue(value)
+                      handleEnterPress(value)
+                    }}
+                    key={`tab-${index}`}
+                    className=""
+                  >
+                    {tab.title}
+                  </CommandItem>
+                ))}
+            </CommandGroup>
+          </>
         )}
         {tabs.length > 0 && (
           <>

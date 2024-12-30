@@ -8,6 +8,7 @@ import { TriangleAlert, WifiOff } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Snake } from './snake'
 import { FindInPage } from './FindInPage'
+import { historyAtom } from '@renderer/atoms/history'
 
 export const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
   const [tabs, setTabs] = useAtom(tabsAtom)
@@ -16,6 +17,7 @@ export const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean 
   const [hasLoadFailed, setHasLoadFailed] = useState(false)
   const [failedLoadMessage, setFailedLoadMessage] = useState('')
   const [failedLoadDescription, setFailedLoadDescription] = useState('')
+  const [history, setHistory] = useAtom(historyAtom)
 
   // Ensure ref is always initialized, even if it wasn't before
   const ref = useRef<WebviewElement | null>(tab.webviewRef?.current || null)
@@ -75,6 +77,7 @@ export const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean 
 
       const navigateHandler = (id: string, event: { url: string }) => {
         updateTabState(id, { url: event.url })
+        setHistory(prev => [...prev, { url: event.url, title: tab.title, date: new Date() }])
       }
 
       const titleHandler = (id: string, event: { title: string }) => {
@@ -98,11 +101,13 @@ export const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean 
 
       const didNavigateHandler = (event: any) => {
         navigateHandler(tab.id, event)
+        setHistory(prev => [...prev, { url: event.url, title: tab.title, date: new Date() }])
       }
 
       const didNavigateInPageHandler = (event: any) => {
         if (event.isMainFrame) {
           navigateHandler(tab.id, event)
+          setHistory(prev => [...prev, { url: event.url, title: tab.title, date: new Date() }])
         }
       }
 

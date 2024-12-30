@@ -400,3 +400,9 @@
 +/code  This AI call is with stream off and is now to an ollama server, not openAI. please refactor th
 +e response handling to not use streaming and display the response of the ollama API call instead
 +
+
+# 2024-12-30 10:05:36.287282
++/add src/renderer/src/components/Tab.tsx
+
+# 2024-12-30 10:05:39.770640
++/add src/renderer/src/components/NewTab.tsx
