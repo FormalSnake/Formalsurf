@@ -1,6 +1,6 @@
 import { atom } from 'jotai'
 
-interface HistoryItem {
+export interface HistoryItem {
   url: string
   title: string
   date: Date

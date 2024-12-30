@@ -8,7 +8,8 @@ import { TriangleAlert, WifiOff } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Snake } from './snake'
 import { FindInPage } from './FindInPage'
-import { historyAtom } from '@renderer/atoms/history'
+import { historyAtom, HistoryItem } from '@renderer/atoms/history'
+import { addHistoryEntry } from '@renderer/utils/history'
 
 export const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean }) => {
   const [tabs, setTabs] = useAtom(tabsAtom)
@@ -101,44 +102,20 @@ export const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean 
 
       const didNavigateHandler = (event: any) => {
         navigateHandler(tab.id, event)
-        const historyEntry = {
+        addHistoryEntry(setHistory, {
           url: event.url,
           title: tab.title || 'Untitled',
-          date: new Date(),
           tabId: tab.id
-        }
-        setHistory(prev => {
-          // Avoid duplicate entries
-          const isDuplicate = prev.some(item => 
-            item.url === historyEntry.url && 
-            Date.now() - item.date.getTime() < 1000
-          )
-          if (!isDuplicate) {
-            return [...prev, historyEntry]
-          }
-          return prev
         })
       }
 
       const didNavigateInPageHandler = (event: any) => {
         if (event.isMainFrame) {
           navigateHandler(tab.id, event)
-          const historyEntry = {
+          addHistoryEntry(setHistory, {
             url: event.url,
             title: tab.title || 'Untitled',
-            date: new Date(),
             tabId: tab.id
-          }
-          setHistory(prev => {
-            // Avoid duplicate entries
-            const isDuplicate = prev.some(item => 
-              item.url === historyEntry.url && 
-              Date.now() - item.date.getTime() < 1000
-            )
-            if (!isDuplicate) {
-              return [...prev, historyEntry]
-            }
-            return prev
           })
         }
       }
