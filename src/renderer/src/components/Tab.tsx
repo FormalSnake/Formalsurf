@@ -101,13 +101,45 @@ export const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean 
 
       const didNavigateHandler = (event: any) => {
         navigateHandler(tab.id, event)
-        setHistory(prev => [...prev, { url: event.url, title: tab.title, date: new Date() }])
+        const historyEntry = {
+          url: event.url,
+          title: tab.title || 'Untitled',
+          date: new Date(),
+          tabId: tab.id
+        }
+        setHistory(prev => {
+          // Avoid duplicate entries
+          const isDuplicate = prev.some(item => 
+            item.url === historyEntry.url && 
+            Date.now() - item.date.getTime() < 1000
+          )
+          if (!isDuplicate) {
+            return [...prev, historyEntry]
+          }
+          return prev
+        })
       }
 
       const didNavigateInPageHandler = (event: any) => {
         if (event.isMainFrame) {
           navigateHandler(tab.id, event)
-          setHistory(prev => [...prev, { url: event.url, title: tab.title, date: new Date() }])
+          const historyEntry = {
+            url: event.url,
+            title: tab.title || 'Untitled',
+            date: new Date(),
+            tabId: tab.id
+          }
+          setHistory(prev => {
+            // Avoid duplicate entries
+            const isDuplicate = prev.some(item => 
+              item.url === historyEntry.url && 
+              Date.now() - item.date.getTime() < 1000
+            )
+            if (!isDuplicate) {
+              return [...prev, historyEntry]
+            }
+            return prev
+          })
         }
       }
 
