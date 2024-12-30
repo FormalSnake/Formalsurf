@@ -255,7 +255,7 @@ export const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean 
         <>
           <FindInPage webviewRef={ref} />
           {isReadingMode && <ReadingMode webviewRef={ref} />}
-          {isHistoryOpen && <History webviewRef={ref} />}
+          <History webviewRef={ref} isHistoryOpen={isHistoryOpen} setIsHistoryOpen={setIsHistoryOpen} />
         </>
       )}
     </div>

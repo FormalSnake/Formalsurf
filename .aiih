@@ -421,3 +421,12 @@
 
 # 2024-12-30 10:12:04.634515
 +/code instead of putting the history in the NewTab.tsx create a separate screen that appears similarly to the readingmode component in the tab
+
+# 2024-12-30 10:14:15.004906
++/add src/renderer/src/App.tsx
+
+# 2024-12-30 10:14:20.990061
++/add src/main/index.ts
+
+# 2024-12-30 10:14:39.780402
++/code add a shortcut similar to the reading mode to trigget the history true/false
