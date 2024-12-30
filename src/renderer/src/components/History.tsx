@@ -21,8 +21,8 @@ export const History: React.FC<HistoryProps> = ({ webviewRef, isHistoryOpen, set
   const filteredHistory = useMemo(() => {
     if (!searchQuery) return history
     const query = searchQuery.toLowerCase()
-    return history.filter(item => 
-      item.title.toLowerCase().includes(query) || 
+    return history.filter(item =>
+      item.title.toLowerCase().includes(query) ||
       item.url.toLowerCase().includes(query)
     )
   }, [history, searchQuery])
