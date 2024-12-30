@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useState, useMemo } from 'react'
 import { useAtom } from 'jotai'
 import { historyAtom } from '@renderer/atoms/history'
 import { ScrollArea } from './ui/scroll-area'
 import { Button } from './ui/button'
-import { X } from 'lucide-react'
+import { Input } from './ui/input'
+import { Search, X } from 'lucide-react'
 import * as motion from "motion/react-client"
 import { AnimatePresence } from "motion/react"
 
@@ -15,6 +16,16 @@ interface HistoryProps {
 
 export const History: React.FC<HistoryProps> = ({ webviewRef, isHistoryOpen, setIsHistoryOpen }) => {
   const [history, setHistory] = useAtom(historyAtom)
+  const [searchQuery, setSearchQuery] = useState('')
+
+  const filteredHistory = useMemo(() => {
+    if (!searchQuery) return history
+    const query = searchQuery.toLowerCase()
+    return history.filter(item => 
+      item.title.toLowerCase().includes(query) || 
+      item.url.toLowerCase().includes(query)
+    )
+  }, [history, searchQuery])
 
   const handleHistoryClick = (url: string) => {
     if (webviewRef.current) {
@@ -36,12 +47,23 @@ export const History: React.FC<HistoryProps> = ({ webviewRef, isHistoryOpen, set
           transition={{ duration: 0.2, ease: "easeInOut" }}
           exit={{ translateX: 999 }}
         >
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">History</h2>
+          <div className="flex flex-col space-y-4 mb-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold">History</h2>
+            </div>
+            <div className="relative">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search history..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-8"
+              />
+            </div>
           </div>
           <ScrollArea className="h-[calc(100vh-2rem)] pr-4">
             <div className="space-y-4">
-              {history
+              {filteredHistory
                 .sort((a, b) => b.date.getTime() - a.date.getTime())
                 .map((item, index) => (
                   <div
