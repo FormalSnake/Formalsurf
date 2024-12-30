@@ -3,6 +3,7 @@ import { useAtom } from 'jotai'
 import { activeTabRefAtom, tabsAtom, useCreateNewTab } from '@/providers/TabProvider'
 import { readingModeTabsAtom } from '@/atoms/reading-mode'
 import { ReadingMode } from './ReadingMode'
+import { History } from './History'
 import { Button } from './ui/button'
 import { TriangleAlert, WifiOff } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -32,6 +33,20 @@ export const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean 
   const [targetUrl, setTargetUrl] = useState('')
   const [readingModeTabs, setReadingModeTabs] = useAtom(readingModeTabsAtom)
   const isReadingMode = readingModeTabs[tab.id] || false
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false)
+
+  useEffect(() => {
+    const handleHistory = () => {
+      if (isActive) {
+        setIsHistoryOpen(prev => !prev)
+      }
+    }
+
+    window.electron.ipcRenderer.on('toggle-history', handleHistory)
+    return () => {
+      window.electron.ipcRenderer.removeListener('toggle-history', handleHistory)
+    }
+  }, [isActive])
 
   useEffect(() => {
     const handleReadingMode = () => {
@@ -240,6 +255,7 @@ export const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean 
         <>
           <FindInPage webviewRef={ref} />
           {isReadingMode && <ReadingMode webviewRef={ref} />}
+          {isHistoryOpen && <History webviewRef={ref} />}
         </>
       )}
     </div>

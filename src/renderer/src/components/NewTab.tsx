@@ -221,29 +221,6 @@ export function NewTabDialog() {
             </CommandItem>
           </CommandGroup>
         )}
-        {history.length > 0 && (
-          <>
-            <CommandSeparator />
-            <CommandGroup heading="History">
-              {history
-                .filter((item) => item.title !== value)
-                .slice(0, 5) // Show only last 5 history items
-                .sort((a, b) => b.date.getTime() - a.date.getTime()) // Sort by most recent
-                .map((item, index) => (
-                  <CommandItem
-                    onSelect={() => {
-                      setValue(item.url)
-                      handleEnterPress(item.url)
-                    }}
-                    key={`history-${index}`}
-                    className=""
-                  >
-                    {item.title || item.url}
-                  </CommandItem>
-                ))}
-            </CommandGroup>
-          </>
-        )}
         {tabs.length > 0 && (
           <>
             <CommandSeparator />
