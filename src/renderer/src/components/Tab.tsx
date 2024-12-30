@@ -102,26 +102,24 @@ export const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean 
 
       const didNavigateHandler = (event: any) => {
         navigateHandler(tab.id, event)
-        addHistoryEntry(setHistory, {
-          url: event.url,
-          title: tab.title || 'Untitled',
-          tabId: tab.id
-        })
+        // Don't add history entry here - wait for title
       }
 
       const didNavigateInPageHandler = (event: any) => {
         if (event.isMainFrame) {
           navigateHandler(tab.id, event)
-          addHistoryEntry(setHistory, {
-            url: event.url,
-            title: tab.title || 'Untitled',
-            tabId: tab.id
-          })
+          // Don't add history entry here - wait for title
         }
       }
 
       const pageTitleHandler = (event: any) => {
         titleHandler(tab.id, event)
+        // Add history entry after we have the title
+        addHistoryEntry(setHistory, {
+          url: tab.url,
+          title: event.title,
+          tabId: tab.id
+        })
       }
 
       const pageFaviconHandler = (event: any) => {

@@ -7,18 +7,18 @@ export const addHistoryEntry = (
 ) => {
   const historyEntry = {
     ...entry,
-    date: new Date()
+    date: new Date(),
+    title: entry.title || new URL(entry.url).hostname
   }
 
   setHistory(prev => {
-    // Avoid duplicate entries within 1 second
-    const isDuplicate = prev.some(item => 
-      item.url === historyEntry.url && 
-      Date.now() - item.date.getTime() < 1000
+    // Remove any entries with the same URL from the last 30 seconds
+    const recentEntries = prev.filter(item => 
+      !(item.url === historyEntry.url && 
+        Date.now() - item.date.getTime() < 30000)
     )
-    if (!isDuplicate) {
-      return [...prev, historyEntry]
-    }
-    return prev
+
+    // Add the new entry
+    return [...recentEntries, historyEntry]
   })
 }
