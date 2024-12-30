@@ -8,7 +8,7 @@ import fetch from 'cross-fetch' // required 'fetch'
 import Store from 'electron-store'
 import { setAsDefaultBrowserLinux } from './linux-utils'
 import electronUpdater, { type AppUpdater } from 'electron-updater';
-
+import { buildChromeContextMenu } from 'electron-chrome-context-menu'
 
 const isMac = process.platform === 'darwin'
 
@@ -542,25 +542,22 @@ app.whenReady().then(async () => {
 
 app.on('web-contents-created', (e, contents) => {
   if (contents.getType() == 'webview') {
+    const existingWindow = BrowserWindow.getAllWindows()[0]
     ElectronBlocker.fromPrebuiltAdsAndTracking(fetch).then((blocker) => {
       blocker.enableBlockingInSession(contents.session)
     })
     contents.setVisualZoomLevelLimits(1, 4)
 
     // set context menu in webview contextMenu({ window: contents, });
-    contextMenu({
-      window: contents,
-      prepend: (defaultActions, params, mainWindow) => [
-        // Can add custom right click actions here
-      ],
-      showInspectElement: true,
-      showSaveImageAs: true,
-      showSaveImage: true,
-      showCopyImageAddress: true,
-      showCopyImage: true,
-      showCopyVideoAddress: true,
-      showSaveVideo: true,
-      showSaveVideoAs: true
+    contents.on('context-menu', (e, params) => {
+      const menu = buildChromeContextMenu({
+        params,
+        webContents: contents,
+        openLink: (url: string) => {
+          existingWindow.webContents.send('open-url', url)
+        }
+      })
+      menu.popup()
     })
   }
 })
