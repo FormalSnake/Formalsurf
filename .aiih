@@ -406,3 +406,18 @@
 
 # 2024-12-30 10:05:39.770640
 +/add src/renderer/src/components/NewTab.tsx
+
+# 2024-12-30 10:05:55.640423
++/add src/renderer/src/atoms/history.ts
+
+# 2024-12-30 10:06:20.993448
++/code Can you improve my history system to include tab ID's, and to update properly
+
+# 2024-12-30 10:07:20.426658
++/code Turn the sethistory into a reusable function please
+
+# 2024-12-30 10:09:24.430104
++/code I get a bunch of duplicate entries, and history doesn't seem to always get updated
+
+# 2024-12-30 10:12:04.634515
++/code instead of putting the history in the NewTab.tsx create a separate screen that appears similarly to the readingmode component in the tab
