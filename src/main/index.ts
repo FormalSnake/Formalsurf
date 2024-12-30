@@ -242,6 +242,15 @@ const template = [
             browserWindow.webContents.send('toggle-reading-mode')
           }
         }
+      },
+      {
+        label: 'History',
+        accelerator: 'CmdOrCtrl+Y',
+        click: (menuItem, browserWindow) => {
+          if (browserWindow) {
+            browserWindow.webContents.send('toggle-history')
+          }
+        }
       }
     ]
   },
