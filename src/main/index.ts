@@ -1,5 +1,5 @@
 import { app, shell, BrowserWindow, ipcMain, Menu, dialog, session } from 'electron'
-import { join } from 'path'
+import path, { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import contextMenu from 'electron-context-menu'
@@ -9,6 +9,8 @@ import Store from 'electron-store'
 import { setAsDefaultBrowserLinux } from './linux-utils'
 import electronUpdater, { type AppUpdater } from 'electron-updater';
 import { buildChromeContextMenu } from 'electron-chrome-context-menu'
+import { ElectronChromeExtensions } from 'electron-chrome-extensions'
+import { installChromeWebStore, installExtension, updateExtensions } from 'electron-chrome-web-store'
 
 const isMac = process.platform === 'darwin'
 
@@ -335,6 +337,8 @@ const template = [
   }
 ]
 
+let extensions: ElectronChromeExtensions
+
 // Handle command line argument URL if provided
 const url = process.argv[process.argv.length - 1]
 if (url && !url.startsWith('-') && url !== '.' && url !== './') {
@@ -363,7 +367,7 @@ if (url && !url.startsWith('-') && url !== '.' && url !== './') {
     }
   }
 }
-
+let sharedSession
 async function createWindow(): Promise<void> {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -395,6 +399,15 @@ async function createWindow(): Promise<void> {
       }
     }
   )
+  const modulePathExtensions = app.isPackaged
+    ? undefined // or specify a custom path instead
+    : path.join(app.getAppPath(), 'node_modules/electron-chrome-extensions')
+
+  extensions = new ElectronChromeExtensions({
+    license: "GPL-3.0",
+    session: sharedSession,
+    modulePath: modulePathExtensions,
+  })
   // let blocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch) // ads only
   //
   // blocker.enableBlockingInSession(mainWindow.webContents.session)
@@ -470,7 +483,8 @@ async function createWindow(): Promise<void> {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
   // Set app user model id for windows
-  electronApp.setAppUserModelId('com.electron')
+  electronApp.setAppUserModelId('com.formalsnake')
+  sharedSession = session.fromPartition('persist:webview')
 
   // Initialize and check for updates
   const autoUpdater = getAutoUpdater();
@@ -549,9 +563,30 @@ app.whenReady().then(async () => {
   })
 })
 
-app.on('web-contents-created', (e, contents) => {
+app.on('web-contents-created', async (e, contents) => {
   if (contents.getType() == 'webview') {
     const existingWindow = BrowserWindow.getAllWindows()[0]
+
+    extensions.addTab(contents, existingWindow)
+
+    const modulePathWebstore = app.isPackaged
+      ? undefined // or specify a custom path instead
+      : path.join(app.getAppPath(), 'node_modules/electron-chrome-web-store');
+
+    await installChromeWebStore({ session: contents.session, modulePath: modulePathWebstore }).catch((e) => console.error(e));
+    // Install React Developer Tools with file:// access
+    await installExtension('fmkadmapgofadopljbjfkapdkoienihi', {
+      loadExtensionOptions: { allowFileAccess: true },
+    })
+
+    // Install uBlock Origin Lite to custom session
+    await installExtension('ddkjiahejlhfcafbddmgiahcphecmpfh', {
+      session: session.fromPartition('persist:browser'),
+    })
+
+    // Check and install updates for all loaded extensions
+    await updateExtensions()
+
     ElectronBlocker.fromPrebuiltAdsAndTracking(fetch).then((blocker) => {
       blocker.enableBlockingInSession(contents.session)
     })
@@ -562,6 +597,7 @@ app.on('web-contents-created', (e, contents) => {
       const menu = buildChromeContextMenu({
         params,
         webContents: contents,
+        extensionMenuItems: extensions.getContextMenuItems(contents, params),
         openLink: (url: string) => {
           existingWindow.webContents.send('open-url', url)
         },
