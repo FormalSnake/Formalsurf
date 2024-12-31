@@ -408,6 +408,28 @@ async function createWindow(): Promise<void> {
     session: sharedSession,
     modulePath: modulePathExtensions,
   })
+
+  const modulePathWebstore = app.isPackaged
+    ? undefined // or specify a custom path instead
+    : path.join(app.getAppPath(), 'node_modules/electron-chrome-web-store');
+
+  await installChromeWebStore({ session: sharedSession, modulePath: modulePathWebstore }).catch((e) => console.error(e));
+  // Install React Developer Tools with file:// access
+  await installExtension('fmkadmapgofadopljbjfkapdkoienihi', {
+    loadExtensionOptions: { allowFileAccess: true },
+  })
+
+  // Install uBlock Origin Lite to custom session
+  await installExtension('ddkjiahejlhfcafbddmgiahcphecmpfh', {
+    session: session.fromPartition('persist:browser'),
+  })
+
+  // Check and install updates for all loaded extensions
+  await updateExtensions()
+
+  ElectronBlocker.fromPrebuiltAdsAndTracking(fetch).then((blocker) => {
+    blocker.enableBlockingInSession(sharedSession)
+  })
   // let blocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch) // ads only
   //
   // blocker.enableBlockingInSession(mainWindow.webContents.session)
@@ -569,27 +591,6 @@ app.on('web-contents-created', async (e, contents) => {
 
     extensions.addTab(contents, existingWindow)
 
-    const modulePathWebstore = app.isPackaged
-      ? undefined // or specify a custom path instead
-      : path.join(app.getAppPath(), 'node_modules/electron-chrome-web-store');
-
-    await installChromeWebStore({ session: contents.session, modulePath: modulePathWebstore }).catch((e) => console.error(e));
-    // Install React Developer Tools with file:// access
-    await installExtension('fmkadmapgofadopljbjfkapdkoienihi', {
-      loadExtensionOptions: { allowFileAccess: true },
-    })
-
-    // Install uBlock Origin Lite to custom session
-    await installExtension('ddkjiahejlhfcafbddmgiahcphecmpfh', {
-      session: session.fromPartition('persist:browser'),
-    })
-
-    // Check and install updates for all loaded extensions
-    await updateExtensions()
-
-    ElectronBlocker.fromPrebuiltAdsAndTracking(fetch).then((blocker) => {
-      blocker.enableBlockingInSession(contents.session)
-    })
     contents.setVisualZoomLevelLimits(1, 4)
 
     // set context menu in webview contextMenu({ window: contents, });
