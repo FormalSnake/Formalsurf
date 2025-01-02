@@ -35,5 +35,4 @@ if (process.contextIsolated) {
   // @ts-ignore (define in dts)
   window.api = api
   injectBrowserAction()
-
 }

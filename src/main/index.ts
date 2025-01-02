@@ -399,37 +399,6 @@ async function createWindow(): Promise<void> {
       }
     }
   )
-  const modulePathExtensions = app.isPackaged
-    ? undefined // or specify a custom path instead
-    : path.join(app.getAppPath(), 'node_modules/electron-chrome-extensions')
-
-  extensions = new ElectronChromeExtensions({
-    license: "GPL-3.0",
-    session: sharedSession,
-    modulePath: modulePathExtensions,
-  })
-
-  const modulePathWebstore = app.isPackaged
-    ? undefined // or specify a custom path instead
-    : path.join(app.getAppPath(), 'node_modules/electron-chrome-web-store');
-
-  await installChromeWebStore({ session: sharedSession, modulePath: modulePathWebstore }).catch((e) => console.error(e));
-  // Install React Developer Tools with file:// access
-  await installExtension('fmkadmapgofadopljbjfkapdkoienihi', {
-    loadExtensionOptions: { allowFileAccess: true },
-  })
-
-  // Install uBlock Origin Lite to custom session
-  await installExtension('ddkjiahejlhfcafbddmgiahcphecmpfh', {
-    session: session.fromPartition('persist:browser'),
-  })
-
-  // Check and install updates for all loaded extensions
-  await updateExtensions()
-
-  ElectronBlocker.fromPrebuiltAdsAndTracking(fetch).then((blocker) => {
-    blocker.enableBlockingInSession(sharedSession)
-  })
   // let blocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch) // ads only
   //
   // blocker.enableBlockingInSession(mainWindow.webContents.session)
@@ -507,6 +476,29 @@ app.whenReady().then(async () => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.formalsnake')
   sharedSession = session.fromPartition('persist:webview')
+
+  const modulePathExtensions = app.isPackaged
+    ? undefined // or specify a custom path instead
+    : path.join(app.getAppPath(), 'node_modules/electron-chrome-extensions')
+
+  extensions = new ElectronChromeExtensions({
+    license: "GPL-3.0",
+    session: sharedSession,
+    modulePath: modulePathExtensions,
+  })
+
+  const modulePathWebstore = app.isPackaged
+    ? undefined // or specify a custom path instead
+    : path.join(app.getAppPath(), 'node_modules/electron-chrome-web-store');
+
+  await installChromeWebStore({ session: sharedSession, modulePath: modulePathWebstore }).catch((e) => console.error(e));
+
+  // Check and install updates for all loaded extensions
+  await updateExtensions()
+
+  ElectronBlocker.fromPrebuiltAdsAndTracking(fetch).then((blocker) => {
+    blocker.enableBlockingInSession(sharedSession)
+  })
 
   // Initialize and check for updates
   const autoUpdater = getAutoUpdater();
