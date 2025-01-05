@@ -384,7 +384,8 @@ async function createWindow(): Promise<void> {
       sandbox: false,
       webviewTag: true,
       nodeIntegration: true,
-      contextIsolation: false
+      contextIsolation: false,
+      experimentalFeatures: true,
     }
   })
 
@@ -585,6 +586,7 @@ app.on('web-contents-created', async (e, contents) => {
     const existingWindow = BrowserWindow.getAllWindows()[0]
 
     extensions.addTab(contents, existingWindow)
+    extensions.selectTab(contents)
 
     contents.setVisualZoomLevelLimits(1, 4)
 
@@ -610,7 +612,7 @@ const newUserAgent = app.userAgentFallback
     'Chrome/130.0.0.0' // Example: Update to a recent Chrome version
   )
   .replace(/Electron\/[\d.]+/, '')
-  .replace(/formalsurf-refactor\/[\d.]+/, '')
+  .replace(/formalsurf\/[\d.]+/, '')
 
 // also replace Electron/* with nothing, and replace formalsurf-refactor/* with nothing
 app.userAgentFallback = newUserAgent // app.userAgentFallback = newUserAgent

@@ -1,5 +1,5 @@
 {
-  "name": "formalsurf-refactor",
+  "name": "formalsurf",
   "version": "0.0.1",
   "description": "An electron and react based web browser.",
   "main": "./out/main/index.js",

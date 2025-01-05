@@ -219,7 +219,7 @@ export const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean 
         ref={ref}
         src={initialSrc.current}
         className={`w-full h-full bg-foreground ${hasLoadFailed ? 'hidden' : ''}`}
-        webpreferences="autoplayPolicy=user-gesture-required,defaultFontSize=16,contextIsolation=true,nodeIntegration=false,sandbox=true,webSecurity=true,enableCamera=true,enableMicrophone=true"
+        webpreferences="autoplayPolicy=user-gesture-required,defaultFontSize=16,contextIsolation=true,nodeIntegration=false,sandbox=true,webSecurity=true,enableCamera=true,enableMicrophone=true,experimentalFeatures=true"
         allowpopups="true"
         partition="persist:webview"
         key={tab.id}
