@@ -477,9 +477,11 @@ app.whenReady().then(async () => {
   electronApp.setAppUserModelId('com.formalsnake')
   sharedSession = session.fromPartition('persist:webview')
 
-  const modulePathExtensions = app.isPackaged
-    ? undefined // or specify a custom path instead
-    : path.join(app.getAppPath(), 'node_modules/electron-chrome-extensions')
+  const modulePathExtensions = path.join(app.getAppPath(), 'node_modules/electron-chrome-extensions')
+
+  // const modulePathExtensions = app.isPackaged
+  //   ? undefined // or specify a custom path instead
+  //   : path.join(app.getAppPath(), 'node_modules/electron-chrome-extensions')
 
   extensions = new ElectronChromeExtensions({
     license: "GPL-3.0",
@@ -487,9 +489,10 @@ app.whenReady().then(async () => {
     modulePath: modulePathExtensions,
   })
 
-  const modulePathWebstore = app.isPackaged
-    ? undefined // or specify a custom path instead
-    : path.join(app.getAppPath(), 'node_modules/electron-chrome-web-store');
+  // const modulePathWebstore = app.isPackaged
+  //   ? path.join(app.getAppPath(), 'node_modules/electron-chrome-web-store') // or specify a custom path instead
+  //   : path.join(app.getAppPath(), 'node_modules/electron-chrome-web-store');
+  const modulePathWebstore = path.join(app.getAppPath(), 'node_modules/electron-chrome-web-store')
 
   await installChromeWebStore({ session: sharedSession, modulePath: modulePathWebstore }).catch((e) => console.error(e));
 
