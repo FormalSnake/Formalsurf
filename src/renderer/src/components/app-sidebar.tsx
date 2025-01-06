@@ -251,7 +251,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           hoverClass="group-hover/goforward:translate-x-1 ease-in-out transition-transform duration-200"
         />
       </div>
-      <div className="nodraglayer">
+      <div className="nodraglayer mx-2">
         <browser-action-list partition="persist:webview" id="actions">
         </browser-action-list>
       </div>
