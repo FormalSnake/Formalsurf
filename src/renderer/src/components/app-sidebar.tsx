@@ -226,7 +226,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <div
         className={cn(
           'flex flex-row mt-2.5 justify-evenly nodraglayer',
-          process.platform === 'darwin' && 'ml-16'
+          // process.platform === 'darwin' && 'ml-16'
+          window.isMac && 'ml-16'
         )}
       >
         <AddTabButton onClick={handleAddTab} />
@@ -250,8 +251,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           hoverClass="group-hover/goforward:translate-x-1 ease-in-out transition-transform duration-200"
         />
       </div>
-      <browser-action-list partition="persist:webview" >
-      </browser-action-list>
+      <div className="nodraglayer">
+        <browser-action-list partition="persist:webview" id="actions" tab="3">
+        </browser-action-list>
+      </div>
       <SidebarContent className={`draglayer`}>
         <SidebarGroup className="nodraglayer">
           <SidebarGroupContent className="mb-1">

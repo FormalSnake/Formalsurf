@@ -381,11 +381,10 @@ async function createWindow(): Promise<void> {
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false,
+      // sandbox: false,
       webviewTag: true,
       nodeIntegration: true,
-      contextIsolation: false,
-      experimentalFeatures: true,
+      contextIsolation: true,
     }
   })
 
@@ -488,6 +487,19 @@ app.whenReady().then(async () => {
     license: "GPL-3.0",
     session: sharedSession,
     modulePath: modulePathExtensions,
+    createTab(details) {
+      // use the existing open-url function to open the new tab
+      const window = BrowserWindow.getAllWindows()[0]
+      if (window) {
+        window.webContents.send('open-url', details.url)
+      }
+      // return the webContents and the window
+      return [window.webContents, window]
+    },
+    createWindow(details) {
+      const window = new BrowserWindow()
+      return window
+    },
   })
 
   // const modulePathWebstore = app.isPackaged
@@ -587,6 +599,7 @@ app.on('web-contents-created', async (e, contents) => {
 
     extensions.addTab(contents, existingWindow)
     extensions.selectTab(contents)
+    console.log("Tab", contents.id)
 
     contents.setVisualZoomLevelLimits(1, 4)
 

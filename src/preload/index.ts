@@ -25,6 +25,8 @@ if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('electron', electronAPI)
     contextBridge.exposeInMainWorld('api', api)
+    // expose the isMac variable
+    contextBridge.exposeInMainWorld('isMac', process.platform === 'darwin')
     injectBrowserAction()
   } catch (error) {
     console.error(error)
@@ -34,5 +36,6 @@ if (process.contextIsolated) {
   window.electron = electronAPI
   // @ts-ignore (define in dts)
   window.api = api
+
   injectBrowserAction()
 }
