@@ -252,7 +252,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         />
       </div>
       <div className="nodraglayer">
-        <browser-action-list partition="persist:webview" id="actions" tab="3">
+        <browser-action-list partition="persist:webview" id="actions">
         </browser-action-list>
       </div>
       <SidebarContent className={`draglayer`}>

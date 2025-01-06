@@ -605,6 +605,7 @@ app.on('web-contents-created', async (e, contents) => {
 
     // set context menu in webview contextMenu({ window: contents, });
     contents.on('context-menu', (e, params) => {
+      extensions.selectTab(contents)
       const menu = buildChromeContextMenu({
         params,
         webContents: contents,

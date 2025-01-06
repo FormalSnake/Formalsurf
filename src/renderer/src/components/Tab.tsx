@@ -68,6 +68,7 @@ export const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean 
     window.electron.ipcRenderer.on('toggle-reading-mode', handleReadingMode)
     return () => {
       window.electron.ipcRenderer.removeListener('toggle-reading-mode', handleReadingMode)
+      // remove event listener
     }
   }, [setReadingModeTabs, isActive, tab.id])
 
