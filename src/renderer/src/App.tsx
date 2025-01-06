@@ -14,7 +14,6 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ipcRenderer } from 'electron'
 import { Snake } from './components/snake'
 import { ThemeProvider } from './components/theme-provider'
-import { Home, homeOpenAtom } from './components/home'
 
 import { FindInPage, findInPageVisibleAtom } from './components/FindInPage'
 
@@ -32,8 +31,6 @@ function App(): JSX.Element {
   const toggleFindInPage = () => {
     setFindInPageVisible((prev) => !prev)
   }
-
-  const [homeOpen, setHomeOpen] = useAtom(homeOpenAtom)
 
   useEffect(() => {
     //@ts-ignore
@@ -136,11 +133,10 @@ function App(): JSX.Element {
   return (
     <BaseLayout>
       <div className="w-full h-full">
-        {homeOpen && <Home />}
         {tabs.map((tab) => (
           <Tab key={tab.id} tab={tab} isActive={tab.isActive} />
         ))}
-        {tabs.length === 0 && !homeOpen && (
+        {tabs.length === 0 && (
           <div className="w-full h-full flex justify-center items-center text-foreground">
             <Particles className="absolute inset-0" quantity={100} ease={80} refresh />
             <Meteors number={5} />

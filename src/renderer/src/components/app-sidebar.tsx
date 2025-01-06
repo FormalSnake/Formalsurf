@@ -28,7 +28,6 @@ import {
 } from '@dnd-kit/core'
 import { SortableContext, arrayMove, horizontalListSortingStrategy } from '@dnd-kit/sortable'
 import { cn } from '@renderer/lib/utils'
-import { homeOpenAtom } from './home'
 
 const AddTabButton = React.memo(({ onClick }: { onClick: () => void }) => (
   <Button onClick={onClick} className="h-7 w-7 group/addtab" size="icon" variant="ghost">
@@ -183,7 +182,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const createNewTab = useCreateNewTab()
   const [activeTab, setActiveTab] = useAtom(activeTabRefAtom)
 
-  const [homeOpen, setHomeOpen] = useAtom(homeOpenAtom)
 
   const handleAddTab = useCallback(() => setTabDialogOpen(true), [setTabDialogOpen])
 
@@ -257,16 +255,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </div>
       <SidebarContent className={`draglayer`}>
         <SidebarGroup className="nodraglayer">
-          <SidebarGroupContent className="mb-1">
-            <SidebarMenuButton
-              onClick={() => setHomeOpen(true)}
-              isActive={homeOpen}
-              tooltip={'Home'}
-            >
-              <HomeIcon />
-              <span>Home</span>
-            </SidebarMenuButton>
-          </SidebarGroupContent>
           <SidebarGroupContent>
             <TabList tabs={tabs} />
           </SidebarGroupContent>

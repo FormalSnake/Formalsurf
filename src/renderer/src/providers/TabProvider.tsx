@@ -7,7 +7,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { LoadingSpinner } from '@/components/loading-spinner'
-import { homeOpenAtom } from '@renderer/components/home'
 import { SidebarMenuButton } from '@renderer/components/ui/sidebar'
 
 const atomWithLocalStorage = (key: string, initialValue: any) => {
@@ -182,11 +181,9 @@ export const TabProvider = ({ children }: { children: any }) => {
 
 export const useCreateNewTab = () => {
   const [tabs, setTabs] = useAtom(tabsAtom)
-  const [, setHomeOpen] = useAtom(homeOpenAtom)
 
   return useCallback(
     ({ url = 'https://www.formalsnake.dev' }: { url?: string } = {}) => {
-      setHomeOpen(false)
       setTabs((prevTabs) =>
         prevTabs
           .map((tab) => ({
@@ -205,7 +202,7 @@ export const useCreateNewTab = () => {
           })
       )
     },
-    [setTabs, setHomeOpen]
+    [setTabs]
   )
 }
 
@@ -289,7 +286,6 @@ export const TabLink = React.memo(
     const togglePinTab = useTogglePinTab()
     const [isHovered, setIsHovered] = useState(false)
     const [isHoveringButtons, setIsHoveringButtons] = useState(false)
-    const [homeOpen, setHomeOpen] = useAtom(homeOpenAtom)
 
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
       id: tab.id,
@@ -311,7 +307,6 @@ export const TabLink = React.memo(
             const activeTabExists = prevTabs.some((t) => t.isActive && t.id === tab.id)
             if (activeTabExists) return prevTabs
 
-            setHomeOpen(false)
 
             return prevTabs.map((item) => ({
               ...item,
