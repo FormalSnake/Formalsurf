@@ -44,7 +44,7 @@ export const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean 
 
     window.electron.ipcRenderer.on('toggle-history', handleHistory)
     return () => {
-      window.electron.ipcRenderer.removeListener('toggle-history', handleHistory)
+      window.electron.ipcRenderer.removeListener('toggle-history', handleHistory);
     }
   }, [isActive])
 
