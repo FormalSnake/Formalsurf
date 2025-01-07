@@ -11,6 +11,8 @@ const api = {
     event: any,
     data: any
   ) => ipcRenderer.on(channel, callable(event, data)),
+  // function that is called when the active tab changes, and returns the active tab's webContents
+  getActiveTab: (webContentsId: string) => ipcRenderer.invoke('get-active-tab', webContentsId),
   toggleTrafficLights: (show) => ipcRenderer.send('toggle-traffic-lights', show),
   changeSetting: (key, value) => ipcRenderer.invoke('change-setting', key, value),
   getSettings: (setting) => ipcRenderer.invoke('get-setting', setting),

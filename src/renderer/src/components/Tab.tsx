@@ -86,8 +86,10 @@ export const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean 
             console.warn(`Tab with id ${id} not found!`)
             return prevTabs
           }
+          // console.log('ref', ref.current?.getWebContentsId())
+
           return prevTabs.map((prevTab) =>
-            prevTab.id === id ? { ...prevTab, ...update } : prevTab
+            prevTab.id === id ? { ...prevTab, ...update, webContentsId: ref.current?.getWebContentsId() } : prevTab
           )
         })
       }
@@ -164,6 +166,21 @@ export const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean 
         } else {
           setTargetUrlOpen(false)
         }
+      }
+
+      const setWebContentsId = () => {
+        const webContentsId = tab.webviewRef?.current?.getWebContentsId()
+        console.log('setWebContentsId', webContentsId)
+        setTabs((prevTabs) => {
+          const tabExists = prevTabs.some((prevTab) => prevTab.id === tab.id)
+          if (!tabExists) {
+            console.warn(`Tab with id ${tab.id} not found!`)
+            return prevTabs
+          }
+          return prevTabs.map((prevTab) =>
+            prevTab.id === tab.id ? { ...prevTab, webContentsId } : prevTab
+          )
+        })
       }
 
       webview.addEventListener('did-start-loading', startLoadingHandler)

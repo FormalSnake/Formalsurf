@@ -25,13 +25,13 @@ const atomWithLocalStorage = (key: string, initialValue: any) => {
     (get, set, update) => {
       const nextValue = typeof update === 'function' ? update(get(baseAtom)) : update
 
+      set(baseAtom, nextValue)
       // Remove `webviewRef` from each tab before saving
       const sanitizedValue = Array.isArray(nextValue)
         ? nextValue.map((tab) => ({ ...tab, webviewRef: undefined }))
         : nextValue
 
       // Update both atom and localStorage with the same sanitized value
-      set(baseAtom, sanitizedValue)
       localStorage.setItem(key, JSON.stringify(sanitizedValue))
     }
   )
@@ -49,7 +49,8 @@ export const tabsAtom = atomWithLocalStorage('FormalTabs', [
     isActive: true,
     favicon: '',
     pinned: false,
-    isLoading: false
+    isLoading: false,
+    webContentsId: ""
   }
 ])
 
@@ -198,7 +199,8 @@ export const useCreateNewTab = () => {
             isActive: true,
             favicon: '',
             pinned: false,
-            isLoading: false
+            isLoading: false,
+            webContentsId: null
           })
       )
     },
@@ -230,7 +232,7 @@ export function useCloseTab() {
       const updatedTabs = prevTabs.filter((_, index) => index !== activeIndex)
 
       // If there are still tabs left, set the next closest one to active
-      if (updatedTabs.length > 0) {
+      if (updatedTabs.length > 0 && tabToClose.isActive) {
         const newActiveIndex =
           activeIndex >= updatedTabs.length ? updatedTabs.length - 1 : activeIndex
         updatedTabs[newActiveIndex].isActive = true
@@ -300,13 +302,24 @@ export const TabLink = React.memo(
       ...(isDragging ? { opacity: 0.4 } : {})
     }
 
+    useEffect(() => {
+      console.log('Tab active changed')
+      const activeTab = tabs.find((t) => t.isActive && t.id === tab.id)
+      if (!activeTab) return
+      // get the active tab's webContentsId from the webviewref
+      const activeWebContentsId = activeTab.webContentsId
+      console.log('activeWebContentsId', activeWebContentsId)
+      window.api.getActiveTab(activeWebContentsId)
+    }, [tabs, tab.id])
+
     const setActiveTab = useCallback(
       (e: React.MouseEvent) => {
         if (!isDragging && !isHoveringButtons) {
+          console.log('setActiveTab')
           setTabs((prevTabs) => {
             const activeTabExists = prevTabs.some((t) => t.isActive && t.id === tab.id)
             if (activeTabExists) return prevTabs
-
+            // set the active tab to the current tab
 
             return prevTabs.map((item) => ({
               ...item,
@@ -315,7 +328,7 @@ export const TabLink = React.memo(
           })
         }
       },
-      [isDragging, isHoveringButtons, tab.id]
+      [isDragging, isHoveringButtons, tab.id, tab.webContentsId]
     )
 
     const closeTabEvent = useCallback(

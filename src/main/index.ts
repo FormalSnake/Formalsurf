@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain, Menu, dialog, session } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, Menu, dialog, session, webContents } from 'electron'
 import path, { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -455,6 +455,11 @@ async function createWindow(): Promise<void> {
   ipcMain.handle('get-setting', async (event, key) => {
     console.log('get-setting', key)
     return store.get(key)
+  })
+
+  ipcMain.handle('get-active-tab', async (event, webContentsId) => {
+    console.log('get-active-tab', webContentsId)
+    return extensions.selectTab(webContents.fromId(webContentsId))
   })
 
   // HMR for renderer base on electron-vite cli.
