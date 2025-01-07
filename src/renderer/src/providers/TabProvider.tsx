@@ -25,13 +25,13 @@ const atomWithLocalStorage = (key: string, initialValue: any) => {
     (get, set, update) => {
       const nextValue = typeof update === 'function' ? update(get(baseAtom)) : update
 
-      set(baseAtom, nextValue)
       // Remove `webviewRef` from each tab before saving
       const sanitizedValue = Array.isArray(nextValue)
         ? nextValue.map((tab) => ({ ...tab, webviewRef: undefined }))
         : nextValue
 
       // Update both atom and localStorage with the same sanitized value
+      set(baseAtom, sanitizedValue)
       localStorage.setItem(key, JSON.stringify(sanitizedValue))
     }
   )
@@ -228,11 +228,14 @@ export function useCloseTab() {
         return prevTabs
       }
 
+      // Check if the closing tab is active
+      const wasActive = prevTabs[activeIndex].isActive
+
       // Remove the specified tab from the array
       const updatedTabs = prevTabs.filter((_, index) => index !== activeIndex)
 
-      // If there are still tabs left, set the next closest one to active
-      if (updatedTabs.length > 0 && tabToClose.isActive) {
+      // If there are still tabs left and the closing tab was active, set the next closest one to active
+      if (updatedTabs.length > 0 && wasActive) {
         const newActiveIndex =
           activeIndex >= updatedTabs.length ? updatedTabs.length - 1 : activeIndex
         updatedTabs[newActiveIndex].isActive = true

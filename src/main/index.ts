@@ -458,6 +458,7 @@ async function createWindow(): Promise<void> {
   })
 
   ipcMain.handle('get-active-tab', async (event, webContentsId) => {
+    if (!webContentsId) return
     console.log('get-active-tab', webContentsId)
     return extensions.selectTab(webContents.fromId(webContentsId))
   })
