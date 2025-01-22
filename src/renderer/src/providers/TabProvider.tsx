@@ -8,6 +8,13 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { LoadingSpinner } from '@/components/loading-spinner'
 import { SidebarMenuButton } from '@renderer/components/ui/sidebar'
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu"
+
 
 const atomWithLocalStorage = (key: string, initialValue: any) => {
   const getInitialValue = () => {
@@ -353,9 +360,9 @@ export const TabLink = React.memo(
     const textMargin = () => {
       if (isHovered) {
         if (tab.pinned) {
-          return '20px'
+          return '0px'
         }
-        return '40px'
+        return '20px'
       }
       return '0px'
     }
@@ -378,57 +385,65 @@ export const TabLink = React.memo(
           transition={{ type: 'spring', stiffness: 300, damping: 20 }}
           className={`w-full relative ${isDragging ? 'opacity-40' : ''}`}
         >
-          <SidebarMenuButton
-            onClick={setActiveTab}
-            className={`flex items-center text-left w-full relative group ${isDragging ? 'pointer-events-none' : ''}`}
-            //variant={tab.isActive ? 'secondary' : 'ghost'}
-            isActive={tab.isActive}
-            tooltip={tab.title}
-          >
-            <div
-              {...attributes}
-              {...listeners}
-              className="flex items-center flex-1 min-w-0 cursor-grab active:cursor-grabbing"
-            >
-              <div className="flex-shrink-0 flex items-center relative mr-2">
-                {tab.favicon ? (
-                  <img src={getFavicon(tab)} className="h-4 w-4" />
-                ) : (
-                  <Globe className="h-4 w-4" />
-                )}
-              </div>
-              <motion.span
-                animate={{ marginRight: textMargin() }}
-                transition={{ duration: 0.2 }}
-                className="min-w-0 flex-1 flex items-center gap-2"
+          <ContextMenu>
+            <ContextMenuTrigger asChild>
+              <SidebarMenuButton
+                onClick={setActiveTab}
+                className={`flex items-center text-left w-full relative group ${isDragging ? 'pointer-events-none' : ''}`}
+                //variant={tab.isActive ? 'secondary' : 'ghost'}
+                isActive={tab.isActive}
+                tooltip={tab.title}
               >
-                {tab.isLoading && <LoadingSpinner className="flex-shrink-0" />}
-                <span className="truncate min-w-0">{tab.isLoading ? 'Loading...' : tab.title}</span>
-              </motion.span>
-            </div>
-            <AnimatePresence>
-              {isHovered && !isDragging && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  transition={{ duration: 0.1 }}
-                  className="absolute right-2 flex gap-1 z-10"
-                  onMouseEnter={() => setIsHoveringButtons(true)}
-                  onMouseLeave={() => setIsHoveringButtons(false)}
+                <div
+                  {...attributes}
+                  {...listeners}
+                  className="flex items-center flex-1 min-w-0 cursor-grab active:cursor-grabbing"
                 >
-                  <Button onClick={pinTabEvent} className="h-5 w-5" size="icon" variant="ghost">
-                    {tab.pinned ? <PinOff className="h-3 w-3" /> : <Pin className="h-3 w-3" />}
-                  </Button>
-                  {!tab.pinned && (
-                    <Button onClick={closeTabEvent} className="h-5 w-5" size="icon" variant="ghost">
-                      <X className="h-3 w-3" />
-                    </Button>
+                  <div className="flex-shrink-0 flex items-center relative mr-2">
+                    {tab.favicon ? (
+                      <img src={getFavicon(tab)} className="h-4 w-4" />
+                    ) : (
+                      <Globe className="h-4 w-4" />
+                    )}
+                  </div>
+                  <motion.span
+                    animate={{ marginRight: textMargin() }}
+                    transition={{ duration: 0.2 }}
+                    className="min-w-0 flex-1 flex items-center gap-2"
+                  >
+                    {tab.isLoading && <LoadingSpinner className="flex-shrink-0" />}
+                    <span className="truncate min-w-0">{tab.isLoading ? 'Loading...' : tab.title}</span>
+                  </motion.span>
+                </div>
+                <AnimatePresence>
+                  {isHovered && !isDragging && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      transition={{ duration: 0.1 }}
+                      className="absolute right-2 flex gap-1 z-10"
+                      onMouseEnter={() => setIsHoveringButtons(true)}
+                      onMouseLeave={() => setIsHoveringButtons(false)}
+                    >
+                      {/* <Button onClick={pinTabEvent} className="h-5 w-5" size="icon" variant="ghost"> */}
+                      {/*   {tab.pinned ? <PinOff className="h-3 w-3" /> : <Pin className="h-3 w-3" />} */}
+                      {/* </Button> */}
+                      {!tab.pinned && (
+                        <Button onClick={closeTabEvent} className="h-5 w-5" size="icon" variant="ghost">
+                          <X className="h-3 w-3" />
+                        </Button>
+                      )}
+                    </motion.div>
                   )}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </SidebarMenuButton>
+                </AnimatePresence>
+              </SidebarMenuButton>
+            </ContextMenuTrigger>
+            <ContextMenuContent className='nodraglayer'>
+              {tab.pinned ? <ContextMenuItem onClick={pinTabEvent}><PinOff className="h-4 w-4 mr-2" /> Unpin tab</ContextMenuItem> : <ContextMenuItem onClick={pinTabEvent}><Pin className="h-4 w-4 mr-2" /> Pin tab</ContextMenuItem>}
+              {!tab.pinned && <ContextMenuItem onClick={closeTabEvent} className="text-red-500"><X className="h-4 w-4 mr-2" /> Close tab</ContextMenuItem>}
+            </ContextMenuContent>
+          </ContextMenu>
         </motion.div>
       </AnimatePresence>
     )

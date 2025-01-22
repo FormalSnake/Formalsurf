@@ -606,7 +606,10 @@ app.on('web-contents-created', async (e, contents) => {
     extensions.selectTab(contents)
     console.log("Tab", contents.id)
 
-    contents.setVisualZoomLevelLimits(1, 4)
+    // contents.setVisualZoomLevelLimits(1, 4)
+    contents.on('dom-ready', () => {
+      contents.setVisualZoomLevelLimits(1, 4)
+    })
 
     // set context menu in webview contextMenu({ window: contents, });
     contents.on('context-menu', (e, params) => {
