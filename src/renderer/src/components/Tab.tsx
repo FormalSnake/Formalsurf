@@ -35,15 +35,6 @@ export const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean 
   const isReadingMode = readingModeTabs[tab.id] || false
   const [isHistoryOpen, setIsHistoryOpen] = useState(false)
 
-  const [instantiateWebview, setInstantiateWebview] = useState(false)
-
-  // When the tab becomes active, instantiate the webview
-  useEffect(() => {
-    if (isActive) {
-      setInstantiateWebview(true)
-    }
-  }, [isActive])
-
   useEffect(() => {
     const handleHistory = () => {
       if (isActive) {
@@ -242,18 +233,16 @@ export const Tab = React.memo(({ tab, isActive }: { tab: any; isActive: boolean 
           </motion.div>
         )}
       </AnimatePresence>
-      {instantiateWebview &&
-        <webview
-          ref={ref}
-          src={initialSrc.current}
-          className={`w-full h-full bg-foreground ${hasLoadFailed ? 'hidden' : ''}`}
-          webpreferences="autoplayPolicy=document-user-activation-required,defaultFontSize=16,contextIsolation=true,nodeIntegration=false,sandbox=true,webSecurity=true"
-          allowpopups
-          partition="persist:webview"
-          style={{ pointerEvents: 'unset' }}
-          key={tab.id}
-        />
-      }
+      <webview
+        ref={ref}
+        src={initialSrc.current}
+        className={`w-full h-full bg-foreground ${hasLoadFailed ? 'hidden' : ''}`}
+        webpreferences="autoplayPolicy=document-user-activation-required,defaultFontSize=16,contextIsolation=true,nodeIntegration=false,sandbox=true,webSecurity=true"
+        allowpopups
+        partition="persist:webview"
+        style={{ pointerEvents: 'unset' }}
+        key={tab.id}
+      />
       {hasLoadFailed && (
         <div className="w-full h-full flex flex-col items-center justify-center">
           <div className="flex flex-col w-fit space-y-2">
