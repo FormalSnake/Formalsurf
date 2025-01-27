@@ -51,7 +51,7 @@
     "electron-store": "^10.0.0",
     "electron-updater": "^6.3.9",
     "jotai": "^2.11.0",
-    "lucide-react": "^0.468.0",
+    "lucide-react": "^0.474.0",
     "motion": "^11.15.0",
     "react-markdown": "^9.0.3",
     "tailwind-merge": "^2.6.0",
