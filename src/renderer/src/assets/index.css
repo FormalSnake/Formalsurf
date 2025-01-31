@@ -185,3 +185,15 @@
     @apply text-foreground;
   }
 }
+
+/* Layout action buttons vertically. */
+browser-action-list {
+  flex-direction: row;
+  overflow-x: scroll;
+  scrollbar-width: none;
+}
+
+/* Modify size of action buttons. */
+browser-action-list::part(action) {
+  aspect-ratio: 1;
+}

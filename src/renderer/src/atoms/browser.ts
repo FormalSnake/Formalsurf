@@ -26,5 +26,13 @@ export const tabsAtom = atom<Tab[]>([
     favicon: 'https://www.formalsnake.dev/favicon.ico',
     isActive: false,
     ref: null
+  },
+  {
+    id: uuid4(),
+    url: 'https://chromewebstore.google.com/',
+    title: 'Chrome Web Store',
+    favicon: 'https://chromewebstore.google.com/favicon.ico',
+    isActive: false,
+    ref: null
   }
 ])

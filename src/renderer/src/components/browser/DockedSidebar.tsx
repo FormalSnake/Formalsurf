@@ -31,6 +31,9 @@ export function DockedSidebar({
         </Button>
         {actionButtons}
       </div>
+      <div className="px-2">
+        <browser-action-list partition="persist:webview"></browser-action-list>
+      </div>
       <div className="flex flex-col p-2 space-y-2">
         {tabs.map((tab) => (
           <Button

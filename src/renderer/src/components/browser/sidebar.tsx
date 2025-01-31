@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { tabsAtom } from "@renderer/atoms/browser"
 import { useAtom } from "jotai"
 import { Button } from "@renderer/components/ui/button"
@@ -11,6 +11,11 @@ export function Sidebar() {
   const [tabs, setTabs] = useAtom(tabsAtom)
   const [isSidebarVisible, setIsSidebarVisible] = useState(true)
   const [isHoveringEdge, setIsHoveringEdge] = useState(false)
+  const ipcHandle = (show: boolean): void => window.api.toggleTrafficLights(show)
+
+  useEffect(() => {
+    ipcHandle(isSidebarVisible || isHoveringEdge)
+  }, [isSidebarVisible, isHoveringEdge])
 
   const toggleSidebar = () => {
     setIsSidebarVisible(!isSidebarVisible)

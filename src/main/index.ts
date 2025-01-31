@@ -1,14 +1,20 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
-import { join } from 'path'
+import { app, shell, BrowserWindow, ipcMain, webContents, session } from 'electron'
+import path, { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { webview } from './webview'
 // import { installExtension, REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
-import { installExtension, REACT_DEVELOPER_TOOLS } from "electron-extension-installer";
+import { installExtension as installExtensionDev, REACT_DEVELOPER_TOOLS } from "electron-extension-installer";
+import { ElectronChromeExtensions } from 'electron-chrome-extensions'
+import { installChromeWebStore, installExtension, updateExtensions } from 'electron-chrome-web-store'
+
+let mainWindow: BrowserWindow;
+let sharedSession
+let extensions: ElectronChromeExtensions
 
 function createWindow(): void {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 900,
     height: 670,
     show: false,
@@ -48,10 +54,12 @@ function createWindow(): void {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
+  sharedSession = session.fromPartition('persist:webview')
+
   // installExtension(REACT_DEVELOPER_TOOLS, { loadExtensionOptions: { allowFileAccess: true } })
   //   .then((react) => console.log(`Added Extension: ${react.name}`))
   //   .catch((err) => console.log('An error occurred: ', err));
-  await installExtension(REACT_DEVELOPER_TOOLS, {
+  await installExtensionDev(REACT_DEVELOPER_TOOLS, {
     loadExtensionOptions: {
       allowFileAccess: true,
     },
@@ -59,6 +67,10 @@ app.whenReady().then(async () => {
 
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
+
+  sharedSession = session.fromPartition('persist:webview')
+
+  const modulePathExtensions = path.join(app.getAppPath(), 'node_modules/electron-chrome-extensions')
 
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
@@ -70,6 +82,52 @@ app.whenReady().then(async () => {
   // IPC test
   ipcMain.on('ping', () => console.log('pong'))
 
+  ipcMain.on('toggle-traffic-lights', (event, show) => {
+    // Check if the platform supports window button visibility
+    if (process.platform === 'darwin' && mainWindow?.setWindowButtonVisibility) {
+      if (show) {
+        mainWindow.setWindowButtonVisibility(true)
+        console.log('Show traffic lights')
+      } else {
+        mainWindow.setWindowButtonVisibility(false)
+        console.log('Hide traffic lights')
+      }
+    } else {
+      console.log('Window button visibility not supported on this platform')
+    }
+  })
+
+  ipcMain.handle('get-active-tab', async (event, webContentsId) => {
+    console.log('get-active-tab', webContentsId)
+    return extensions.selectTab(webContents.fromId(webContentsId))
+  })
+
+  extensions = new ElectronChromeExtensions({
+    license: "GPL-3.0",
+    session: sharedSession,
+    modulePath: modulePathExtensions,
+    createTab(details) {
+      // use the existing open-url function to open the new tab
+      const window = BrowserWindow.getAllWindows()[0]
+      if (window) {
+        window.webContents.send('open-url', details.url)
+      }
+      // return the webContents and the window
+      return [window.webContents, window]
+    },
+    createWindow(details) {
+      const window = new BrowserWindow()
+      return window
+    },
+  })
+
+  const modulePathWebstore = path.join(app.getAppPath(), 'node_modules/electron-chrome-web-store')
+
+  await installChromeWebStore({ session: sharedSession, modulePath: modulePathWebstore }).catch((e) => console.error(e));
+
+  // Check and install updates for all loaded extensions
+  await updateExtensions()
+
   createWindow()
 
   app.on('activate', function() {
@@ -79,7 +137,7 @@ app.whenReady().then(async () => {
   })
 
   app.on('web-contents-created', (event, webContents) => {
-    webview(event, webContents);
+    webview(event, webContents, extensions);
   })
 })
 
@@ -94,3 +152,14 @@ app.on('window-all-closed', () => {
 
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
+
+const newUserAgent = app.userAgentFallback
+  .replace(
+    /Chrome\/[\d.]+/,
+    'Chrome/130.0.0.0' // Example: Update to a recent Chrome version
+  )
+  .replace(/Electron\/[\d.]+/, '')
+  .replace(/formalsurf\/[\d.]+/, '')
+
+// also replace Electron/* with nothing, and replace formalsurf-refactor/* with nothing
+app.userAgentFallback = newUserAgent // app.userAgentFallback = newUserAgent
