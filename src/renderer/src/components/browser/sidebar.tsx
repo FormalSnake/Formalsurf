@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { activeTabRefAtom, tabsAtom } from "@renderer/atoms/browser"
-import { useAtom } from "jotai"
+import { atom, useAtom } from "jotai"
 import { Button } from "@renderer/components/ui/button"
 import { ArrowLeft, ArrowRight, Plus, RefreshCw } from "lucide-react"
 import { goBackTab, goForwardTab, reloadTab } from "./webview"
@@ -8,9 +8,11 @@ import { DockedSidebar } from "./DockedSidebar"
 import { FloatingSidebar } from "./FloatingSidebar"
 import { openAtom } from "./NewTabDialog"
 
+export const sidebarVisibleAtom = atom(true)
+
 export function Sidebar() {
   const [tabs, setTabs] = useAtom(tabsAtom)
-  const [isSidebarVisible, setIsSidebarVisible] = useState(true)
+  const [isSidebarVisible, setIsSidebarVisible] = useAtom(sidebarVisibleAtom)
   const [isHoveringEdge, setIsHoveringEdge] = useState(false)
   const [activeTabRef, setActiveTabRef] = useAtom(activeTabRefAtom)
   const ipcHandle = (show: boolean): void => window.api.toggleTrafficLights(show)

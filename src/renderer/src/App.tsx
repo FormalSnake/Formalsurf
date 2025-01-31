@@ -1,4 +1,4 @@
-import { Sidebar } from '@renderer/components/browser/sidebar'
+import { Sidebar, sidebarVisibleAtom } from '@renderer/components/browser/sidebar'
 import { BrowserView } from '@renderer/components/browser/browserview'
 import { JSX, useEffect } from 'react'
 import { CommandMenu, openAtom } from './components/browser/NewTabDialog'
@@ -9,6 +9,7 @@ import { activeTabRefAtom, tabsAtom } from './atoms/browser'
 function App(): JSX.Element {
   const [tabs, setTabs] = useAtom(tabsAtom)
   const [newTabDialogOpen, setNewTabDialogOpen] = useAtom(openAtom)
+  const [isSidebarVisible, setIsSidebarVisible] = useAtom(sidebarVisibleAtom)
 
   // const ipcHandle = (): void => window.electron.ipcRenderer.send('ping')
   useEffect(() => {
@@ -29,13 +30,18 @@ function App(): JSX.Element {
         closeTab(activeTab.id, setTabs)
       }
     })
+    // @ts-expect-error
+    window.api.handle('toggle-sidebar', (event, data) => function(event, data) {
+      setIsSidebarVisible(!isSidebarVisible)
+    })
 
     return () => {
       window.electron.ipcRenderer.removeAllListeners('open-url')
       window.api.removeHandler('new-tab')
       window.api.removeHandler('close-active-tab')
+      window.api.removeHandler('toggle-sidebar')
     }
-  }, [tabs, setTabs, setNewTabDialogOpen])
+  }, [tabs, setTabs, setNewTabDialogOpen, isSidebarVisible, setIsSidebarVisible])
 
   return (
     <main className="min-h-screen antialiased flex">
