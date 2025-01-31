@@ -2,6 +2,7 @@ import { activeTabRefAtom, Tab, tabsAtom } from "@renderer/atoms/browser";
 import { cn } from "@renderer/lib/utils";
 import { useAtom } from "jotai";
 import { useEffect, useRef } from "react";
+import uuid4 from "uuid4";
 
 export function WebView({ tab }: { tab: Tab }) {
   const [tabs, setTabs] = useAtom(tabsAtom);
@@ -92,4 +93,16 @@ export function goForwardTab(activeTabRef: any) {
   if (activeTabRef.current) {
     activeTabRef.current?.goForward();
   }
+}
+
+export function newTab(url: string, title: string, setTabs: any) {
+  const newTab = {
+    id: uuid4(),
+    title: title,
+    url: url,
+    favicon: "",
+    isActive: true,
+  };
+
+  setTabs((prevTabs) => [...prevTabs, newTab]);
 }

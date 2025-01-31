@@ -3,6 +3,7 @@ import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, C
 import { atom, useAtom } from "jotai"
 import { tabsAtom } from "@renderer/atoms/browser"
 import uuid4 from "uuid4"
+import { newTab } from "./webview"
 
 export const openAtom = atom(false)
 
@@ -10,79 +11,69 @@ export function CommandMenu() {
   const [open, setOpen] = useAtom(openAtom)
   const [tabs, setTabs] = useAtom(tabsAtom)
   const [input, setInput] = React.useState("")
-
-  // React.useEffect(() => {
-  //   const down = (e: KeyboardEvent) => {
-  //     if (e.key === "t" && (e.metaKey || e.ctrlKey)) {
-  //       e.preventDefault()
-  //       setOpen((open) => !open)
-  //     }
-  //   }
-  //   document.addEventListener("keydown", down)
-  //   return () => document.removeEventListener("keydown", down)
-  // }, [])
-
-  // query the google search api
   const [searchResults, setSearchResults] = React.useState<any[]>([])
+
   React.useEffect(() => {
-    if (input.length > 0) {
-      fetch(`https://corsproxy.io/?https://api.project-jam.is-a.dev/api/v0/autosearch/google?q=${encodeURIComponent(input)}&src=google`)
-        .then((res) => {
-          if (!res.ok) {
-            throw new Error(`HTTP error! Status: ${res.status}`);
-          }
-          return res.json();
-        })
-        .then((data) => {
-          if (data && data.suggestions) {
-            setSearchResults(data.suggestions);
-            console.log(data.suggestions)
-          } else {
-            console.error("Unexpected API response:", data);
-          }
-        })
-        .catch((error) => console.error("Fetch error:", error));
+    if (input.length === 0) {
+      console.log("Input cleared, resetting search results.");
+      setSearchResults([]);
+      return;
     }
+
+    console.log(`Fetching results for: ${input}`);
+
+    fetch(`https://corsproxy.io/?https://api.project-jam.is-a.dev/api/v0/autosearch/google?q=${encodeURIComponent(input)}&src=google`)
+      .then((res) => {
+        console.log("API response received", res);
+        if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        console.log("API data:", data);
+        if (data && Array.isArray(data.suggestions)) {
+          console.log("Setting search results:", data.suggestions);
+          setSearchResults(data.suggestions);
+        } else {
+          console.error("Unexpected API response format:", data);
+          setSearchResults([]);
+        }
+      })
+      .catch((error) => {
+        console.error("Fetch error:", error);
+        setSearchResults([]);
+      });
+
   }, [input]);
 
   const handleSubmit = (item: string) => {
-    const createURL = (url: string) => {
-      // create google search url from the input
-      const urlObject = "https://www.google.com/search?q=";
-      const encodedURL = encodeURIComponent(url);
-      return urlObject + encodedURL;
-    }
+    const createURL = (query: string) => `https://www.google.com/search?q=${encodeURIComponent(query)}`;
 
-    tabs.push({
-      id: uuid4(),
-      title: item,
-      url: createURL(item),
-      favicon: "",
-      isActive: true,
-    })
-    setTabs(tabs)
-    setInput("")
-    setOpen(false)
-  }
+    newTab(createURL(item), item, setTabs)
+
+    setInput("");
+    setOpen(false);
+  };
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
       <CommandInput placeholder="Type a command or search..." value={input} onValueChange={setInput} />
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
-        <CommandGroup heading="Suggestions">
-          {searchResults.map((item) => (
-            <CommandItem key={item} onSelect={() => {
-              setInput(item)
-              handleSubmit(item)
-            }
-            }>
-              <a href={item.link} target="_blank" rel="noreferrer">
-                {item}
-              </a>
+        {searchResults.length > 0 && input.length > 0 ? (
+          <CommandGroup heading="Suggestions">
+            <CommandItem onSelect={() => handleSubmit(input)}>
+              {input}
             </CommandItem>
-          ))}
-        </CommandGroup>
+            {searchResults.map((item, index) => (
+              <CommandItem key={index} onSelect={() => handleSubmit(item)}>
+                {item}
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        ) : (
+          <CommandEmpty>No results found.</CommandEmpty>
+        )}
+
         {tabs.length > 0 && (
           <>
             <CommandSeparator />

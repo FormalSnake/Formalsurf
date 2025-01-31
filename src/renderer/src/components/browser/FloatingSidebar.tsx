@@ -1,6 +1,6 @@
 import { Button } from "@renderer/components/ui/button"
 import { cn } from "@renderer/lib/utils"
-import { PanelRightClose } from "lucide-react"
+import { PanelLeftClose, PanelRightClose } from "lucide-react"
 import { JSX } from "react"
 
 interface FloatingSidebarProps {
@@ -23,7 +23,7 @@ export function FloatingSidebar({
   return (
     <div
       className={cn(
-        "fixed left-0 top-0 h-full bg-popover/75 backdrop-blur-3xl z-40 transition-all duration-300 ease-in-out",
+        "fixed left-0 top-0 h-full bg-popover/75 backdrop-blur-3xl z-40 transition-all duration-300 ease-in-out border-r",
         isVisible ? "w-[300px]" : "w-[10px] opacity-0 pointer-events-none"
       )}
       onMouseEnter={() => setIsHoveringEdge(true)}
@@ -32,7 +32,7 @@ export function FloatingSidebar({
       <div className="flex flex-col w-[300px] h-full pt-1.5">
         <div className="flex flex-row ml-18 space-x-2 items-center">
           <Button variant="ghost" size="icon" onClick={toggleSidebar}>
-            <PanelRightClose className="h-4 w-4" />
+            <PanelLeftClose className="h-4 w-4" />
           </Button>
           {actionButtons}
         </div>
