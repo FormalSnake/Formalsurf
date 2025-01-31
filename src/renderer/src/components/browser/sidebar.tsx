@@ -13,7 +13,7 @@ export function Sidebar() {
   }
 
   return (
-    <div className="flex flex-col w-sidebar bg-transparent pt-1.5 max-w-sidebar min-w-sidebar">
+    <div className="flex flex-col w-[300px] bg-transparent pt-1.5 max-w-[300px] min-w-[300px]">
       <div className="flex flex-row ml-18 space-x-2 items-center">
         <Button variant="ghost" size="icon" onClick={() => reloadTab(tabs)}>
           <RefreshCw className="h-4 w-4" />
@@ -24,11 +24,13 @@ export function Sidebar() {
           <Button
             key={tab.id}
             variant="ghost"
-            className={cn("hover:bg-muted/40 justify-start", tab.isActive && "bg-muted/60 hover:bg-muted/60")}
+            className={cn("hover:bg-muted/40 justify-start w-full", tab.isActive && "bg-muted/60 hover:bg-muted/60")}
             onClick={() => setActiveTab(tab.id)}
           >
             <img src={tab.favicon} className="w-4 h-4 rounded-md" />
-            <span className="ml-2 text-sm font-medium truncate">{tab.title}</span>
+            <span className="ml-2 text-sm font-medium truncate max-w-[calc(100%-2rem)]">
+              {tab.title}
+            </span>
           </Button>
         ))}
       </div>
