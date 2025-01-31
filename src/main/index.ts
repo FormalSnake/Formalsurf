@@ -21,7 +21,6 @@ function createWindow(): void {
     titleBarStyle: 'hiddenInset',
     trafficLightPosition: { x: 12, y: 15 },
     autoHideMenuBar: true,
-    vibrancy: 'sidebar',
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
@@ -116,9 +115,9 @@ app.whenReady().then(async () => {
     // },
   })
 
-  const modulePathWebstore = path.join(app.getAppPath(), 'node_modules/electron-chrome-web-store')
+  // const modulePathWebstore = path.join(app.getAppPath(), 'node_modules/electron-chrome-web-store')
 
-  await installChromeWebStore({ session: sharedSession, modulePath: modulePathWebstore }).catch((e) => console.error(e));
+  // installChromeWebStore({ session: sharedSession, modulePath: modulePathWebstore }).catch((e) => console.error(e));
 
   // Check and install updates for all loaded extensions
   // updateExtensions()

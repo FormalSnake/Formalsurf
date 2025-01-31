@@ -25,7 +25,11 @@ export function WebView({ tab }: { tab: Tab }) {
   useEffect(() => {
     if (tab.isActive) {
       setActiveTabRef(ref);
-      ipcHandle(ref)
+      setTimeout(() => {
+        if (activeTabRef.current) {
+          ipcHandle(activeTabRef)
+        }
+      }, 100);
     }
   }, [tab.isActive, setActiveTabRef]);
 
@@ -34,17 +38,15 @@ export function WebView({ tab }: { tab: Tab }) {
     if (!webview) return;
 
     const handleDomReady = () => {
-      // Set the current tab's title
+      // ipcHandle(activeTabRef); // Ahora se llama solo cuando el webview está listo
       handleTitleUpdate();
     };
 
     const handleTitleUpdate = () => {
-      // Set the current tab's title
       updateCurrentTab((t) => ({ ...t, title: webview.getTitle() }));
     };
 
     const handleFaviconUpdate = (event: any) => {
-      // Set the current tab's favicon
       updateCurrentTab((t) => ({ ...t, favicon: event.favicons[0] }));
     };
 
@@ -52,7 +54,6 @@ export function WebView({ tab }: { tab: Tab }) {
     webview.addEventListener('page-title-updated', handleTitleUpdate);
     webview.addEventListener('page-favicon-updated', handleFaviconUpdate);
 
-    // Cleanup event listener
     return () => {
       webview.removeEventListener('dom-ready', handleDomReady);
       webview.removeEventListener('page-title-updated', handleTitleUpdate);

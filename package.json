@@ -23,6 +23,7 @@
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^3.0.0",
+    "@radix-ui/react-dialog": "^1.1.5",
     "@radix-ui/react-dropdown-menu": "^2.1.5",
     "@radix-ui/react-slot": "^1.1.1",
     "@tailwindcss/vite": "^4.0.1",
@@ -30,6 +31,7 @@
     "babel-plugin-react-compiler": "^19.0.0-beta-27714ef-20250124",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "cmdk": "1.0.0",
     "electron-chrome-context-menu": "^1.1.0",
     "electron-chrome-extensions": "^4.1.1",
     "electron-chrome-web-store": "^0.6.4",

@@ -23,7 +23,7 @@ export function FloatingSidebar({
   return (
     <div
       className={cn(
-        "fixed left-0 top-0 h-full bg-sidebar/75 backdrop-blur-sm z-40 transition-all duration-300 ease-in-out",
+        "fixed left-0 top-0 h-full bg-popover/75 backdrop-blur-3xl z-40 transition-all duration-300 ease-in-out",
         isVisible ? "w-[300px]" : "w-[10px] opacity-0 pointer-events-none"
       )}
       onMouseEnter={() => setIsHoveringEdge(true)}
@@ -41,7 +41,7 @@ export function FloatingSidebar({
             <Button
               key={tab.id}
               variant="ghost"
-              className={cn("hover:bg-muted/40 justify-start w-full", tab.isActive && "bg-muted/60 hover:bg-muted/60")}
+              className={cn("justify-start w-full", tab.isActive && "bg-primary/90 text-primary-foreground")}
               onClick={() => setActiveTab(tab.id)}
             >
               <img src={tab.favicon} className="w-4 h-4 rounded-md" />

@@ -21,7 +21,7 @@ export function DockedSidebar({
   return (
     <div
       className={cn(
-        "flex flex-col w-[300px] bg-transparent backdrop-blur-sm pt-1.5 max-w-[300px] min-w-[300px] transition-all duration-300 ease-in-out",
+        "flex flex-col w-[300px] bg-popover backdrop-blur-sm pt-1.5 max-w-[300px] min-w-[300px] transition-all duration-300 ease-in-out",
         !isVisible && "w-0 min-w-0 max-w-0 opacity-0"
       )}
     >
@@ -39,7 +39,7 @@ export function DockedSidebar({
           <Button
             key={tab.id}
             variant="ghost"
-            className={cn("hover:bg-muted/40 justify-start w-full", tab.isActive && "bg-muted/60 hover:bg-muted/60")}
+            className={cn("justify-start w-full", tab.isActive && "bg-primary/90 text-primary-foreground")}
             onClick={() => setActiveTab(tab.id)}
           >
             <img src={tab.favicon} className="w-4 h-4 rounded-md" />
