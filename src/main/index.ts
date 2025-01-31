@@ -32,6 +32,27 @@ async function createWindow(): Promise<void> {
     }
   })
 
+  // Set up permission handling
+  mainWindow.webContents.session.setPermissionRequestHandler(
+    (webContents, permission, callback) => {
+      const allowedPermissions = ['media']
+      if (allowedPermissions.includes(permission)) {
+        callback(true)
+      } else {
+        callback(false)
+      }
+    }
+  )
+
+  // Main window handlers
+  mainWindow.webContents.on('did-attach-webview', (_, contents) => {
+    contents.setWindowOpenHandler((details) => {
+      console.log("Opening URL (window):", details.url)
+      mainWindow.webContents.send('open-url', details.url)
+      return { action: 'deny' }
+    })
+  })
+
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
   })
@@ -102,6 +123,29 @@ app.whenReady().then(async () => {
     optimizer.watchWindowShortcuts(window)
   })
 
+  // app handlers
+  app.on('open-url', (event, url) => {
+    event.preventDefault()
+    console.log("Handling URL:", url)
+
+    const existingWindow = BrowserWindow.getAllWindows()[0]
+    if (existingWindow) {
+      console.log("Existing window found, sending URL to it")
+      existingWindow.webContents.send('open-url', url)
+    } else {
+      console.log("No existing window found, creating new window")
+      // If no window exists, create one and wait for it to be ready
+      createWindow().then(() => {
+        const window = BrowserWindow.getAllWindows()[0]
+        if (window) {
+          window.webContents.send('open-url', url)
+        }
+      })
+    }
+  })
+
+  // Extensions
+
   extensions = new ElectronChromeExtensions({
     license: "GPL-3.0",
     session: sharedSession,
@@ -146,6 +190,12 @@ app.on('web-contents-created', (event, webContents) => {
 
     webContents.setVisualZoomLevelLimits(1, 4)
 
+    // Handle new window events (e.g., links with target="_blank")
+    webContents.on('new-window', (event, url) => {
+      event.preventDefault() // Prevent the default behavior
+      existingWindow.webContents.send('open-url', url) // Send the URL to the renderer process
+    })
+
     webContents.on('context-menu', (_e, params) => {
       const menu = buildChromeContextMenu({
         params,
@@ -160,7 +210,6 @@ app.on('web-contents-created', (event, webContents) => {
     })
   }
 })
-
 
 const newUserAgent = app.userAgentFallback
   .replace(

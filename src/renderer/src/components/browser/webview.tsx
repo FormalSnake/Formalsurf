@@ -91,7 +91,7 @@ export function WebView({ tab }: { tab: Tab }) {
         id={tab.id}
         className={cn('w-full bg-white', !tab.isActive && 'hidden')}
         webpreferences="autoplayPolicy=document-user-activation-required,defaultFontSize=16,contextIsolation=true,nodeIntegration=false,sandbox=true,webSecurity=true"
-        allowpopups
+        allowpopups="true"
         partition="persist:webview"
         style={{ pointerEvents: 'unset' }}
       />

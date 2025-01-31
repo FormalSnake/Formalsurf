@@ -11,6 +11,7 @@ function App(): JSX.Element {
   // const ipcHandle = (): void => window.electron.ipcRenderer.send('ping')
   useEffect(() => {
     window.electron.ipcRenderer.on('open-url', (_event, url) => {
+      console.log("Handling URL:", url)
       newTab(url, 'New Tab', setTabs)
     })
 
