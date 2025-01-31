@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain, webContents, session, Session } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, webContents, session, Session, Menu } from 'electron'
 import path, { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -8,6 +8,7 @@ import os from 'os'
 import { buildChromeContextMenu } from 'electron-chrome-context-menu'
 import { ElectronChromeExtensions } from 'electron-chrome-extensions'
 import { installChromeWebStore, installExtension, updateExtensions } from 'electron-chrome-web-store'
+import { template } from './menubar'
 
 let mainWindow;
 let sharedSession
@@ -31,6 +32,11 @@ async function createWindow(): Promise<void> {
       contextIsolation: true,
     }
   })
+
+  // Set up menu
+  // @ts-expect-error
+  const menu = Menu.buildFromTemplate(template)
+  Menu.setApplicationMenu(menu)
 
   // Set up permission handling
   mainWindow.webContents.session.setPermissionRequestHandler(

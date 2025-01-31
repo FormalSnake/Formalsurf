@@ -11,6 +11,7 @@ const api = {
     event: any,
     data: any
   ) => ipcRenderer.on(channel, callable(event, data)),
+  removeHandler: (channel) => ipcRenderer.removeAllListeners(channel),
   toggleTrafficLights: (show: boolean) => ipcRenderer.send('toggle-traffic-lights', show),
   getActiveTab: (webContentsId: string) => ipcRenderer.invoke('get-active-tab', webContentsId),
   getVersion: () => ipcRenderer.invoke('get-version'),
