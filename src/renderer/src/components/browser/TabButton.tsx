@@ -1,7 +1,7 @@
 import { Tab, tabsAtom } from "@renderer/atoms/browser";
 import { Button } from "../ui/button";
 import { cn } from "@renderer/lib/utils";
-import { Trash } from "lucide-react";
+import { Trash, X } from "lucide-react";
 import { closeTab } from "./webview";
 import { useAtom } from "jotai";
 
@@ -29,7 +29,7 @@ export function TabButton({ tab, setActiveTab }: { tab: Tab; setActiveTab: (id: 
           closeTab(tab.id, setTabs);
         }}
       >
-        <Trash className="h-4 w-4" />
+        <X className="h-4 w-4" />
       </button>
     </Button>
   );
