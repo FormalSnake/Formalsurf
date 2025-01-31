@@ -7,6 +7,7 @@ export function WebView({ tab }: { tab: Tab }) {
   const [tabs, setTabs] = useAtom(tabsAtom);
   const [activeTabRef, setActiveTabRef] = useAtom(activeTabRefAtom);
   const ref = useRef<HTMLWebViewElement>(null);
+  const ipcHandle = (ref: any): void => window.api.getActiveTab(ref.current?.getWebContentsId())
 
   // Reusable function to update the current tab's properties
   const updateCurrentTab = (updater: (tab: Tab) => Tab) => {
@@ -24,6 +25,7 @@ export function WebView({ tab }: { tab: Tab }) {
   useEffect(() => {
     if (tab.isActive) {
       setActiveTabRef(ref);
+      ipcHandle(ref)
     }
   }, [tab.isActive, setActiveTabRef]);
 

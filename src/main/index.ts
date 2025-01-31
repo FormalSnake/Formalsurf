@@ -121,7 +121,7 @@ app.whenReady().then(async () => {
   await installChromeWebStore({ session: sharedSession, modulePath: modulePathWebstore }).catch((e) => console.error(e));
 
   // Check and install updates for all loaded extensions
-  await updateExtensions()
+  // updateExtensions()
 
   createWindow()
 
