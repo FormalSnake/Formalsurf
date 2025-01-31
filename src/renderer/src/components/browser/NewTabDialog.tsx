@@ -64,11 +64,14 @@ export function CommandMenu() {
             <CommandItem onSelect={() => handleSubmit(input)}>
               {input}
             </CommandItem>
-            {searchResults.map((item, index) => (
-              <CommandItem key={index} onSelect={() => handleSubmit(item)}>
-                {item}
-              </CommandItem>
-            ))}
+            {searchResults.map((item, index) => {
+              if (item === input) return null
+              return (
+                <CommandItem key={index} onSelect={() => handleSubmit(item)}>
+                  {item}
+                </CommandItem>
+              )
+            })}
           </CommandGroup>
         ) : (
           <CommandEmpty>No results found.</CommandEmpty>

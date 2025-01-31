@@ -23,7 +23,7 @@ export function DockedSidebar({
   return (
     <div
       className={cn(
-        "flex flex-col w-[300px] bg-popover backdrop-blur-sm pt-1.5 max-w-[300px] min-w-[300px] transition-all duration-300 ease-in-out border-r",
+        "flex flex-col w-[300px] pt-1.5 max-w-[300px] min-w-[300px] transition-all duration-300 ease-in-out border-r",
         !isVisible && "w-0 min-w-0 max-w-0 opacity-0"
       )}
     >

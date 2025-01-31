@@ -12,12 +12,12 @@ export function TabButton({ tab, setActiveTab }: { tab: Tab; setActiveTab: (id: 
       key={tab.id}
       variant="ghost"
       className={cn(
-        "justify-start w-full",
-        tab.isActive && "bg-primary/90 text-primary-foreground"
+        "justify-start w-full select-none",
+        tab.isActive && "bg-accent/50"
       )}
       onClick={() => setActiveTab(tab.id)}
     >
-      <img src={tab.favicon} className="w-4 h-4 rounded-md" />
+      <img src={tab.favicon} className="w-4 h-4 rounded-md" draggable={false} />
       <span className="ml-2 text-sm font-medium truncate max-w-[calc(100%-2rem)]">
         {tab.title}
       </span>
