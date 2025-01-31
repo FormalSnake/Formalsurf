@@ -17,7 +17,7 @@ export function webview(_event: { preventDefault: () => void; readonly defaultPr
         webContents,
         extensionMenuItems: extensions.getContextMenuItems(webContents, params),
         openLink: (url, _disposition) => {
-          webContents.loadURL(url)
+          existingWindow.webContents.send('open-url', url)
         }
       })
 

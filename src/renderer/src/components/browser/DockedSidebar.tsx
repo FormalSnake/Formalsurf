@@ -2,6 +2,8 @@ import { Button } from "@renderer/components/ui/button"
 import { cn } from "@renderer/lib/utils"
 import { PanelLeft } from "lucide-react"
 import { JSX } from "react"
+import { TabButton } from "./TabButton"
+import { Tab } from "@renderer/atoms/browser"
 
 interface DockedSidebarProps {
   isVisible: boolean
@@ -35,18 +37,8 @@ export function DockedSidebar({
         <browser-action-list partition="persist:webview" id="actions"></browser-action-list>
       </div>
       <div className="flex flex-col p-2 space-y-2">
-        {tabs.map((tab) => (
-          <Button
-            key={tab.id}
-            variant="ghost"
-            className={cn("justify-start w-full", tab.isActive && "bg-primary/90 text-primary-foreground")}
-            onClick={() => setActiveTab(tab.id)}
-          >
-            <img src={tab.favicon} className="w-4 h-4 rounded-md" />
-            <span className="ml-2 text-sm font-medium truncate max-w-[calc(100%-2rem)]">
-              {tab.title}
-            </span>
-          </Button>
+        {tabs.map((tab: Tab) => (
+          <TabButton key={tab.id} tab={tab} setActiveTab={setActiveTab} />
         ))}
       </div>
     </div>

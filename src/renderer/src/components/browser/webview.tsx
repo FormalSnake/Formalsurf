@@ -104,5 +104,8 @@ export function newTab(url: string, title: string, setTabs: any) {
     isActive: true,
   };
 
+  // set all other tabs to inactive
+  setTabs((prevTabs) => prevTabs.map((t) => (t.id === newTab.id ? newTab : t)));
+
   setTabs((prevTabs) => [...prevTabs, newTab]);
 }
