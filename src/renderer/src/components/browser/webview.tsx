@@ -104,5 +104,36 @@ export function newTab(url: string, title: string, setTabs: any) {
     isActive: true,
   };
 
-  setTabs((prevTabs) => [...prevTabs, newTab]);
+  setTabs((prevTabs: any[]) => {
+    // Set all existing tabs to inactive
+    const updatedTabs = prevTabs.map(tab => ({
+      ...tab,
+      isActive: false,
+    }));
+
+    // Add the new tab
+    return [...updatedTabs, newTab];
+  });
+}
+
+export function closeTab(tabId: string, setTabs: (updater: (prevTabs: Tab[]) => Tab[]) => void) {
+  setTabs((prevTabs) => {
+    console.log("Closing tab with ID:", tabId); // Log the tab ID being closed
+    console.log("Current tabs:", prevTabs); // Log the current tabs
+
+    const updatedTabs = prevTabs.filter((tab) => tab.id !== tabId);
+
+    console.log("Updated tabs after closing:", updatedTabs); // Log the updated tabs
+
+    if (updatedTabs.length === 0) {
+      return [];
+    }
+
+    const wasActiveTabClosed = prevTabs.find((tab) => tab.id === tabId)?.isActive;
+    if (wasActiveTabClosed) {
+      updatedTabs[0].isActive = true;
+    }
+
+    return updatedTabs;
+  });
 }
