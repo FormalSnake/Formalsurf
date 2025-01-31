@@ -1,10 +1,11 @@
-import { Tab, tabsAtom } from "@renderer/atoms/browser";
+import { activeTabRefAtom, Tab, tabsAtom } from "@renderer/atoms/browser";
 import { cn } from "@renderer/lib/utils";
 import { useAtom } from "jotai";
 import { useEffect, useRef } from "react";
 
 export function WebView({ tab }: { tab: Tab }) {
   const [tabs, setTabs] = useAtom(tabsAtom);
+  const [activeTabRef, setActiveTabRef] = useAtom(activeTabRefAtom);
   const ref = useRef<HTMLWebViewElement>(null);
 
   // Reusable function to update the current tab's properties
@@ -18,6 +19,13 @@ export function WebView({ tab }: { tab: Tab }) {
     // Set the current tab's ref
     updateCurrentTab((t) => ({ ...t, ref }));
   }, [setTabs]);
+
+  // if i am the current active tab, set the activeTabRef to me
+  useEffect(() => {
+    if (tab.isActive) {
+      setActiveTabRef(ref);
+    }
+  }, [tab.isActive, setActiveTabRef]);
 
   useEffect(() => {
     const webview = ref.current;
@@ -33,7 +41,7 @@ export function WebView({ tab }: { tab: Tab }) {
       updateCurrentTab((t) => ({ ...t, title: webview.getTitle() }));
     };
 
-    const handleFaviconUpdate = (event) => {
+    const handleFaviconUpdate = (event: any) => {
       // Set the current tab's favicon
       updateCurrentTab((t) => ({ ...t, favicon: event.favicons[0] }));
     };
@@ -65,23 +73,20 @@ export function WebView({ tab }: { tab: Tab }) {
   );
 }
 
-export function reloadTab(tabs: Tab[]) {
-  const activeTab = tabs.find((tab) => tab.isActive);
-  if (activeTab) {
-    activeTab.ref?.current?.reload();
+export function reloadTab(activeTabRef: any) {
+  if (activeTabRef.current) {
+    activeTabRef.current?.reload();
   }
 }
 
-export function goBackTab(tabs: Tab[]) {
-  const activeTab = tabs.find((tab) => tab.isActive);
-  if (activeTab) {
-    activeTab.ref?.current?.goBack();
+export function goBackTab(activeTabRef: any) {
+  if (activeTabRef.current) {
+    activeTabRef.current?.goBack();
   }
 }
 
-export function goForwardTab(tabs: Tab[]) {
-  const activeTab = tabs.find((tab) => tab.isActive);
-  if (activeTab) {
-    activeTab.ref?.current?.goForward();
+export function goForwardTab(activeTabRef: any) {
+  if (activeTabRef.current) {
+    activeTabRef.current?.goForward();
   }
 }

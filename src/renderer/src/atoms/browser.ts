@@ -7,7 +7,6 @@ export interface Tab {
   title: string
   favicon: string
   isActive: boolean
-  ref: React.RefObject<HTMLWebViewElement | null> | null
 }
 
 export const tabsAtom = atom<Tab[]>([
@@ -17,7 +16,6 @@ export const tabsAtom = atom<Tab[]>([
     title: 'GitHub',
     favicon: 'https://www.github.com/favicon.ico',
     isActive: true,
-    ref: null
   },
   {
     id: uuid4(),
@@ -25,7 +23,6 @@ export const tabsAtom = atom<Tab[]>([
     title: 'formalsnake.dev',
     favicon: 'https://www.formalsnake.dev/favicon.ico',
     isActive: false,
-    ref: null
   },
   {
     id: uuid4(),
@@ -33,6 +30,7 @@ export const tabsAtom = atom<Tab[]>([
     title: 'Chrome Web Store',
     favicon: 'https://chromewebstore.google.com/favicon.ico',
     isActive: false,
-    ref: null
   }
 ])
+
+export const activeTabRefAtom = atom<any>(null)
