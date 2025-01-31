@@ -1,39 +1,65 @@
+import { useState } from "react"
 import { tabsAtom } from "@renderer/atoms/browser"
 import { useAtom } from "jotai"
 import { Button } from "@renderer/components/ui/button"
-import { cn } from "@renderer/lib/utils"
-import { RefreshCw } from "lucide-react"
-import { reloadTab } from "./webview"
+import { ArrowLeft, ArrowRight, RefreshCw } from "lucide-react"
+import { goBackTab, goForwardTab, reloadTab } from "./webview"
+import { DockedSidebar } from "./DockedSidebar"
+import { FloatingSidebar } from "./FloatingSidebar"
 
 export function Sidebar() {
   const [tabs, setTabs] = useAtom(tabsAtom)
+  const [isSidebarVisible, setIsSidebarVisible] = useState(true)
+  const [isHoveringEdge, setIsHoveringEdge] = useState(false)
+
+  const toggleSidebar = () => {
+    setIsSidebarVisible(!isSidebarVisible)
+  }
 
   const setActiveTab = (id: string) => {
     setTabs(tabs.map((tab) => (tab.id === id ? { ...tab, isActive: true } : { ...tab, isActive: false })))
   }
 
+  // Action buttons array
+  const actionButtons = [
+    <Button key="refresh" variant="ghost" size="icon" onClick={() => reloadTab(tabs)}>
+      <RefreshCw className="h-4 w-4" />
+    </Button>,
+    <Button key="back" variant="ghost" size="icon" onClick={() => goBackTab(tabs)}>
+      <ArrowLeft className="h-4 w-4" />
+    </Button>,
+    <Button key="forward" variant="ghost" size="icon" onClick={() => goForwardTab(tabs)}>
+      <ArrowRight className="h-4 w-4" />
+    </Button>,
+  ]
+
   return (
-    <div className="flex flex-col w-[300px] bg-transparent pt-1.5 max-w-[300px] min-w-[300px]">
-      <div className="flex flex-row ml-18 space-x-2 items-center">
-        <Button variant="ghost" size="icon" onClick={() => reloadTab(tabs)}>
-          <RefreshCw className="h-4 w-4" />
-        </Button>
-      </div>
-      <div className="flex flex-col p-2 space-y-2">
-        {tabs.map((tab) => (
-          <Button
-            key={tab.id}
-            variant="ghost"
-            className={cn("hover:bg-muted/40 justify-start w-full", tab.isActive && "bg-muted/60 hover:bg-muted/60")}
-            onClick={() => setActiveTab(tab.id)}
-          >
-            <img src={tab.favicon} className="w-4 h-4 rounded-md" />
-            <span className="ml-2 text-sm font-medium truncate max-w-[calc(100%-2rem)]">
-              {tab.title}
-            </span>
-          </Button>
-        ))}
-      </div>
-    </div>
+    <>
+      {/* Hover detection area */}
+      <div
+        className="fixed left-0 top-0 h-full w-2 z-50"
+        onMouseEnter={() => setIsHoveringEdge(true)}
+        onMouseLeave={() => setIsHoveringEdge(false)}
+      />
+
+      {/* Floating Sidebar */}
+      <FloatingSidebar
+        isVisible={isHoveringEdge && !isSidebarVisible}
+        tabs={tabs}
+        actionButtons={actionButtons}
+        setActiveTab={setActiveTab}
+        toggleSidebar={toggleSidebar}
+        setIsHoveringEdge={setIsHoveringEdge}
+      />
+
+      {/* Docked Sidebar */}
+      <DockedSidebar
+        isVisible={isSidebarVisible}
+        tabs={tabs}
+        actionButtons={actionButtons}
+        setActiveTab={setActiveTab}
+        toggleSidebar={toggleSidebar}
+      />
+    </>
   )
 }

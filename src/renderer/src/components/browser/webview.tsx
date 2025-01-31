@@ -69,3 +69,17 @@ export function reloadTab(tabs: Tab[]) {
     activeTab.ref?.current?.reload();
   }
 }
+
+export function goBackTab(tabs: Tab[]) {
+  const activeTab = tabs.find((tab) => tab.isActive);
+  if (activeTab) {
+    activeTab.ref?.current?.goBack();
+  }
+}
+
+export function goForwardTab(tabs: Tab[]) {
+  const activeTab = tabs.find((tab) => tab.isActive);
+  if (activeTab) {
+    activeTab.ref?.current?.goForward();
+  }
+}
