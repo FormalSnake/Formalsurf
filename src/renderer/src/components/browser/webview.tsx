@@ -1,14 +1,20 @@
 import { activeTabRefAtom, Tab, tabsAtom } from "@renderer/atoms/browser";
 import { cn } from "@renderer/lib/utils";
 import { useAtom } from "jotai";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react"; // Add useState
 import uuid4 from "uuid4";
 
 export function WebView({ tab }: { tab: Tab }) {
   const [tabs, setTabs] = useAtom(tabsAtom);
   const [activeTabRef, setActiveTabRef] = useAtom(activeTabRefAtom);
   const ref = useRef<HTMLWebViewElement>(null);
-  const ipcHandle = (ref: any): void => window.api.getActiveTab(ref.current?.getWebContentsId())
+  const [isWebViewReady, setIsWebViewReady] = useState(false); // Track if webview is ready
+
+  const ipcHandle = (ref: any): void => {
+    if (ref.current && isWebViewReady) {
+      window.api.getActiveTab(ref.current.getWebContentsId());
+    }
+  };
 
   // Reusable function to update the current tab's properties
   const updateCurrentTab = (updater: (tab: Tab) => Tab) => {
@@ -22,24 +28,15 @@ export function WebView({ tab }: { tab: Tab }) {
     updateCurrentTab((t) => ({ ...t, ref }));
   }, [setTabs]);
 
-  // if i am the current active tab, set the activeTabRef to me
-  useEffect(() => {
-    if (tab.isActive) {
-      setActiveTabRef(ref);
-      setTimeout(() => {
-        if (activeTabRef.current) {
-          ipcHandle(activeTabRef)
-        }
-      }, 100);
-    }
-  }, [tab.isActive, setActiveTabRef]);
-
   useEffect(() => {
     const webview = ref.current;
     if (!webview) return;
 
     const handleDomReady = () => {
-      // ipcHandle(activeTabRef); // Ahora se llama solo cuando el webview está listo
+      setIsWebViewReady(true); // Mark webview as ready
+      if (tab.isActive) {
+        ipcHandle(ref); // Call ipcHandle if the tab is active
+      }
       handleTitleUpdate();
     };
 
@@ -60,7 +57,14 @@ export function WebView({ tab }: { tab: Tab }) {
       webview.removeEventListener('page-title-updated', handleTitleUpdate);
       webview.removeEventListener('page-favicon-updated', handleFaviconUpdate);
     };
-  }, [ref]);
+  }, [ref, tab.isActive]);
+
+  // Execute ipcHandle when the active tab changes
+  useEffect(() => {
+    if (tab.isActive && isWebViewReady) {
+      ipcHandle(ref); // Call ipcHandle only if the webview is ready
+    }
+  }, [tab.isActive, activeTabRef, isWebViewReady]);
 
   return (
     <webview

@@ -5,13 +5,13 @@ import icon from '../../resources/icon.png?asset'
 import os from 'os'
 // import { installExtension, REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 // import { installExtension as installExtensionDev, REACT_DEVELOPER_TOOLS } from "electron-extension-installer";
-import { ElectronChromeExtensions } from 'electron-chrome-extensions'
-import { installChromeWebStore, updateExtensions } from 'electron-chrome-web-store'
 import { buildChromeContextMenu } from 'electron-chrome-context-menu'
+import { ElectronChromeExtensions } from 'electron-chrome-extensions'
+import { installChromeWebStore, installExtension, updateExtensions } from 'electron-chrome-web-store'
 
-let mainWindow: BrowserWindow;
-let sharedSession: Session
-let extensions: ElectronChromeExtensions
+let mainWindow;
+let sharedSession
+let extensions
 
 async function createWindow(): Promise<void> {
   // Create the browser window.
