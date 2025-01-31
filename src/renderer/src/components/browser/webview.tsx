@@ -45,6 +45,8 @@ export function WebView({ tab }: { tab: Tab }) {
     // Cleanup event listener
     return () => {
       webview.removeEventListener('dom-ready', handleDomReady);
+      webview.removeEventListener('page-title-updated', handleTitleUpdate);
+      webview.removeEventListener('page-favicon-updated', handleFaviconUpdate);
     };
   }, [ref]);
 

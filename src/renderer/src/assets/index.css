@@ -184,16 +184,29 @@
   body {
     @apply text-foreground;
   }
-}
 
-/* Layout action buttons vertically. */
-browser-action-list {
-  flex-direction: row;
-  overflow-x: scroll;
-  scrollbar-width: none;
-}
+  /* Layout action buttons vertically. */
+  browser-action-list {
+    flex-direction: row;
+    overflow-x: scroll;
+    scrollbar-width: none;
+  }
 
-/* Modify size of action buttons. */
-browser-action-list::part(action) {
-  aspect-ratio: 1;
+  /* Modify size of action buttons. */
+  browser-action-list::part(action) {
+    aspect-ratio: 1;
+    font-size: 0;
+  }
+
+  browser-action-list::part(action):hover {
+    @apply bg-muted/40;
+  }
+
+  browser-action-list::part(action)::before {
+    content: attr(title);
+  }
+
+  browser-action-list::part(action)::first-letter {
+    @apply text-sm text-foreground;
+  }
 }

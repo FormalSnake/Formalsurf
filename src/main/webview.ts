@@ -1,7 +1,7 @@
 import { BrowserWindow } from 'electron';
 import { buildChromeContextMenu } from 'electron-chrome-context-menu'
 
-export function webview(event: { preventDefault: () => void; readonly defaultPrevented: boolean; }, webContents: Electron.WebContents, extensions: any) {
+export function webview(_event: { preventDefault: () => void; readonly defaultPrevented: boolean; }, webContents: Electron.WebContents, extensions: any) {
   if (webContents.getType() == 'webview') {
     const existingWindow = BrowserWindow.getAllWindows()[0]
 
@@ -11,12 +11,12 @@ export function webview(event: { preventDefault: () => void; readonly defaultPre
 
     webContents.setVisualZoomLevelLimits(1, 4)
 
-    webContents.on('context-menu', (e, params) => {
+    webContents.on('context-menu', (_e, params) => {
       const menu = buildChromeContextMenu({
         params,
         webContents,
         extensionMenuItems: extensions.getContextMenuItems(webContents, params),
-        openLink: (url, disposition) => {
+        openLink: (url, _disposition) => {
           webContents.loadURL(url)
         }
       })

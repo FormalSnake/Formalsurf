@@ -1,15 +1,15 @@
-import { app, shell, BrowserWindow, ipcMain, webContents, session } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, webContents, session, Session } from 'electron'
 import path, { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { webview } from './webview'
 // import { installExtension, REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
-import { installExtension as installExtensionDev, REACT_DEVELOPER_TOOLS } from "electron-extension-installer";
+// import { installExtension as installExtensionDev, REACT_DEVELOPER_TOOLS } from "electron-extension-installer";
 import { ElectronChromeExtensions } from 'electron-chrome-extensions'
-import { installChromeWebStore, installExtension, updateExtensions } from 'electron-chrome-web-store'
+import { installChromeWebStore, updateExtensions } from 'electron-chrome-web-store'
 
 let mainWindow: BrowserWindow;
-let sharedSession
+let sharedSession: Session
 let extensions: ElectronChromeExtensions
 
 function createWindow(): void {
@@ -25,7 +25,6 @@ function createWindow(): void {
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false,
       webviewTag: true,
       nodeIntegration: true,
       contextIsolation: true,
@@ -54,16 +53,14 @@ function createWindow(): void {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
-  sharedSession = session.fromPartition('persist:webview')
-
   // installExtension(REACT_DEVELOPER_TOOLS, { loadExtensionOptions: { allowFileAccess: true } })
   //   .then((react) => console.log(`Added Extension: ${react.name}`))
   //   .catch((err) => console.log('An error occurred: ', err));
-  await installExtensionDev(REACT_DEVELOPER_TOOLS, {
-    loadExtensionOptions: {
-      allowFileAccess: true,
-    },
-  });
+  // await installExtensionDev(REACT_DEVELOPER_TOOLS, {
+  //   loadExtensionOptions: {
+  //     allowFileAccess: true,
+  //   },
+  // });
 
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
@@ -79,10 +76,8 @@ app.whenReady().then(async () => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // IPC test
-  ipcMain.on('ping', () => console.log('pong'))
-
-  ipcMain.on('toggle-traffic-lights', (event, show) => {
+  // IPC events
+  ipcMain.on('toggle-traffic-lights', (_event, show) => {
     // Check if the platform supports window button visibility
     if (process.platform === 'darwin' && mainWindow?.setWindowButtonVisibility) {
       if (show) {
@@ -97,28 +92,28 @@ app.whenReady().then(async () => {
     }
   })
 
-  ipcMain.handle('get-active-tab', async (event, webContentsId) => {
+  ipcMain.handle('get-active-tab', async (_event, webContentsId) => {
     console.log('get-active-tab', webContentsId)
-    return extensions.selectTab(webContents.fromId(webContentsId))
+    return extensions.selectTab(webContents.fromId(webContentsId) as any)
   })
 
   extensions = new ElectronChromeExtensions({
     license: "GPL-3.0",
     session: sharedSession,
     modulePath: modulePathExtensions,
-    createTab(details) {
-      // use the existing open-url function to open the new tab
-      const window = BrowserWindow.getAllWindows()[0]
-      if (window) {
-        window.webContents.send('open-url', details.url)
-      }
-      // return the webContents and the window
-      return [window.webContents, window]
-    },
-    createWindow(details) {
-      const window = new BrowserWindow()
-      return window
-    },
+    // createTab(details) {
+    //   // use the existing open-url function to open the new tab
+    //   const window = BrowserWindow.getAllWindows()[0]
+    //   if (window) {
+    //     window.webContents.send('open-url', details.url)
+    //   }
+    //   // return the webContents and the window
+    //   return [window.webContents, window]
+    // },
+    // createWindow(details) {
+    //   const window = new BrowserWindow()
+    //   return window
+    // },
   })
 
   const modulePathWebstore = path.join(app.getAppPath(), 'node_modules/electron-chrome-web-store')
