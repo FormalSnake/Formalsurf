@@ -3,12 +3,14 @@ import { cn } from "@renderer/lib/utils";
 import { useAtom } from "jotai";
 import { useEffect, useRef, useState } from "react"; // Add useState
 import uuid4 from "uuid4";
+import { AnimatePresence, motion } from "framer-motion";
 
 export function WebView({ tab }: { tab: Tab }) {
   const [tabs, setTabs] = useAtom(tabsAtom);
   const [activeTabRef, setActiveTabRef] = useAtom(activeTabRefAtom);
   const ref = useRef<HTMLWebViewElement>(null);
   const [isWebViewReady, setIsWebViewReady] = useState(false); // Track if webview is ready
+  const [webviewTargetUrl, setWebviewTargetUrl] = useState("");
 
   const ipcHandle = (ref: any): void => {
     if (ref.current && isWebViewReady) {
@@ -48,14 +50,28 @@ export function WebView({ tab }: { tab: Tab }) {
       updateCurrentTab((t) => ({ ...t, favicon: event.favicons[0] }));
     };
 
+    const handleTargetUrlUpdate = (event: any) => {
+      setWebviewTargetUrl(event.url);
+    };
+
+    const navigateHandler = (event: any) => {
+      updateCurrentTab((t) => ({ ...t, url: event.url }));
+    };
+
     webview.addEventListener('dom-ready', handleDomReady);
     webview.addEventListener('page-title-updated', handleTitleUpdate);
     webview.addEventListener('page-favicon-updated', handleFaviconUpdate);
+    webview.addEventListener('update-target-url', handleTargetUrlUpdate);
+    webview.addEventListener('did-navigate', navigateHandler);
+    webview.addEventListener('did-navigate-in-page', navigateHandler);
 
     return () => {
       webview.removeEventListener('dom-ready', handleDomReady);
       webview.removeEventListener('page-title-updated', handleTitleUpdate);
       webview.removeEventListener('page-favicon-updated', handleFaviconUpdate);
+      webview.removeEventListener('update-target-url', handleTargetUrlUpdate);
+      webview.removeEventListener('did-navigate', navigateHandler);
+      webview.removeEventListener('did-navigate-in-page', navigateHandler);
     };
   }, [ref, tab.isActive]);
 
@@ -67,17 +83,31 @@ export function WebView({ tab }: { tab: Tab }) {
   }, [tab.isActive, activeTabRef, isWebViewReady]);
 
   return (
-    <webview
-      ref={ref}
-      key={tab.id}
-      src={tab.url}
-      id={tab.id}
-      className={cn('w-full bg-white', !tab.isActive && 'hidden')}
-      webpreferences="autoplayPolicy=document-user-activation-required,defaultFontSize=16,contextIsolation=true,nodeIntegration=false,sandbox=true,webSecurity=true"
-      allowpopups
-      partition="persist:webview"
-      style={{ pointerEvents: 'unset' }}
-    />
+    <>
+      <webview
+        ref={ref}
+        key={tab.id}
+        src={tab.url}
+        id={tab.id}
+        className={cn('w-full bg-white', !tab.isActive && 'hidden')}
+        webpreferences="autoplayPolicy=document-user-activation-required,defaultFontSize=16,contextIsolation=true,nodeIntegration=false,sandbox=true,webSecurity=true"
+        allowpopups
+        partition="persist:webview"
+        style={{ pointerEvents: 'unset' }}
+      />
+      <AnimatePresence>
+        {webviewTargetUrl && (<motion.div
+          initial={{ scale: 0.5, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.5, opacity: 0 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+          className="text-xs m-1 h-fit w-fit max-w-[500px] z-50 p-1 px-2 truncate bg-popover border-border border fixed bottom-4 right-4 rounded-lg pointer-events-none"
+        >
+          {webviewTargetUrl}
+        </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
 
