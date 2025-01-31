@@ -1,6 +1,6 @@
 {
   "name": "formalsurf",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "An Electron application with React and TypeScript",
   "main": "./out/main/index.js",
   "author": "example.com",
@@ -34,7 +34,7 @@
     "cmdk": "1.0.0",
     "electron-chrome-context-menu": "^1.1.0",
     "electron-chrome-extensions": "^4.1.1",
-    "electron-chrome-web-store": "^0.6.4",
+    "electron-chrome-web-store": "^0.6.3",
     "electron-devtools-installer": "^4.0.0",
     "electron-extension-installer": "^1.2.0",
     "electron-updater": "^6.1.7",

@@ -13,6 +13,7 @@ const api = {
   ) => ipcRenderer.on(channel, callable(event, data)),
   toggleTrafficLights: (show: boolean) => ipcRenderer.send('toggle-traffic-lights', show),
   getActiveTab: (webContentsId: string) => ipcRenderer.invoke('get-active-tab', webContentsId),
+  getVersion: () => ipcRenderer.invoke('get-version'),
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

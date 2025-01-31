@@ -2,17 +2,18 @@ import { app, shell, BrowserWindow, ipcMain, webContents, session, Session } fro
 import path, { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import { webview } from './webview'
+import os from 'os'
 // import { installExtension, REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 // import { installExtension as installExtensionDev, REACT_DEVELOPER_TOOLS } from "electron-extension-installer";
 import { ElectronChromeExtensions } from 'electron-chrome-extensions'
 import { installChromeWebStore, updateExtensions } from 'electron-chrome-web-store'
+import { buildChromeContextMenu } from 'electron-chrome-context-menu'
 
 let mainWindow: BrowserWindow;
 let sharedSession: Session
 let extensions: ElectronChromeExtensions
 
-function createWindow(): void {
+async function createWindow(): Promise<void> {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 900,
@@ -40,42 +41,6 @@ function createWindow(): void {
     return { action: 'deny' }
   })
 
-  // HMR for renderer base on electron-vite cli.
-  // Load the remote URL for development or the local html file for production.
-  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
-  } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
-  }
-}
-
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.whenReady().then(async () => {
-  // installExtension(REACT_DEVELOPER_TOOLS, { loadExtensionOptions: { allowFileAccess: true } })
-  //   .then((react) => console.log(`Added Extension: ${react.name}`))
-  //   .catch((err) => console.log('An error occurred: ', err));
-  // await installExtensionDev(REACT_DEVELOPER_TOOLS, {
-  //   loadExtensionOptions: {
-  //     allowFileAccess: true,
-  //   },
-  // });
-
-  // Set app user model id for windows
-  electronApp.setAppUserModelId('com.electron')
-
-  sharedSession = session.fromPartition('persist:webview')
-
-  const modulePathExtensions = path.join(app.getAppPath(), 'node_modules/electron-chrome-extensions')
-
-  // Default open or close DevTools by F12 in development
-  // and ignore CommandOrControl + R in production.
-  // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
-  app.on('browser-window-created', (_, window) => {
-    optimizer.watchWindowShortcuts(window)
-  })
-
   // IPC events
   ipcMain.on('toggle-traffic-lights', (_event, show) => {
     // Check if the platform supports window button visibility
@@ -97,31 +62,71 @@ app.whenReady().then(async () => {
     return extensions.selectTab(webContents.fromId(webContentsId) as any)
   })
 
+  ipcMain.handle('get-version', async (_event) => {
+    const version = app.getVersion()
+    const platform = os.platform();
+
+    // Get the architecture (e.g., 'arm64' for ARM64)
+    const architecture = process.arch;
+
+    const systemInfo = `${version} ${platform} ${architecture}`;
+
+    return systemInfo
+  })
+
+
+  // HMR for renderer base on electron-vite cli.
+  // Load the remote URL for development or the local html file for production.
+  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
+  } else {
+    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+  }
+}
+
+// This method will be called when Electron has finished
+// initialization and is ready to create browser windows.
+// Some APIs can only be used after this event occurs.
+app.whenReady().then(async () => {
+  // Set app user model id for windows
+  electronApp.setAppUserModelId('com.formalsnake')
+
+  sharedSession = session.fromPartition('persist:webview')
+
+  const modulePathExtensions = path.join(app.getAppPath(), 'node_modules/electron-chrome-extensions')
+
+  // Default open or close DevTools by F12 in development
+  // and ignore CommandOrControl + R in production.
+  // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
+  app.on('browser-window-created', (_, window) => {
+    optimizer.watchWindowShortcuts(window)
+  })
+
   extensions = new ElectronChromeExtensions({
     license: "GPL-3.0",
     session: sharedSession,
     modulePath: modulePathExtensions,
-    // createTab(details) {
-    //   // use the existing open-url function to open the new tab
-    //   const window = BrowserWindow.getAllWindows()[0]
-    //   if (window) {
-    //     window.webContents.send('open-url', details.url)
-    //   }
-    //   // return the webContents and the window
-    //   return [window.webContents, window]
-    // },
-    // createWindow(details) {
-    //   const window = new BrowserWindow()
-    //   return window
-    // },
+    createTab(details) {
+      // use the existing open-url function to open the new tab
+      const window = BrowserWindow.getAllWindows()[0]
+      if (window) {
+        window.webContents.send('open-url', details.url)
+      }
+      // return the webContents and the window
+      return [window.webContents, window]
+    },
+    createWindow(details) {
+      const window = new BrowserWindow()
+      return window
+    },
   })
 
-  // const modulePathWebstore = path.join(app.getAppPath(), 'node_modules/electron-chrome-web-store')
+  const modulePathWebstore = path.join(app.getAppPath(), 'node_modules/electron-chrome-web-store')
 
-  // installChromeWebStore({ session: sharedSession, modulePath: modulePathWebstore }).catch((e) => console.error(e));
+  await installChromeWebStore({ session: sharedSession, modulePath: modulePathWebstore }).catch((e) => console.error(e));
 
   // Check and install updates for all loaded extensions
-  // updateExtensions()
+  await updateExtensions()
 
   createWindow()
 
@@ -130,11 +135,43 @@ app.whenReady().then(async () => {
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
-
-  app.on('web-contents-created', (event, webContents) => {
-    webview(event, webContents, extensions);
-  })
 })
+
+app.on('web-contents-created', (event, webContents) => {
+  if (webContents.getType() == 'webview') {
+    const existingWindow = BrowserWindow.getAllWindows()[0]
+
+    extensions.addTab(webContents, existingWindow)
+    console.log("Tab", webContents.id)
+
+    webContents.setVisualZoomLevelLimits(1, 4)
+
+    webContents.on('context-menu', (_e, params) => {
+      const menu = buildChromeContextMenu({
+        params,
+        webContents,
+        extensionMenuItems: extensions.getContextMenuItems(webContents, params),
+        openLink: (url, _disposition) => {
+          existingWindow.webContents.send('open-url', url)
+        }
+      })
+
+      menu.popup()
+    })
+  }
+})
+
+
+const newUserAgent = app.userAgentFallback
+  .replace(
+    /Chrome\/[\d.]+/,
+    'Chrome/130.0.0.0' // Example: Update to a recent Chrome version
+  )
+  .replace(/Electron\/[\d.]+/, '')
+  .replace(/formalsurf\/[\d.]+/, '')
+
+// also replace Electron/* with nothing, and replace formalsurf-refactor/* with nothing
+app.userAgentFallback = newUserAgent // app.userAgentFallback = newUserAgent
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
@@ -147,14 +184,3 @@ app.on('window-all-closed', () => {
 
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
-
-const newUserAgent = app.userAgentFallback
-  .replace(
-    /Chrome\/[\d.]+/,
-    'Chrome/130.0.0.0' // Example: Update to a recent Chrome version
-  )
-  .replace(/Electron\/[\d.]+/, '')
-  .replace(/formalsurf\/[\d.]+/, '')
-
-// also replace Electron/* with nothing, and replace formalsurf-refactor/* with nothing
-app.userAgentFallback = newUserAgent // app.userAgentFallback = newUserAgent
