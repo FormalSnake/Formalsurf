@@ -74,7 +74,15 @@ export function CommandMenu() {
             })}
           </CommandGroup>
         ) : (
-          <CommandEmpty>No results found.</CommandEmpty>
+          <>
+            {input.length > 0 && (
+              <CommandGroup heading="Suggestions">
+                <CommandItem onSelect={() => handleSubmit(input)}>
+                  {input}
+                </CommandItem>
+              </CommandGroup>
+            )}
+          </>
         )}
 
         {tabs.length > 0 && (
@@ -83,9 +91,7 @@ export function CommandMenu() {
             <CommandGroup heading="Tabs">
               {tabs.map((tab) => (
                 <CommandItem key={tab.id}>
-                  <a href={tab.url} target="_blank" rel="noreferrer">
-                    {tab.title}
-                  </a>
+                  {tab.title}
                 </CommandItem>
               ))}
             </CommandGroup>
