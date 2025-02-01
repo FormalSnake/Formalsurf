@@ -1,17 +1,17 @@
-import React from "react"
-import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "../ui/command"
-import { atom, useAtom } from "jotai"
-import { tabsAtom } from "@renderer/atoms/browser"
-import uuid4 from "uuid4"
-import { newTab } from "./webview"
+import React from "react";
+import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "../ui/command";
+import { atom, useAtom } from "jotai";
+import { tabsAtom } from "@renderer/atoms/browser";
+import { newTab } from "./webview";
+import { isUrl, formatUrl } from "@renderer/lib/link";
 
-export const openAtom = atom(false)
+export const openAtom = atom(false);
 
 export function CommandMenu() {
-  const [open, setOpen] = useAtom(openAtom)
-  const [tabs, setTabs] = useAtom(tabsAtom)
-  const [input, setInput] = React.useState("")
-  const [searchResults, setSearchResults] = React.useState<any[]>([])
+  const [open, setOpen] = useAtom(openAtom);
+  const [tabs, setTabs] = useAtom(tabsAtom);
+  const [input, setInput] = React.useState("");
+  const [searchResults, setSearchResults] = React.useState<any[]>([]);
 
   React.useEffect(() => {
     if (input.length === 0) {
@@ -46,9 +46,15 @@ export function CommandMenu() {
   }, [input]);
 
   const handleSubmit = (item: string) => {
-    const createURL = (query: string) => `https://www.google.com/search?q=${encodeURIComponent(query)}`;
-
-    newTab(createURL(item), item, setTabs)
+    if (isUrl(item)) {
+      // If the input is a valid URL, format it and use it directly
+      const formattedUrl = formatUrl(item);
+      newTab(formattedUrl, item, setTabs);
+    } else {
+      // If the input is not a URL, treat it as a search query
+      const createURL = (query: string) => `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+      newTab(createURL(item), item, setTabs);
+    }
 
     setInput("");
     setOpen(false);
@@ -65,12 +71,12 @@ export function CommandMenu() {
               {input}
             </CommandItem>
             {searchResults.map((item, index) => {
-              if (item === input) return null
+              if (item === input) return null;
               return (
                 <CommandItem key={index} onSelect={() => handleSubmit(item)}>
                   {item}
                 </CommandItem>
-              )
+              );
             })}
           </CommandGroup>
         ) : (
@@ -99,6 +105,5 @@ export function CommandMenu() {
         )}
       </CommandList>
     </CommandDialog>
-  )
+  );
 }
-
