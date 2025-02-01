@@ -194,3 +194,10 @@
     @apply text-sm text-foreground;
   }
 }
+
+/* Enable 3D transformations and perspective */
+.transform-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.1s ease-out;
+  /* Smooth transition */
+}
