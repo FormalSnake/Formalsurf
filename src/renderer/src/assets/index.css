@@ -201,3 +201,11 @@
   transition: transform 0.1s ease-out;
   /* Smooth transition */
 }
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

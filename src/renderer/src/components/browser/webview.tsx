@@ -84,6 +84,8 @@ export function WebView({ tab }: { tab: Tab }) {
 
   return (
     <>
+      {/* a loading indicator */}
+      {/* {isLoading && <div className="fixed top-0 w-full h-1 bg-white/50 flex items-center justify-center" />} */}
       <webview
         ref={ref}
         key={tab.id}
@@ -96,15 +98,17 @@ export function WebView({ tab }: { tab: Tab }) {
         style={{ pointerEvents: 'unset' }}
       />
       <AnimatePresence>
-        {webviewTargetUrl && (<motion.div
-          initial={{ scale: 0.5, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.5, opacity: 0 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-          className="text-xs m-1 h-fit w-fit max-w-[500px] z-50 p-1 px-2 truncate bg-popover border-border border fixed bottom-4 right-4 rounded-lg pointer-events-none"
-        >
-          {webviewTargetUrl}
-        </motion.div>
+        {webviewTargetUrl && (
+          <motion.div
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.5, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            className="text-xs m-1 h-fit w-fit max-w-[500px] z-50 p-1 px-2 truncate bg-popover border-border border fixed bottom-4 right-4 rounded-lg pointer-events-none"
+            layout
+          >
+            {webviewTargetUrl}
+          </motion.div>
         )}
       </AnimatePresence>
     </>

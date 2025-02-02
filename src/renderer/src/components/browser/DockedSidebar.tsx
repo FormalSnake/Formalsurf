@@ -4,6 +4,7 @@ import { PanelLeft } from "lucide-react"
 import { JSX } from "react"
 import { TabButton } from "./TabButton"
 import { Tab } from "@renderer/atoms/browser"
+import { AnimatedGroup } from "../ui/animated-group"
 
 interface DockedSidebarProps {
   isVisible: boolean
@@ -36,11 +37,11 @@ export function DockedSidebar({
       <div className="px-2">
         <browser-action-list partition="persist:webview" id="actions"></browser-action-list>
       </div>
-      <div className="flex flex-col p-2 space-y-2">
+      <AnimatedGroup className="flex flex-col p-2 space-y-2" preset="blur-slide">
         {tabs.map((tab: Tab) => (
           <TabButton key={tab.id} tab={tab} setActiveTab={setActiveTab} />
         ))}
-      </div>
+      </AnimatedGroup>
     </div>
   )
 }
