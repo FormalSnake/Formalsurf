@@ -11,51 +11,85 @@ import { openAtom } from "./NewTabDialog"
 export const sidebarVisibleAtom = atom(true)
 
 export function Sidebar() {
-  const [tabs, setTabs] = useAtom(tabsAtom)
-  const [isSidebarVisible, setIsSidebarVisible] = useAtom(sidebarVisibleAtom)
-  const [isHoveringEdge, setIsHoveringEdge] = useState(false)
-  const [activeTabRef, setActiveTabRef] = useAtom(activeTabRefAtom)
-  const ipcHandle = (show: boolean): void => window.api.toggleTrafficLights(show)
-  const [tabDialogOpen, setTabDialogOpen] = useAtom(openAtom)
+  const [tabs, setTabs] = useAtom(tabsAtom);
+  const [isSidebarVisible, setIsSidebarVisible] = useAtom(sidebarVisibleAtom);
+  const [isHoveringEdge, setIsHoveringEdge] = useState(false);
+  const [activeTabRef, setActiveTabRef] = useAtom(activeTabRefAtom);
+  const [tabDialogOpen, setTabDialogOpen] = useAtom(openAtom);
+
+  const ipcHandle = (show: boolean): void => window.api.toggleTrafficLights(show);
 
   useEffect(() => {
-    ipcHandle(isSidebarVisible || isHoveringEdge)
-  }, [isSidebarVisible, isHoveringEdge])
+    ipcHandle(isSidebarVisible || isHoveringEdge);
+  }, [isSidebarVisible, isHoveringEdge]);
 
   const toggleSidebar = () => {
-    setIsSidebarVisible(!isSidebarVisible)
-  }
+    setIsSidebarVisible(!isSidebarVisible);
+  };
 
   const setActiveTab = (id: string) => {
-    setTabs(tabs.map((tab) => (tab.id === id ? { ...tab, isActive: true } : { ...tab, isActive: false })))
-  }
+    const updatedTabs = tabs.map((tab) => ({
+      ...tab,
+      isActive: tab.id === id,
+    }));
+    setTabs(updatedTabs);
 
-  // Action buttons array
+    const activeTab = updatedTabs.find((tab) => tab.isActive);
+    if (activeTab) {
+      setActiveTabRef(activeTab.ref); // Ensure `ref` is set correctly
+    }
+  };
+
+  const handleReload = () => {
+    console.log("Reloading tab with ref:", activeTabRef);
+    if (activeTabRef) {
+      reloadTab(activeTabRef);
+    } else {
+      console.error("No active tab reference found.");
+    }
+  };
+
+  const handleGoBack = () => {
+    console.log("Going back with ref:", activeTabRef);
+    if (activeTabRef) {
+      goBackTab(activeTabRef);
+    } else {
+      console.error("No active tab reference found.");
+    }
+  };
+
+  const handleGoForward = () => {
+    console.log("Going forward with ref:", activeTabRef);
+    if (activeTabRef) {
+      goForwardTab(activeTabRef);
+    } else {
+      console.error("No active tab reference found.");
+    }
+  };
+
   const actionButtons = [
-    <Button key="refresh" variant="ghost" size="icon" onClick={() => reloadTab(activeTabRef)}>
+    <Button key="refresh" variant="ghost" size="icon" onClick={handleReload}>
       <RefreshCw className="h-4 w-4" />
     </Button>,
     <Button key="newtab" variant="ghost" size="icon" onClick={() => setTabDialogOpen(true)}>
       <Plus className="h-4 w-4" />
     </Button>,
-    <Button key="back" variant="ghost" size="icon" onClick={() => goBackTab(activeTabRef)}>
+    <Button key="back" variant="ghost" size="icon" onClick={handleGoBack}>
       <ArrowLeft className="h-4 w-4" />
     </Button>,
-    <Button key="forward" variant="ghost" size="icon" onClick={() => goForwardTab(activeTabRef)}>
+    <Button key="forward" variant="ghost" size="icon" onClick={handleGoForward}>
       <ArrowRight className="h-4 w-4" />
     </Button>,
-  ]
+  ];
 
   return (
     <>
-      {/* Hover detection area */}
       <div
         className="fixed left-0 top-0 h-full w-2 z-50"
         onMouseEnter={() => setIsHoveringEdge(true)}
         onMouseLeave={() => setIsHoveringEdge(false)}
       />
 
-      {/* Floating Sidebar */}
       <FloatingSidebar
         isVisible={isHoveringEdge && !isSidebarVisible}
         tabs={tabs}
@@ -65,7 +99,6 @@ export function Sidebar() {
         setIsHoveringEdge={setIsHoveringEdge}
       />
 
-      {/* Docked Sidebar */}
       <DockedSidebar
         isVisible={isSidebarVisible}
         tabs={tabs}
@@ -74,5 +107,5 @@ export function Sidebar() {
         toggleSidebar={toggleSidebar}
       />
     </>
-  )
+  );
 }
