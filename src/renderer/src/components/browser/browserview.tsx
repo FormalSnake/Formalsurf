@@ -14,7 +14,7 @@ export function BrowserView() {
   }, []);
 
   useEffect(() => {
-    const handleMouseMove = throttle((e) => {
+    const handleMouseMove = throttle((e: { clientX: any; clientY: any; }) => {
       const { clientX, clientY } = e;
       const centerX = window.innerWidth / 2;
       const centerY = window.innerHeight / 2;
