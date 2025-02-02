@@ -1,8 +1,9 @@
 import { Button } from "@renderer/components/ui/button"
 import { cn } from "@renderer/lib/utils"
-import { PanelLeftClose, PanelRightClose } from "lucide-react"
+import { PanelLeftClose } from "lucide-react"
 import { JSX } from "react"
 import { TabButton } from "./TabButton"
+import { motion } from "framer-motion" // Import Framer Motion
 
 interface FloatingSidebarProps {
   isVisible: boolean
@@ -22,11 +23,17 @@ export function FloatingSidebar({
   setIsHoveringEdge,
 }: FloatingSidebarProps) {
   return (
-    <div
+    <motion.div
       className={cn(
-        "fixed left-0 top-0 h-full bg-popover/75 backdrop-blur-3xl z-40 transition-all duration-300 ease-in-out border-r",
-        isVisible ? "w-[300px]" : "w-[10px] opacity-0 pointer-events-none"
+        "fixed left-0 top-0 h-full bg-popover/75 backdrop-blur-3xl z-40 border-r"
       )}
+      initial={false} // Disable initial animation
+      animate={{
+        width: isVisible ? 300 : 10,
+        opacity: isVisible ? 1 : 0,
+        pointerEvents: isVisible ? "auto" : "none", // Control pointer events
+      }}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
       onMouseEnter={() => setIsHoveringEdge(true)}
       onMouseLeave={() => setIsHoveringEdge(false)}
     >
@@ -43,6 +50,6 @@ export function FloatingSidebar({
           ))}
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }

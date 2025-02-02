@@ -10,10 +10,12 @@ export function BrowserView() {
   const [version, setVersion] = useState("");
 
   useEffect(() => {
+    if (tabs.length !== 0) return;
     window.api.getVersion().then((version: string) => setVersion(version));
-  }, []);
+  }, [tabs]);
 
   useEffect(() => {
+    if (tabs.length !== 0) return;
     const handleMouseMove = throttle((e: { clientX: any; clientY: any; }) => {
       const { clientX, clientY } = e;
       const centerX = window.innerWidth / 2;
@@ -30,7 +32,7 @@ export function BrowserView() {
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
     };
-  }, []);
+  }, [tabs]);
 
   return (
     <div className="flex flex-row gap-x-2 w-full">

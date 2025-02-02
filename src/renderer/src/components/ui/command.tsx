@@ -6,6 +6,8 @@ import { Search } from "lucide-react"
 import { cn } from "@renderer/lib/utils"
 import { Dialog, DialogContent } from "@renderer/components/ui/dialog"
 
+import { motion } from "framer-motion"
+
 const Command = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive>
@@ -13,7 +15,7 @@ const Command = React.forwardRef<
   <CommandPrimitive
     ref={ref}
     className={cn(
-      "flex h-full w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground",
+      "flex h-full w-full flex-col overflow-hidden bg-popover text-popover-foreground",
       className
     )}
     {...props}
@@ -58,7 +60,7 @@ const CommandList = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <CommandPrimitive.List
     ref={ref}
-    className={cn("max-h-[300px] overflow-y-auto overflow-x-hidden", className)}
+    className={cn("h-[300px] overflow-y-auto overflow-x-hidden", className)}
     {...props}
   />
 ))
