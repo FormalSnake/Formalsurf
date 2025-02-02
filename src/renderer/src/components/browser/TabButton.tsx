@@ -7,6 +7,17 @@ import { useAtom } from "jotai";
 
 export function TabButton({ tab, setActiveTab }: { tab: Tab; setActiveTab: (id: string) => void }) {
   const [tabs, setTabs] = useAtom(tabsAtom);
+
+  const setActive = () => {
+    setActiveTab(tab.id);
+  }
+
+  const close = (e: any) => {
+    e.stopPropagation();
+    console.log("Closing tab:", tab.id); // Log the tab ID being closed
+    closeTab(tab.id, setTabs);
+  }
+
   return (
     <Button
       key={tab.id}
@@ -15,7 +26,7 @@ export function TabButton({ tab, setActiveTab }: { tab: Tab; setActiveTab: (id: 
         "justify-start w-full select-none",
         tab.isActive && "bg-accent/50"
       )}
-      onClick={() => setActiveTab(tab.id)}
+      onClick={setActive}
     >
       <img src={tab.favicon} className="w-4 h-4 rounded-md" draggable={false} />
       <span className="ml-2 text-sm font-medium truncate max-w-[calc(100%-2rem)]">
@@ -23,11 +34,7 @@ export function TabButton({ tab, setActiveTab }: { tab: Tab; setActiveTab: (id: 
       </span>
       <button
         className="ml-auto"
-        onClick={(e) => {
-          e.stopPropagation();
-          console.log("Closing tab:", tab.id); // Log the tab ID being closed
-          closeTab(tab.id, setTabs);
-        }}
+        onClick={close}
       >
         <X className="h-4 w-4" />
       </button>
