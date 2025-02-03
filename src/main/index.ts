@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain, webContents, session, Session, Menu } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, webContents, session, Session, Menu, protocol } from 'electron'
 import path, { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -13,6 +13,19 @@ import { template } from './menubar'
 let mainWindow;
 let sharedSession
 let extensions
+
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: 'surf',
+    privileges: {
+      standard: true,
+      secure: true,
+      allowServiceWorkers: true,
+      supportFetchAPI: true,
+      corsEnabled: true,
+    },
+  },
+]);
 
 async function createWindow(): Promise<void> {
   // Create the browser window.
@@ -115,6 +128,40 @@ async function createWindow(): Promise<void> {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
+  // Determine the base directory based on the environment
+  const baseDir = is.dev
+    ? path.join(__dirname, '../../src/renderer') // Development path
+    : path.join(__dirname, '../renderer'); // Production path
+
+  console.log('Base directory:', baseDir); // Debugging
+
+  // Register the custom protocol handler
+  protocol.registerFileProtocol('surf', (request, callback) => {
+    const url = request.url.replace('surf://', ''); // Remove the protocol part
+    let filePath;
+
+    if (url === 'settings') {
+      filePath = path.join(baseDir, 'settings.html');
+    } else {
+      filePath = path.join(baseDir, 'index.html'); // Default page
+    }
+
+    console.log('Serving file:', filePath); // Debugging
+    callback(filePath);
+  });
+
+  // Register the custom protocol for the "persist:webview" partition
+  const webviewSession = session.fromPartition('persist:webview');
+  webviewSession.protocol.registerFileProtocol('surf', (request, callback) => {
+    const url = request.url.replace('surf://', ''); // Remove the protocol part
+    let filePath;
+
+    if (url === 'settings/') {
+      filePath = path.join(baseDir, 'settings.html');
+    }
+    console.log('Serving file (webview session):', filePath); // Debugging
+    callback(filePath);
+  });
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.formalsnake')
 

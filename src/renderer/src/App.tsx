@@ -5,6 +5,7 @@ import { CommandMenu, openAtom } from './components/browser/NewTabDialog'
 import { closeTab, newTab } from './components/browser/webview'
 import { useAtom } from 'jotai'
 import { activeTabRefAtom, tabsAtom } from './atoms/browser'
+import { Button } from './components/ui/button'
 
 function App(): JSX.Element {
   const [tabs, setTabs] = useAtom(tabsAtom)
@@ -45,6 +46,7 @@ function App(): JSX.Element {
 
   return (
     <main className="min-h-screen antialiased flex">
+      {/* <a href="/settings.html">Settings</a> */}
       <CommandMenu />
       <Sidebar />
       <BrowserView />

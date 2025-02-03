@@ -1,3 +1,4 @@
+
 import './assets/index.css'
 import { ThemeProvider } from "@renderer/components/theme-provider"
 
@@ -8,7 +9,7 @@ import App from './App'
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <ThemeProvider defaultTheme="system" storageKey="theme">
-      <App />
+      <p>Settings</p>
     </ThemeProvider>
   </React.StrictMode>
 )
