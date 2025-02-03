@@ -84,8 +84,6 @@ export function WebView({ tab }: { tab: Tab }) {
 
   return (
     <>
-      {/* a loading indicator */}
-      {/* {isLoading && <div className="fixed top-0 w-full h-1 bg-white/50 flex items-center justify-center" />} */}
       <webview
         ref={ref}
         key={tab.id}
