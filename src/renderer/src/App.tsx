@@ -48,6 +48,7 @@ function App(): JSX.Element {
       window.api.removeHandler('new-tab')
       window.api.removeHandler('close-active-tab')
       window.api.removeHandler('toggle-sidebar')
+      window.api.removeHandler('remove-tab')
     }
   }, [tabs, setTabs, setNewTabDialogOpen, isSidebarVisible, setIsSidebarVisible])
 
