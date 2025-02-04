@@ -1,15 +1,15 @@
 import { activeTabRefAtom, Tab, tabsAtom } from "@renderer/atoms/browser";
 import { cn } from "@renderer/lib/utils";
-import { atom, useAtom } from "jotai";
-import { useEffect, useRef, useState } from "react"; // Add useState
+import { useAtom } from "jotai";
 import uuid4 from "uuid4";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 export function WebView({ tab }: { tab: Tab }) {
   const [tabs, setTabs] = useAtom(tabsAtom);
   const [activeTabRef, setActiveTabRef] = useAtom(activeTabRefAtom);
   const ref = useRef<HTMLWebViewElement>(null);
-  const [isWebViewReady, setIsWebViewReady] = useState(false); // Track if webview is ready
+  const [isWebViewReady, setIsWebViewReady] = useState(false);
   const [webviewTargetUrl, setWebviewTargetUrl] = useState("");
 
   const ipcHandle = (ref: any): void => {
@@ -44,25 +44,29 @@ export function WebView({ tab }: { tab: Tab }) {
 
     const handleTitleUpdate = () => {
       updateCurrentTab((t) => ({ ...t, title: webview.getTitle() }));
-      console.log("Title updated:", webview.getTitle())
+      console.log("Title updated:", webview.getTitle());
     };
 
     const handleFaviconUpdate = (event: any) => {
       updateCurrentTab((t) => ({ ...t, favicon: event.favicons[0] }));
-      console.log("Favicon updated:", event.favicons[0])
+      console.log("Favicon updated:", event.favicons[0]);
     };
 
     const handleTargetUrlUpdate = (event: any) => {
       setWebviewTargetUrl(event.url);
-      console.log("Target URL updated:", event.url)
+      console.log("Target URL updated:", event.url);
     };
 
-    const navigateHandler = (event: any) => {
+    const handleFullNavigation = (event: any) => {
       if (event.isMainFrame) {
+        console.log("Navigated to:", event.url); // Log full navigation
         updateCurrentTab((t) => ({ ...t, url: event.url }));
-        console.log("Navigated to:", event.url)
-      } else {
-        console.log("is not main frame")
+      }
+    };
+
+    const handleInPageNavigation = (event: any) => {
+      if (event.isMainFrame) {
+        console.log("In-page navigation to:", event.url); // Log in-page navigation
       }
     };
 
@@ -70,16 +74,16 @@ export function WebView({ tab }: { tab: Tab }) {
     webview.addEventListener('page-title-updated', handleTitleUpdate);
     webview.addEventListener('page-favicon-updated', handleFaviconUpdate);
     webview.addEventListener('update-target-url', handleTargetUrlUpdate);
-    webview.addEventListener('did-navigate', navigateHandler);
-    webview.addEventListener('did-navigate-in-page', navigateHandler);
+    webview.addEventListener('did-navigate', handleFullNavigation); // Full page navigation
+    webview.addEventListener('did-navigate-in-page', handleInPageNavigation); // In-page navigation
 
     return () => {
       webview.removeEventListener('dom-ready', handleDomReady);
       webview.removeEventListener('page-title-updated', handleTitleUpdate);
       webview.removeEventListener('page-favicon-updated', handleFaviconUpdate);
       webview.removeEventListener('update-target-url', handleTargetUrlUpdate);
-      webview.removeEventListener('did-navigate', navigateHandler);
-      webview.removeEventListener('did-navigate-in-page', navigateHandler);
+      webview.removeEventListener('did-navigate', handleFullNavigation);
+      webview.removeEventListener('did-navigate-in-page', handleInPageNavigation);
     };
   }, [ref, tab.isActive]);
 
