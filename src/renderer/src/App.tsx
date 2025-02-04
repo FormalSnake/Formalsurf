@@ -17,7 +17,7 @@ function App(): JSX.Element {
   useEffect(() => {
     window.electron.ipcRenderer.on('open-url', (_event, url) => {
       console.log("Handling URL:", url)
-      newTab(url, 'New Tab', setTabs)
+      newTab(url, 'Loading...', setTabs)
     })
 
     // hotkeys

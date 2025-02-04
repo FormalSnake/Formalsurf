@@ -11,6 +11,7 @@ export function WebView({ tab }: { tab: Tab }) {
   const ref = useRef<HTMLWebViewElement>(null);
   const [isWebViewReady, setIsWebViewReady] = useState(false);
   const [webviewTargetUrl, setWebviewTargetUrl] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const ipcHandle = (ref: any): void => {
     if (ref.current && isWebViewReady) {
@@ -70,12 +71,24 @@ export function WebView({ tab }: { tab: Tab }) {
       }
     };
 
+    const handleStartLoading = () => {
+      setIsLoading(true); // Set loading state to true
+    };
+
+    const handleStopLoading = () => {
+      setIsLoading(false); // Set loading state to false
+    };
+
     webview.addEventListener('dom-ready', handleDomReady);
     webview.addEventListener('page-title-updated', handleTitleUpdate);
     webview.addEventListener('page-favicon-updated', handleFaviconUpdate);
     webview.addEventListener('update-target-url', handleTargetUrlUpdate);
     webview.addEventListener('did-navigate', handleFullNavigation); // Full page navigation
     webview.addEventListener('did-navigate-in-page', handleInPageNavigation); // In-page navigation
+    webview.addEventListener('did-start-loading', handleStartLoading); // Start loading
+    webview.addEventListener('did-stop-loading', handleStopLoading); // Stop loading
+    webview.addEventListener('did-finish-load', handleStopLoading); // Finish loading
+    webview.addEventListener('did-fail-load', handleStopLoading); // Fail loading
 
     return () => {
       webview.removeEventListener('dom-ready', handleDomReady);
@@ -84,6 +97,10 @@ export function WebView({ tab }: { tab: Tab }) {
       webview.removeEventListener('update-target-url', handleTargetUrlUpdate);
       webview.removeEventListener('did-navigate', handleFullNavigation);
       webview.removeEventListener('did-navigate-in-page', handleInPageNavigation);
+      webview.removeEventListener('did-start-loading', handleStartLoading);
+      webview.removeEventListener('did-stop-loading', handleStopLoading);
+      webview.removeEventListener('did-finish-load', handleStopLoading);
+      webview.removeEventListener('did-fail-load', handleStopLoading);
     };
   }, [ref, tab.isActive]);
 
@@ -95,13 +112,35 @@ export function WebView({ tab }: { tab: Tab }) {
   }, [tab.isActive, activeTabRef, isWebViewReady]);
 
   return (
-    <>
+    <div className={cn('w-full bg-white', !tab.isActive && 'hidden')}>
+      <AnimatePresence>
+        {isLoading && (
+          <motion.div
+            className="fixed top-0 left-0 right-0 h-1 bg-blue-500 z-50"
+            initial={{ width: 0 }}
+            animate={{ width: "90%" }} // Animate to 90% of the width
+            exit={{
+              width: "100%", // Complete to 100% on exit
+              opacity: 0,    // Fade out
+              transition: {
+                width: { duration: 0.3 }, // Quick transition to 100%
+                opacity: { duration: 0.3, delay: 0.2 } // Slight delay before fading
+              }
+            }}
+            transition={{
+              duration: 4,    // Slow initial progress (4 seconds to 90%)
+              ease: "linear"
+            }}
+          />
+        )}
+      </AnimatePresence>
+
       <webview
         ref={ref}
         key={tab.id}
         src={tab.url}
         id={tab.id}
-        className={cn('w-full bg-white', !tab.isActive && 'hidden')}
+        className="w-full h-full"
         webpreferences="autoplayPolicy=document-user-activation-required,defaultFontSize=16,contextIsolation=true,nodeIntegration=false,sandbox=true,webSecurity=true,nativeWindowOpen=true"
         allowpopups="true"
         partition="persist:webview"
@@ -121,7 +160,7 @@ export function WebView({ tab }: { tab: Tab }) {
           </motion.div>
         )}
       </AnimatePresence>
-    </>
+    </div>
   );
 }
 

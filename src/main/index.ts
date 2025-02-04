@@ -3,7 +3,6 @@ import path, { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import os from 'os'
-import fs from 'fs'
 // import { installExtension, REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 // import { installExtension as installExtensionDev, REACT_DEVELOPER_TOOLS } from "electron-extension-installer";
 import { buildChromeContextMenu } from 'electron-chrome-context-menu'
