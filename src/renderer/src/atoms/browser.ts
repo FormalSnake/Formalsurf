@@ -15,7 +15,7 @@ export const tabsAtom = atom<Tab[]>([
     url: 'https://github.com/FormalSnake/Formalsurf',
     title: 'GitHub',
     favicon: 'https://www.github.com/favicon.ico',
-    isActive: true,
+    isActive: false,
   },
   {
     id: uuid4(),
@@ -30,7 +30,14 @@ export const tabsAtom = atom<Tab[]>([
     title: 'Chrome Web Store',
     favicon: 'https://chromewebstore.google.com/favicon.ico',
     isActive: false,
-  }
+  },
+  {
+    id: uuid4(),
+    url: 'https://webbrowsertools.com/popup-blocker/',
+    title: 'Popup Blocker',
+    favicon: 'https://webbrowsertools.com/favicon.ico',
+    isActive: true,
+  },
 ])
 
 export const activeTabRefAtom = atom<any>(null)

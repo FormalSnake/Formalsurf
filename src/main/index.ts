@@ -67,11 +67,22 @@ async function createWindow(): Promise<void> {
   // Main window handlers
   mainWindow.webContents.on('did-attach-webview', (_, contents) => {
     contents.setWindowOpenHandler((details) => {
-      console.log("Opening URL (window):", details.url)
-      mainWindow.webContents.send('open-url', details.url)
-      return { action: 'deny' }
-    })
-  })
+      console.log("details", details)
+      console.log("Opening URL (window):", details.url);
+
+      // Allow new windows only if the disposition is 'new-window'
+      if (details.disposition === 'new-window') {
+        console.log("New window opening:", details.url);
+        return { action: 'allow' }; // Allow the new window to open
+      } else {
+        console.log("Denying window opening:", details.url);
+        // You can optionally send the URL to the main process or handle it as needed
+        mainWindow.webContents.send('open-url', details.url);
+        // Deny other types of window openings (e.g., target="_blank")
+        return { action: 'deny' };
+      }
+    });
+  });
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
@@ -105,7 +116,8 @@ async function createWindow(): Promise<void> {
 
   ipcMain.handle('close-tab', async (_event, webContentsId) => {
     console.log('close-tab', webContentsId)
-    return extensions.closeTab(webContents.fromId(webContentsId) as any)
+    // unload the tab from electron (not extensions)
+    webContents.fromId(webContentsId)?.removeAllListeners()
   })
 
   ipcMain.handle('get-version', async (_event) => {

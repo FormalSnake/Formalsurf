@@ -2,7 +2,7 @@ import { Sidebar, sidebarVisibleAtom } from '@renderer/components/browser/sideba
 import { BrowserView } from '@renderer/components/browser/browserview'
 import { JSX, useEffect } from 'react'
 import { CommandMenu, openAtom } from './components/browser/NewTabDialog'
-import { closeTab, newTab } from './components/browser/webview'
+import { closeTab, newTab, reloadTab } from './components/browser/webview'
 import { useAtom } from 'jotai'
 import { activeTabRefAtom, tabsAtom } from './atoms/browser'
 import { Button } from './components/ui/button'
@@ -11,6 +11,7 @@ function App(): JSX.Element {
   const [tabs, setTabs] = useAtom(tabsAtom)
   const [newTabDialogOpen, setNewTabDialogOpen] = useAtom(openAtom)
   const [isSidebarVisible, setIsSidebarVisible] = useAtom(sidebarVisibleAtom)
+  const [activeTabRef, setActiveTabRef] = useAtom(activeTabRefAtom);
 
   // const ipcHandle = (): void => window.electron.ipcRenderer.send('ping')
   useEffect(() => {
@@ -42,6 +43,12 @@ function App(): JSX.Element {
         closeTab(activeTab.id, tabs, setTabs)
       }
     })
+    // @ts-expect-error
+    window.api.handle('reload', (event, data) => function(event, data) {
+      if (activeTabRef) {
+        reloadTab(activeTabRef)
+      }
+    })
 
     return () => {
       window.electron.ipcRenderer.removeAllListeners('open-url')
@@ -49,8 +56,9 @@ function App(): JSX.Element {
       window.api.removeHandler('close-active-tab')
       window.api.removeHandler('toggle-sidebar')
       window.api.removeHandler('remove-tab')
+      window.api.removeHandler('reload')
     }
-  }, [tabs, setTabs, setNewTabDialogOpen, isSidebarVisible, setIsSidebarVisible])
+  }, [tabs, setTabs, setNewTabDialogOpen, isSidebarVisible, setIsSidebarVisible, activeTabRef])
 
   return (
     <main className="min-h-screen antialiased flex">

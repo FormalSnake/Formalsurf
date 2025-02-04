@@ -102,7 +102,7 @@ export function WebView({ tab }: { tab: Tab }) {
         src={tab.url}
         id={tab.id}
         className={cn('w-full bg-white', !tab.isActive && 'hidden')}
-        webpreferences="autoplayPolicy=document-user-activation-required,defaultFontSize=16,contextIsolation=true,nodeIntegration=false,sandbox=true,webSecurity=true"
+        webpreferences="autoplayPolicy=document-user-activation-required,defaultFontSize=16,contextIsolation=true,nodeIntegration=false,sandbox=true,webSecurity=true,nativeWindowOpen=true"
         allowpopups="true"
         partition="persist:webview"
         style={{ pointerEvents: 'unset' }}
