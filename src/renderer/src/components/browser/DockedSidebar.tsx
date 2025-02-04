@@ -26,14 +26,15 @@ export function DockedSidebar({
     <motion.div
       initial={false} // Disable initial animation
       animate={{
-        width: isVisible ? 300 : 0,
+        width: isVisible ? 350 : 0,
         opacity: isVisible ? 1 : 0,
       }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
       className={cn(
-        "flex flex-col pt-1.5 border-r ", // Add overflow-hidden to prevent content from spilling out
+        "flex flex-col pt-1.5 border-r overflow-hidden", // Add overflow-hidden to prevent content from spilling out
         !isVisible && "pointer-events-none" // Disable pointer events when hidden
       )}
+      style={{ width: isVisible ? 350 : 0 }} // Ensure fixed width when visible
     >
       <div className="flex flex-row ml-18 space-x-2 items-center">
         <Button variant="ghost" size="icon" onClick={toggleSidebar}>

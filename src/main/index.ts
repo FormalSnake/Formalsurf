@@ -188,9 +188,6 @@ app.whenReady().then(async () => {
       const window = new BrowserWindow()
       return window
     },
-    removeTab(tab, browserWindow) {
-      browserWindow.webContents.send('remove-tab', tab)
-    }
   })
 
   const modulePathWebstore = path.join(app.getAppPath(), 'node_modules/electron-chrome-web-store')
