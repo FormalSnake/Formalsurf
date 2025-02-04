@@ -14,6 +14,7 @@ const api = {
   removeHandler: (channel) => ipcRenderer.removeAllListeners(channel),
   toggleTrafficLights: (show: boolean) => ipcRenderer.send('toggle-traffic-lights', show),
   getActiveTab: (webContentsId: string) => ipcRenderer.invoke('get-active-tab', webContentsId),
+  closeTab: (webContentsId: string) => ipcRenderer.invoke('close-tab', webContentsId),
   getVersion: () => ipcRenderer.invoke('get-version'),
 }
 

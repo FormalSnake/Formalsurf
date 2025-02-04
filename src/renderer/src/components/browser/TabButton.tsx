@@ -15,7 +15,7 @@ export function TabButton({ tab, setActiveTab }: { tab: Tab; setActiveTab: (id: 
   const close = (e: any) => {
     e.stopPropagation();
     console.log("Closing tab:", tab.id); // Log the tab ID being closed
-    closeTab(tab.id, setTabs);
+    closeTab(tab.id, tabs, setTabs);
   }
 
   return (

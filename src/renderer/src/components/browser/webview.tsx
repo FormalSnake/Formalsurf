@@ -1,6 +1,6 @@
 import { activeTabRefAtom, Tab, tabsAtom } from "@renderer/atoms/browser";
 import { cn } from "@renderer/lib/utils";
-import { useAtom } from "jotai";
+import { atom, useAtom } from "jotai";
 import { useEffect, useRef, useState } from "react"; // Add useState
 import uuid4 from "uuid4";
 import { AnimatePresence, motion } from "framer-motion";
@@ -44,18 +44,26 @@ export function WebView({ tab }: { tab: Tab }) {
 
     const handleTitleUpdate = () => {
       updateCurrentTab((t) => ({ ...t, title: webview.getTitle() }));
+      console.log("Title updated:", webview.getTitle())
     };
 
     const handleFaviconUpdate = (event: any) => {
       updateCurrentTab((t) => ({ ...t, favicon: event.favicons[0] }));
+      console.log("Favicon updated:", event.favicons[0])
     };
 
     const handleTargetUrlUpdate = (event: any) => {
       setWebviewTargetUrl(event.url);
+      console.log("Target URL updated:", event.url)
     };
 
     const navigateHandler = (event: any) => {
-      updateCurrentTab((t) => ({ ...t, url: event.url }));
+      if (event.isMainFrame) {
+        updateCurrentTab((t) => ({ ...t, url: event.url }));
+        console.log("Navigated to:", event.url)
+      } else {
+        console.log("is not main frame")
+      }
     };
 
     webview.addEventListener('dom-ready', handleDomReady);
@@ -152,7 +160,35 @@ export function newTab(url: string, title: string, setTabs: any) {
   });
 }
 
-export function closeTab(tabId: string, setTabs: (updater: (prevTabs: Tab[]) => Tab[]) => void) {
+export function closeTab(
+  tabId: string,
+  tabs: Tab[], // Pass the tabs array as an argument
+  setTabs: (updater: (prevTabs: Tab[]) => Tab[]) => void
+) {
+  console.log("Closing tab with ID:", tabId); // Log the tab ID being closed
+
+  // Find the tab being closed
+  const tabToClose = tabs.find((tab) => tab.id === tabId);
+  if (!tabToClose) {
+    console.error("Tab not found");
+    return;
+  }
+
+  // Get the webview element associated with the tab
+  const webview = tabToClose.ref.current;
+  if (!webview) {
+    console.error("Webview not found");
+    return;
+  }
+
+  // Get the webContentsId from the webview
+  const webContentsId = webview.getWebContentsId();
+
+  console.log("Closing tab", webContentsId)
+  // Send the webContentsId to window.api instead of tabId
+  window.api.closeTab(webContentsId);
+
+  // Update the tabs state
   setTabs((prevTabs) => {
     console.log("Closing tab with ID:", tabId); // Log the tab ID being closed
     console.log("Current tabs:", prevTabs); // Log the current tabs

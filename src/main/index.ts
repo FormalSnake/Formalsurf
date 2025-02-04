@@ -3,6 +3,7 @@ import path, { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import os from 'os'
+import fs from 'fs'
 // import { installExtension, REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 // import { installExtension as installExtensionDev, REACT_DEVELOPER_TOOLS } from "electron-extension-installer";
 import { buildChromeContextMenu } from 'electron-chrome-context-menu'
@@ -102,6 +103,11 @@ async function createWindow(): Promise<void> {
     return extensions.selectTab(webContents.fromId(webContentsId) as any)
   })
 
+  ipcMain.handle('close-tab', async (_event, webContentsId) => {
+    console.log('close-tab', webContentsId)
+    return extensions.closeTab(webContents.fromId(webContentsId) as any)
+  })
+
   ipcMain.handle('get-version', async (_event) => {
     const version = app.getVersion()
     const platform = os.platform();
@@ -128,40 +134,6 @@ async function createWindow(): Promise<void> {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
-  // Determine the base directory based on the environment
-  const baseDir = is.dev
-    ? path.join(__dirname, '../../src/renderer') // Development path
-    : path.join(__dirname, '../renderer'); // Production path
-
-  console.log('Base directory:', baseDir); // Debugging
-
-  // Register the custom protocol handler
-  protocol.registerFileProtocol('surf', (request, callback) => {
-    const url = request.url.replace('surf://', ''); // Remove the protocol part
-    let filePath;
-
-    if (url === 'settings') {
-      filePath = path.join(baseDir, 'settings.html');
-    } else {
-      filePath = path.join(baseDir, 'index.html'); // Default page
-    }
-
-    console.log('Serving file:', filePath); // Debugging
-    callback(filePath);
-  });
-
-  // Register the custom protocol for the "persist:webview" partition
-  const webviewSession = session.fromPartition('persist:webview');
-  webviewSession.protocol.registerFileProtocol('surf', (request, callback) => {
-    const url = request.url.replace('surf://', ''); // Remove the protocol part
-    let filePath;
-
-    if (url === 'settings/') {
-      filePath = path.join(baseDir, 'settings.html');
-    }
-    console.log('Serving file (webview session):', filePath); // Debugging
-    callback(filePath);
-  });
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.formalsnake')
 
@@ -216,6 +188,9 @@ app.whenReady().then(async () => {
       const window = new BrowserWindow()
       return window
     },
+    removeTab(tab, browserWindow) {
+      browserWindow.webContents.send('remove-tab', tab)
+    }
   })
 
   const modulePathWebstore = path.join(app.getAppPath(), 'node_modules/electron-chrome-web-store')

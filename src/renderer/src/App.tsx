@@ -28,12 +28,19 @@ function App(): JSX.Element {
     window.api.handle('close-active-tab', (event, data) => function(event, data) {
       const activeTab = tabs.find((tab) => tab.isActive)
       if (activeTab) {
-        closeTab(activeTab.id, setTabs)
+        closeTab(activeTab.id, tabs, setTabs)
       }
     })
     // @ts-expect-error
     window.api.handle('toggle-sidebar', (event, data) => function(event, data) {
       setIsSidebarVisible(!isSidebarVisible)
+    })
+    // @ts-expect-error
+    window.api.handle('remove-tab', (event, data) => function(event, data) {
+      const activeTab = tabs.find((tab) => tab.isActive)
+      if (activeTab) {
+        closeTab(activeTab.id, tabs, setTabs)
+      }
     })
 
     return () => {

@@ -12,17 +12,10 @@ export interface Tab {
 export const tabsAtom = atom<Tab[]>([
   {
     id: uuid4(),
-    url: 'surf://settings',
-    title: 'Settings',
-    favicon: '',
-    isActive: true,
-  },
-  {
-    id: uuid4(),
     url: 'https://github.com/FormalSnake/Formalsurf',
     title: 'GitHub',
     favicon: 'https://www.github.com/favicon.ico',
-    isActive: false,
+    isActive: true,
   },
   {
     id: uuid4(),
