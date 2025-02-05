@@ -17,7 +17,7 @@ The intention of this browser is to only implement basic browser features that I
 - [x] Persistence
 - [x] Context menu (Downloading is currently broken)
 - [x] Settings
-- [ ] Extensions
+- [x] Extensions
 - [ ] Profiles
 - [ ] Spaces
 - [ ] Tab folders and trails
