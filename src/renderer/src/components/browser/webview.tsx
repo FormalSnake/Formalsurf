@@ -252,3 +252,14 @@ export function closeTab(
     return updatedTabs;
   });
 }
+
+export const handleToggleDevTools = (activeTabRef: any) => {
+  if (activeTabRef.current) {
+    // activeTabRef.current?.openDevTools()
+    if (activeTabRef.current.isDevToolsOpened()) {
+      activeTabRef.current.closeDevTools()
+    } else {
+      activeTabRef.current.openDevTools()
+    }
+  }
+}

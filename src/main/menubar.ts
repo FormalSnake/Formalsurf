@@ -170,6 +170,15 @@ export const template = [
       },
       { role: 'forceReload' },
       {
+        label: 'Toggle DevTools (Renderer)',
+        accelerator: 'Alt+Command+I',
+        click: (menuItem, browserWindow) => {
+          if (browserWindow) {
+            browserWindow.webContents.send('toggle-devtools')
+          }
+        }
+      },
+      {
         label: 'Toggle DevTools (App)',
         accelerator: 'Alt+Command+Shift+I',
         role: 'toggleDevTools'

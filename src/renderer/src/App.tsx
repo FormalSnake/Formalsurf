@@ -2,7 +2,7 @@ import { Sidebar, sidebarVisibleAtom } from '@renderer/components/browser/sideba
 import { BrowserView } from '@renderer/components/browser/browserview'
 import { JSX, useEffect } from 'react'
 import { CommandMenu, openAtom } from './components/browser/NewTabDialog'
-import { closeTab, newTab, reloadTab } from './components/browser/webview'
+import { closeTab, handleToggleDevTools, newTab, reloadTab } from './components/browser/webview'
 import { useAtom } from 'jotai'
 import { activeTabRefAtom, tabsAtom } from './atoms/browser'
 import { Button } from './components/ui/button'
@@ -49,6 +49,13 @@ function App(): JSX.Element {
         reloadTab(activeTabRef)
       }
     })
+    // @ts-expect-error
+    window.api.handle('toggle-devtools', (event, data) => function(event, data) {
+      if (activeTabRef) {
+        console.log("Handling toggle devtools")
+        handleToggleDevTools(activeTabRef)
+      }
+    })
 
     return () => {
       window.electron.ipcRenderer.removeAllListeners('open-url')
@@ -57,6 +64,7 @@ function App(): JSX.Element {
       window.api.removeHandler('toggle-sidebar')
       window.api.removeHandler('remove-tab')
       window.api.removeHandler('reload')
+      window.api.removeHandler('toggle-devtools')
     }
   }, [tabs, setTabs, setNewTabDialogOpen, isSidebarVisible, setIsSidebarVisible, activeTabRef])
 

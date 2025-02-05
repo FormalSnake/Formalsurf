@@ -2,18 +2,24 @@
 
 export function isUrl(input: string): boolean {
   try {
-    // If the input doesn't start with a protocol, prepend 'https://'
-    const urlToTest = input.includes("://") ? input : `https://${input}`;
+    const hasProtocol = input.includes('://');
+    const urlToTest = hasProtocol ? input : `https://${input}`;
     const url = new URL(urlToTest);
 
-    // Ensure the hostname has at least one dot (to rule out single-word strings like "hello")
-    return url.hostname.includes(".");
+    // Special handling for http and https protocols
+    if (['http:', 'https:'].includes(url.protocol)) {
+      const hostname = url.hostname;
+      // Allow localhost or hostnames containing a dot
+      return hostname === 'localhost' || hostname.includes('.');
+    }
+
+    // All other protocols are considered valid
+    return true;
   } catch {
     return false;
   }
 }
 
 export function formatUrl(input: string): string {
-  // If the input doesn't start with a protocol, prepend 'https://'
-  return input.includes("://") ? input : `https://${input}`;
+  return input.includes('://') ? input : `https://${input}`;
 }
