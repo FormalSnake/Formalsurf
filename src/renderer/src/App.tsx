@@ -2,7 +2,7 @@ import { Sidebar, sidebarVisibleAtom } from '@renderer/components/browser/sideba
 import { BrowserView } from '@renderer/components/browser/browserview'
 import { JSX, useEffect } from 'react'
 import { CommandMenu, openAtom } from './components/browser/NewTabDialog'
-import { closeTab, handleToggleDevTools, newTab, reloadTab } from './components/browser/webview'
+import { closeTab, handleToggleDevTools, newTab, reloadTab, toggleReadingMode } from './components/browser/webview'
 import { useAtom } from 'jotai'
 import { activeTabRefAtom, tabsAtom } from './atoms/browser'
 import { SettingsDialog, settingsOpenAtom } from './components/settings/Settings'
@@ -61,6 +61,10 @@ function App(): JSX.Element {
     window.api.handle('show-settings', (event, data) => function(event, data) {
       setSettingsOpen(!settingsOpen)
     })
+    // @ts-expect-error
+    window.api.handle('toggle-reading-mode', (event, data) => function(event, data) {
+      toggleReadingMode(tabs.find((tab) => tab.isActive), setTabs)
+    })
 
     return () => {
       window.electron.ipcRenderer.removeAllListeners('open-url')
@@ -71,6 +75,7 @@ function App(): JSX.Element {
       window.api.removeHandler('reload')
       window.api.removeHandler('toggle-devtools')
       window.api.removeHandler('show-settings')
+      window.api.removeHandler('toggle-reading-mode')
     }
   }, [tabs, setTabs, setNewTabDialogOpen, isSidebarVisible, setIsSidebarVisible, activeTabRef, settingsOpen, setSettingsOpen])
 

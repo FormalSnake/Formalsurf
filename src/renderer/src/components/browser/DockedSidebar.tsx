@@ -5,11 +5,11 @@ import { JSX } from "react"
 import { TabButton } from "./TabButton"
 import { Tab } from "@renderer/atoms/browser"
 import { AnimatedGroup } from "../ui/animated-group"
-import { motion } from "framer-motion" // Import Framer Motion
+import { motion } from "framer-motion"
 
 interface DockedSidebarProps {
   isVisible: boolean
-  tabs: any[]
+  tabs: Tab[]
   actionButtons: JSX.Element[]
   setActiveTab: (id: string) => void
   toggleSidebar: () => void
@@ -24,17 +24,17 @@ export function DockedSidebar({
 }: DockedSidebarProps) {
   return (
     <motion.div
-      initial={false} // Disable initial animation
+      initial={false}
       animate={{
-        width: isVisible ? 350 : 0,
+        width: isVisible ? 300 : 0,
         opacity: isVisible ? 1 : 0,
       }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
       className={cn(
-        "flex flex-col pt-1.5 border-r overflow-hidden", // Add overflow-hidden to prevent content from spilling out
-        !isVisible && "pointer-events-none" // Disable pointer events when hidden
+        "flex-none flex flex-col pt-1.5 border-r overflow-hidden", // "flex-none" prevents it from shrinking
+        !isVisible && "pointer-events-none"
       )}
-      style={{ width: isVisible ? 350 : 0 }} // Ensure fixed width when visible
+      style={{ width: isVisible ? 300 : 0, boxSizing: "border-box" }}
     >
       <div className="flex flex-row ml-18 space-x-2 items-center">
         <Button variant="ghost" size="icon" onClick={toggleSidebar}>
@@ -46,10 +46,11 @@ export function DockedSidebar({
         <browser-action-list partition="persist:webview" id="actions"></browser-action-list>
       </div>
       <AnimatedGroup className="flex flex-col p-2 space-y-2">
-        {tabs.map((tab: Tab) => (
+        {tabs.map((tab) => (
           <TabButton key={tab.id} tab={tab} setActiveTab={setActiveTab} />
         ))}
       </AnimatedGroup>
     </motion.div>
   )
 }
+

@@ -7,6 +7,7 @@ export interface Tab {
   title: string
   favicon: string
   isActive: boolean
+  readerMode: boolean
 }
 
 export const tabsAtom = atom<Tab[]>([
@@ -16,13 +17,15 @@ export const tabsAtom = atom<Tab[]>([
     title: 'GitHub',
     favicon: 'https://www.github.com/favicon.ico',
     isActive: false,
+    readerMode: false,
   },
   {
     id: uuid4(),
-    url: 'https://www.formalsnake.dev/',
+    url: 'https://www.formalsnake.dev/blog/07-nix/',
     title: 'formalsnake.dev',
     favicon: 'https://www.formalsnake.dev/favicon.ico',
-    isActive: false,
+    isActive: true,
+    readerMode: false,
   },
   {
     id: uuid4(),
@@ -30,13 +33,7 @@ export const tabsAtom = atom<Tab[]>([
     title: 'Chrome Web Store',
     favicon: 'https://chromewebstore.google.com/favicon.ico',
     isActive: false,
-  },
-  {
-    id: uuid4(),
-    url: 'https://webbrowsertools.com/popup-blocker/',
-    title: 'Popup Blocker',
-    favicon: 'https://webbrowsertools.com/favicon.ico',
-    isActive: true,
+    readerMode: false,
   },
 ])
 

@@ -48,7 +48,7 @@ export function BrowserView() {
                 transform: `perspective(1000px) rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
               }}
             >
-              <p className="text-[12vw] font-extrabold tracking-widest [text-shadow:_4px_4px_15px_rgb(0_0_0_/_70%)]">
+              <p className="text-[12vw] font-extrabold tracking-widest [text-shadow:_4px_4px_15px_rgb(0_0_0_/_70%)] select-none">
                 FORMAL
               </p>
             </div>
