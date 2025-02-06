@@ -3,7 +3,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@renderer/components/ui/dialog"
@@ -29,6 +28,8 @@ import { Check, ChevronsUpDown } from "lucide-react"
 import { cn } from "@renderer/lib/utils"
 
 export const settingsOpenAtom = atom(false)
+export const activeModelAtom = atom<Model | null>(null)
+export const ollamaUrlAtom = atom<string | null>(null)
 
 interface Model {
   name: string
@@ -37,35 +38,54 @@ interface Model {
 
 export function SettingsDialog() {
   const [open, setOpen] = useAtom(settingsOpenAtom)
-  const [ollamaUrl, setOllamaUrl] = useState<string>("")
+  const [ollamaUrl, setOllamaUrl] = useAtom(ollamaUrlAtom)
   const [models, setModels] = useState<Model[]>([])
-  const [activeModel, setActiveModel] = useState<Model>({ name: "llama3.2:latest", model: "llama3.2:latest" })
+  const [activeModel, setActiveModel] = useAtom(activeModelAtom)
   const [modelOpen, setModelOpen] = useState(false)
 
   useEffect(() => {
     window.api.getSettings('ollamaUrl').then((value) => {
-      console.log("Setting ollamaUrl to:", value)
       setOllamaUrl(value)
+    })
+    window.api.getSettings('activeModel').then((value) => {
+      if (value) setActiveModel(value)
     })
   }, [])
 
   const handleChangeOllamaUrl = (value: string) => {
-    window.api.changeSetting('ollamaUrl', value).then((value) => { setOllamaUrl(value) })
+    // Normalize URL by ensuring it ends with a slash
+    const normalizedValue = value.trim().replace(/\/?$/, '/')
+    window.api.changeSetting('ollamaUrl', normalizedValue).then((savedValue) => {
+      setOllamaUrl(savedValue)
+    })
   }
 
   useEffect(() => {
-    if (ollamaUrl !== "") {
-      handleChangeOllamaUrl(ollamaUrl)
-      if (ollamaUrl.endsWith('/')) {
-        const fetchedModels = fetch(`${ollamaUrl}api/tags`)
-        fetchedModels.then(res => res.json()).then((value) => {
-          if (value.models) {
-            setModels(value.models)
-          }
+    if (ollamaUrl) {
+      // Properly construct API URL using URL constructor
+      const apiUrl = new URL('api/tags', ollamaUrl).href
+
+      fetch(apiUrl)
+        .then(res => {
+          if (!res.ok) throw new Error('Failed to fetch models')
+          return res.json()
         })
-      }
+        .then((data) => {
+          setModels(data.models || [])
+        })
+        .catch((error) => {
+          console.error('Error fetching models:', error)
+          setModels([])
+        })
     }
   }, [ollamaUrl])
+
+  useEffect(() => {
+    if (activeModel) {
+      // Remove unnecessary state update in .then() callback
+      window.api.changeSetting('activeModel', activeModel)
+    }
+  }, [activeModel])
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -73,8 +93,7 @@ export function SettingsDialog() {
         <DialogHeader>
           <DialogTitle>Browser Settings</DialogTitle>
           <DialogDescription>
-            Make changes to your browser settings here. Click save when you're
-            done.
+            Make changes to your browser settings here. Click save when you're done.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -94,34 +113,43 @@ export function SettingsDialog() {
             <Label htmlFor="active-model" className="text-right">
               Active Model
             </Label>
-            <Popover value={activeModel} onValueChange={(value) => setActiveModel(value)} open={modelOpen} onOpenChange={setModelOpen}>
+            <Popover open={modelOpen} onOpenChange={setModelOpen}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
                   role="combobox"
                   aria-expanded={open}
-                  className="w-[200px] justify-between"
+                  className="justify-between col-span-3"
                 >
-                  {activeModel.name}
+                  {activeModel?.name}
                   <ChevronsUpDown className="opacity-50" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent>
+              <PopoverContent className="p-0">
                 <Command>
                   <CommandInput placeholder="Search models..." className="h-9" />
                   <CommandList>
                     <CommandEmpty>No results.</CommandEmpty>
-                    {models.map((model) => (
-                      <CommandItem key={model.name} value={model.name} onSelect={() => setActiveModel(model)}>
-                        {model.name}
-                        <Check
-                          className={cn(
-                            "ml-auto",
-                            model === activeModel ? "opacity-100" : "opacity-0"
-                          )}
-                        />
-                      </CommandItem>
-                    ))}
+                    <CommandGroup heading="Models">
+                      {models.map((model) => (
+                        <CommandItem
+                          key={model.name}
+                          value={model.name}
+                          onSelect={() => {
+                            setActiveModel(model)
+                            setModelOpen(false)
+                          }}
+                        >
+                          {model.name}
+                          <Check
+                            className={cn(
+                              "ml-auto",
+                              model.model === activeModel?.model ? "opacity-100" : "opacity-0"
+                            )}
+                          />
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
                   </CommandList>
                 </Command>
               </PopoverContent>
@@ -132,4 +160,3 @@ export function SettingsDialog() {
     </Dialog>
   )
 }
-
