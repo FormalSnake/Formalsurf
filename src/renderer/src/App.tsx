@@ -5,13 +5,14 @@ import { CommandMenu, openAtom } from './components/browser/NewTabDialog'
 import { closeTab, handleToggleDevTools, newTab, reloadTab } from './components/browser/webview'
 import { useAtom } from 'jotai'
 import { activeTabRefAtom, tabsAtom } from './atoms/browser'
-import { Button } from './components/ui/button'
+import { SettingsDialog, settingsOpenAtom } from './components/settings/Settings'
 
 function App(): JSX.Element {
   const [tabs, setTabs] = useAtom(tabsAtom)
-  const [newTabDialogOpen, setNewTabDialogOpen] = useAtom(openAtom)
+  const [_newTabDialogOpen, setNewTabDialogOpen] = useAtom(openAtom)
   const [isSidebarVisible, setIsSidebarVisible] = useAtom(sidebarVisibleAtom)
-  const [activeTabRef, setActiveTabRef] = useAtom(activeTabRefAtom);
+  const [activeTabRef, _setActiveTabRef] = useAtom(activeTabRefAtom);
+  const [settingsOpen, setSettingsOpen] = useAtom(settingsOpenAtom)
 
   // const ipcHandle = (): void => window.electron.ipcRenderer.send('ping')
   useEffect(() => {
@@ -56,6 +57,10 @@ function App(): JSX.Element {
         handleToggleDevTools(activeTabRef)
       }
     })
+    // @ts-expect-error
+    window.api.handle('show-settings', (event, data) => function(event, data) {
+      setSettingsOpen(!settingsOpen)
+    })
 
     return () => {
       window.electron.ipcRenderer.removeAllListeners('open-url')
@@ -65,8 +70,9 @@ function App(): JSX.Element {
       window.api.removeHandler('remove-tab')
       window.api.removeHandler('reload')
       window.api.removeHandler('toggle-devtools')
+      window.api.removeHandler('show-settings')
     }
-  }, [tabs, setTabs, setNewTabDialogOpen, isSidebarVisible, setIsSidebarVisible, activeTabRef])
+  }, [tabs, setTabs, setNewTabDialogOpen, isSidebarVisible, setIsSidebarVisible, activeTabRef, settingsOpen, setSettingsOpen])
 
   return (
     <main className="min-h-screen antialiased flex">
@@ -74,6 +80,7 @@ function App(): JSX.Element {
       <CommandMenu />
       <Sidebar />
       <BrowserView />
+      <SettingsDialog />
     </main>
   )
 }

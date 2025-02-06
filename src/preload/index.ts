@@ -16,6 +16,10 @@ const api = {
   getActiveTab: (webContentsId: string) => ipcRenderer.invoke('get-active-tab', webContentsId),
   closeTab: (webContentsId: string) => ipcRenderer.invoke('close-tab', webContentsId),
   getVersion: () => ipcRenderer.invoke('get-version'),
+  changeSetting: (key, value) => ipcRenderer.invoke('change-setting', key, value),
+  getSettings: (setting) => ipcRenderer.invoke('get-setting', setting),
+  onSettingChanged: (callback: (event: any, key: string, value: any) => void) =>
+    ipcRenderer.on('setting-changed', callback),
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

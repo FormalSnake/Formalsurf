@@ -9,6 +9,9 @@ import { buildChromeContextMenu } from 'electron-chrome-context-menu'
 import { ElectronChromeExtensions } from 'electron-chrome-extensions'
 import { installChromeWebStore, installExtension, updateExtensions } from 'electron-chrome-web-store'
 import { template } from './menubar'
+import Store from 'electron-store'
+
+const store = new Store()
 
 let mainWindow;
 let sharedSession
@@ -131,6 +134,22 @@ async function createWindow(): Promise<void> {
     return systemInfo
   })
 
+  // A 'change-setting' event receiver that does store.set and store.get using a provided value with the event.
+  ipcMain.handle('change-setting', async (event, key, value) => {
+    store.set(key, value)
+    console.log("settings key", key, value)
+    // Notify all windows about the setting change
+    BrowserWindow.getAllWindows().forEach((window) => {
+      window.webContents.send('setting-changed', key, value)
+    })
+    return store.get(key)
+  })
+
+  // A 'get-setting' event receiver that does store.get using a provided value with the event.
+  ipcMain.handle('get-setting', async (event, key) => {
+    console.log('get-setting', key)
+    return store.get(key)
+  })
 
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
