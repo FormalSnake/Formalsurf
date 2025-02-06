@@ -26,6 +26,7 @@ import {
 } from "@renderer/components/ui/popover"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { cn } from "@renderer/lib/utils"
+import { SchemeSelect } from "../scheme-select"
 
 export const settingsOpenAtom = atom(false)
 export const activeModelAtom = atom<Model | null>(null)
@@ -102,6 +103,12 @@ export function SettingsDialog() {
               Theme
             </Label>
             <ModeToggle />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="color-scheme" className="text-right">
+              Color Scheme
+            </Label>
+            <SchemeSelect />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="ollama-url" className="text-right">

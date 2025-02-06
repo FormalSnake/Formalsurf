@@ -105,7 +105,7 @@
 }
 
 @layer base {
-  :root {
+  html[data-theme='default'] {
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
@@ -133,7 +133,7 @@
     --chart-5: 27 87% 67%;
   }
 
-  .dark {
+  html[data-theme='default'].dark {
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
     --card: 240 10% 3.9%;
@@ -158,6 +158,90 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+  }
+
+  html[data-theme='flexoki'] {
+    --background: 48 100% 97%;
+    /*flexoki-bg*/
+    --foreground: 0 3% 6%;
+    /*flexoki-tx*/
+    --card: 48 100% 97%;
+    /*flexoki-bg*/
+    --card-foreground: 0 3% 6%;
+    /*flexoki-tx*/
+    --popover: 48 100% 97%;
+    /*flexoki-bg*/
+    --popover-foreground: 0 3% 6%;
+    /*flexoki-tx*/
+    --primary: 0 3% 6%;
+    /*flexoki-tx*/
+    --primary-foreground: 48 100% 97%;
+    /*flexoki-bg*/
+    --secondary: 50 14% 83%;
+    /*flexoki-ui-2*/
+    --secondary-foreground: 50 3% 42%;
+    /*flexoki-tx-2*/
+    --muted: 51 33% 92%;
+    /* flexoki-bg-2 */
+    --muted-foreground: 49 7% 70%;
+    /* flexoki-tx-3 */
+    --accent: 51 21% 88%;
+    /*flexoki-ui*/
+    --accent-foreground: 50 3% 42%;
+    /*flexoki-tx-2*/
+    --destructive: 3 62% 42%;
+    /* flexoki-re */
+    --destructive-foreground: 48 100% 97%;
+    /*flexoki-bg*/
+    --border: 50 14% 83%;
+    /*flexoki-ui-2*/
+    --input: 50 14% 83%;
+    /*flexoki-ui-2*/
+    --ring: 55 10% 79%;
+    /*flexoki-ui-3*/
+    --radius: 0.5rem;
+  }
+
+  html[data-theme='flexoki'].dark {
+    --background: 0 3% 6%;
+    /* flexoki-bg */
+    --foreground: 55 10% 79%;
+    /* flexoki-tx */
+    --card: 0 3% 6%;
+    /* flexoki-bg */
+    --card-foreground: 55 10% 79%;
+    /* flexoki-tx */
+    --popover: 0 3% 6%;
+    /* flexoki-bg */
+    --popover-foreground: 55 10% 79%;
+    /* flexoki-tx */
+    --primary: 55 10% 79%;
+    /* flexoki-tx */
+    --primary-foreground: 0 3% 6%;
+    /* flexoki-bg */
+    --secondary: 40 3% 20%;
+    /* flexoki-ui-2 */
+    --secondary-foreground: 43 3% 52%;
+    /* flexoki-tx-2 */
+    --muted: 30 4% 11%;
+    /* flexoki-bg-2 */
+    --muted-foreground: 45 2% 33%;
+    /* flexoki-tx-3 */
+    --accent: 30 3% 15%;
+    /* flexoki-ui */
+    --accent-foreground: 43 3% 52%;
+    /* flexoki-tx-2 */
+    --destructive: 5 61% 54%;
+    /* flexoki-re */
+    --destructive-foreground: 0 3% 6%;
+    /* flexoki-bg */
+    --border: 40 3% 20%;
+    /* flexoki-ui-2 */
+    --input: 40 3% 20%;
+    /* flexoki-ui-2 */
+    --ring: 30 3% 24%;
+    /* flexoki-ui-3 */
+    --radius: 0.5rem;
   }
 }
 
