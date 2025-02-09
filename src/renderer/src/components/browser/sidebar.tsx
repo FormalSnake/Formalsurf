@@ -28,6 +28,7 @@ export function Sidebar() {
   };
 
   const setActiveTab = (id: string) => {
+    console.log("Setting active tab to:", id);
     const updatedTabs = tabs.map((tab) => ({
       ...tab,
       isActive: tab.id === id,
