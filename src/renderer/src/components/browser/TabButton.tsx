@@ -23,40 +23,23 @@ export function TabButton({ tab, setActiveTab, depth = 0 }: {
     console.log("Setting tab active:", tab.id);
     
     setTabs((prevTabs) => {
-      // First pass: deactivate all tabs
-      const deactivateAll = (tabs: Tab[]): Tab[] => {
-        return tabs.map(t => ({
-          ...t,
-          isActive: false,
-          subTabs: t.subTabs ? deactivateAll(t.subTabs) : t.subTabs
-        }));
+      const updateTabs = (tabs: Tab[]): Tab[] => {
+        return tabs.map(t => {
+          // Handle subtabs recursively
+          const updatedSubTabs = t.subTabs ? updateTabs(t.subTabs) : [];
+          
+          return {
+            ...t,
+            isActive: t.id === tab.id,
+            subTabs: updatedSubTabs
+          };
+        });
       };
 
-      // Second pass: find and activate the target tab
-      const activateTarget = (tabs: Tab[], targetId: string): [Tab[], boolean] => {
-        return tabs.map((t): [Tab, boolean] => {
-          if (t.id === targetId) {
-            console.log("Found and activating target tab:", targetId);
-            return [{ ...t, isActive: true }, true];
-          }
-          
-          if (t.subTabs?.length) {
-            const [updatedSubTabs, found] = activateTarget(t.subTabs, targetId);
-            // If target was found in subtabs, keep parent inactive
-            return [{ ...t, isActive: false, subTabs: updatedSubTabs }, found];
-          }
-          
-          return [{ ...t, isActive: false }, false];
-        }).reduce(([accTabs, found], [tab, wasFound]) => {
-          return [[...accTabs, tab], found || wasFound];
-        }, [[] as Tab[], false]);
-      };
-
-      const deactivatedTabs = deactivateAll(prevTabs);
-      const [finalTabs] = activateTarget(deactivatedTabs, tab.id);
-      return finalTabs;
+      return updateTabs(prevTabs);
     });
 
+    // Always call setActiveTab after updating the tabs state
     setActiveTab(tab.id);
   }
 
