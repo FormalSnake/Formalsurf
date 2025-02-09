@@ -35,7 +35,7 @@ export function BrowserView() {
   }, [tabs]);
 
   return (
-    <div className="flex flex-row gap-x-2 w-full relative">
+    <div className="w-full h-full relative">
       {tabs.map((tab: Tab) => {
         const renderTabs = (tab: Tab): JSX.Element[] => {
           const elements: JSX.Element[] = [];

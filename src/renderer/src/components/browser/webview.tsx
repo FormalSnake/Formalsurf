@@ -158,8 +158,9 @@ export function WebView({ tab }: { tab: Tab }) {
   useEffect(() => {
     console.log("Tab activation changed:", tab.id, tab.isActive);
     if (tab.isActive && ref.current) {
-      // Force a reflow to ensure the webview is visible
-      ref.current.style.display = 'block';
+      // Ensure webview is visible
+      ref.current.style.opacity = '1';
+      ref.current.style.pointerEvents = 'auto';
       if (isWebViewReady) {
         ipcHandle(ref);
       }
@@ -167,7 +168,7 @@ export function WebView({ tab }: { tab: Tab }) {
   }, [tab.isActive, isWebViewReady]);
 
   return (
-    <div className={cn("w-full h-full bg-white", !tab.isActive && "hidden")}>
+    <div className={cn("w-full h-full bg-white absolute inset-0", !tab.isActive && "opacity-0 pointer-events-none")}>
       <AnimatePresence>
         {isLoading && (
           <motion.div
