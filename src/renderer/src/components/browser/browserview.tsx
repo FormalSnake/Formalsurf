@@ -40,13 +40,17 @@ export function BrowserView() {
         const renderTabs = (tab: Tab): JSX.Element[] => {
           const elements: JSX.Element[] = [];
           
-          // Add the WebView for this tab
-          elements.push(<WebView key={tab.id} tab={tab} />);
+          // Only render if this tab is active
+          if (tab.isActive) {
+            elements.push(<WebView key={tab.id} tab={tab} />);
+          }
           
           // Recursively render subtabs
           if (tab.subTabs?.length > 0) {
             tab.subTabs.forEach(subTab => {
-              elements.push(...renderTabs(subTab));
+              if (subTab.isActive) {
+                elements.push(...renderTabs(subTab));
+              }
             });
           }
           

@@ -67,8 +67,10 @@ export function WebView({ tab }: { tab: Tab }) {
     const webview = ref.current;
     if (!webview) return;
     
-    // Ensure webview maintains its state
-    webview.src = tab.url;
+    // Only set src if it's different to avoid unnecessary reloads
+    if (webview.src !== tab.url) {
+      webview.src = tab.url;
+    }
 
     const handleDomReady = () => {
       setIsWebViewReady(true); // Mark webview as ready
@@ -154,16 +156,20 @@ export function WebView({ tab }: { tab: Tab }) {
   }, [ref, tab.isActive]);
 
   useEffect(() => {
-    console.log("Tab activation changed:", tab.id, tab.isActive);
+    console.log("Tab activation changed:", tab.id, tab.isActive, isWebViewReady);
     if (tab.isActive && ref.current) {
-      // Ensure webview is visible
-      ref.current.style.opacity = '1';
-      ref.current.style.pointerEvents = 'auto';
       if (isWebViewReady) {
         ipcHandle(ref);
+      } else {
+        // If not ready, set up a one-time listener
+        const handleOneTimeReady = () => {
+          ipcHandle(ref);
+          ref.current?.removeEventListener("dom-ready", handleOneTimeReady);
+        };
+        ref.current.addEventListener("dom-ready", handleOneTimeReady);
       }
     }
-  }, [tab.isActive, isWebViewReady]);
+  }, [tab.isActive]);
 
   return (
     <div className={cn("w-full h-full bg-white", !tab.isActive && "hidden")}>

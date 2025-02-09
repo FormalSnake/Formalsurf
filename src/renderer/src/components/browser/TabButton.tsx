@@ -36,15 +36,17 @@ export function TabButton({ tab, setActiveTab, depth = 0 }: {
       const activateTarget = (tabs: Tab[], targetId: string): [Tab[], boolean] => {
         return tabs.map((t): [Tab, boolean] => {
           if (t.id === targetId) {
+            console.log("Found and activating target tab:", targetId);
             return [{ ...t, isActive: true }, true];
           }
           
           if (t.subTabs?.length) {
             const [updatedSubTabs, found] = activateTarget(t.subTabs, targetId);
-            return [{ ...t, subTabs: updatedSubTabs }, found];
+            // If target was found in subtabs, keep parent inactive
+            return [{ ...t, isActive: false, subTabs: updatedSubTabs }, found];
           }
           
-          return [t, false];
+          return [{ ...t, isActive: false }, false];
         }).reduce(([accTabs, found], [tab, wasFound]) => {
           return [[...accTabs, tab], found || wasFound];
         }, [[] as Tab[], false]);
