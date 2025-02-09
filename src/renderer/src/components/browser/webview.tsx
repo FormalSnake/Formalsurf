@@ -17,7 +17,15 @@ export function WebView({ tab }: { tab: Tab }) {
 
   const ipcHandle = (ref: any): void => {
     if (ref.current && isWebViewReady) {
-      window.api.getActiveTab(ref.current.getWebContentsId());
+      try {
+        const webContentsId = ref.current.getWebContentsId();
+        if (webContentsId) {
+          window.api.getActiveTab(webContentsId);
+          setActiveTabRef(ref);
+        }
+      } catch (error) {
+        console.log("Failed to get webContentsId during ipcHandle:", error);
+      }
     }
   };
 
@@ -148,10 +156,13 @@ export function WebView({ tab }: { tab: Tab }) {
   }, [ref, tab.isActive]);
 
   useEffect(() => {
-    if (tab.isActive && isWebViewReady) {
-      ipcHandle(ref);
+    if (tab.isActive && isWebViewReady && ref.current) {
+      // Small delay to ensure DOM is ready
+      setTimeout(() => {
+        ipcHandle(ref);
+      }, 0);
     }
-  }, [tab.isActive, activeTabRef, isWebViewReady]);
+  }, [tab.isActive, isWebViewReady]);
 
   return (
     <div className={cn("w-full h-full bg-white", !tab.isActive && "hidden")}>
