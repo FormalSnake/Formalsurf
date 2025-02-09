@@ -20,6 +20,30 @@ export function TabButton({ tab, setActiveTab, depth = 0 }: {
   const [isExpanded, setIsExpanded] = useState(depth === 0); // Top-level tab start expanded
 
   const setActive = (tab: Tab) => {
+    setTabs((prevTabs) => {
+      const deactivateAllTabs = (tabs: Tab[]): Tab[] => {
+        return tabs.map(t => ({
+          ...t,
+          isActive: false,
+          subTabs: t.subTabs ? deactivateAllTabs(t.subTabs) : []
+        }));
+      };
+      
+      const activateTab = (tabs: Tab[], targetId: string): Tab[] => {
+        return tabs.map(t => {
+          if (t.id === targetId) {
+            return { ...t, isActive: true };
+          }
+          if (t.subTabs?.length) {
+            return { ...t, subTabs: activateTab(t.subTabs, targetId) };
+          }
+          return { ...t, isActive: false };
+        });
+      };
+
+      const allInactive = deactivateAllTabs(prevTabs);
+      return activateTab(allInactive, tab.id);
+    });
     setActiveTab(tab.id);
   }
 

@@ -36,14 +36,23 @@ export function BrowserView() {
 
   return (
     <div className="flex flex-row gap-x-2 w-full">
-      {tabs.map((tab: Tab) => (
-        <Fragment key={tab.id}>
-          <WebView key={tab.id} tab={tab} />
-          {tab.subTabs?.length > 0 && tab.subTabs.map((subTab) => (
-            <WebView key={subTab.id} tab={subTab} />
-          ))}
-        </Fragment>
-      ))}
+      {tabs.map((tab: Tab) => {
+        const renderTabs = (tab: Tab): JSX.Element[] => {
+          const elements: JSX.Element[] = [
+            <WebView key={tab.id} tab={tab} />
+          ];
+          
+          if (tab.subTabs?.length > 0) {
+            tab.subTabs.forEach(subTab => {
+              elements.push(...renderTabs(subTab));
+            });
+          }
+          
+          return elements;
+        };
+        
+        return <Fragment key={tab.id}>{renderTabs(tab)}</Fragment>;
+      })}
       {tabs.length === 0 && (
         <div className="flex flex-col items-center justify-center w-full h-full">
           <div className="flex flex-col items-center justify-center w-full h-full relative">

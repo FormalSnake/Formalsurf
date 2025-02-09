@@ -47,6 +47,11 @@ export function WebView({ tab }: { tab: Tab }) {
   useEffect(() => {
     const webview = ref.current;
     if (!webview) return;
+    
+    // Initialize webview
+    if (!webview.src) {
+      webview.src = tab.url;
+    }
 
     const handleDomReady = () => {
       setIsWebViewReady(true); // Mark webview as ready
@@ -104,16 +109,26 @@ export function WebView({ tab }: { tab: Tab }) {
     webview.addEventListener("did-fail-load", handleStopLoading);
 
     return () => {
-      webview.removeEventListener("dom-ready", handleDomReady);
-      webview.removeEventListener("page-title-updated", handleTitleUpdate);
-      webview.removeEventListener("page-favicon-updated", handleFaviconUpdate);
-      webview.removeEventListener("update-target-url", handleTargetUrlUpdate);
-      webview.removeEventListener("did-navigate", handleFullNavigation);
-      webview.removeEventListener("did-navigate-in-page", handleInPageNavigation);
-      webview.removeEventListener("did-start-loading", handleStartLoading);
-      webview.removeEventListener("did-stop-loading", handleStopLoading);
-      webview.removeEventListener("did-finish-load", handleStopLoading);
-      webview.removeEventListener("did-fail-load", handleStopLoading);
+      if (webview) {
+        webview.removeEventListener("dom-ready", handleDomReady);
+        webview.removeEventListener("page-title-updated", handleTitleUpdate);
+        webview.removeEventListener("page-favicon-updated", handleFaviconUpdate);
+        webview.removeEventListener("update-target-url", handleTargetUrlUpdate);
+        webview.removeEventListener("did-navigate", handleFullNavigation);
+        webview.removeEventListener("did-navigate-in-page", handleInPageNavigation);
+        webview.removeEventListener("did-start-loading", handleStartLoading);
+        webview.removeEventListener("did-stop-loading", handleStopLoading);
+        webview.removeEventListener("did-finish-load", handleStopLoading);
+        webview.removeEventListener("did-fail-load", handleStopLoading);
+        
+        // Clean up webview
+        if (webview.getWebContentsId) {
+          const webContentsId = webview.getWebContentsId();
+          if (webContentsId) {
+            window.api.closeTab(webContentsId);
+          }
+        }
+      }
     };
   }, [ref, tab.isActive]);
 
