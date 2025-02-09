@@ -3,3 +3,7 @@ dist
 out
 .DS_Store
 *.log*
+
+.aich.md
+.aider.tags.cache.v3/*
+.aiih
