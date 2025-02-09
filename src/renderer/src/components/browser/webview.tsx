@@ -67,10 +67,8 @@ export function WebView({ tab }: { tab: Tab }) {
     const webview = ref.current;
     if (!webview) return;
     
-    // Initialize webview
-    if (!webview.src) {
-      webview.src = tab.url;
-    }
+    // Ensure webview maintains its state
+    webview.src = tab.url;
 
     const handleDomReady = () => {
       setIsWebViewReady(true); // Mark webview as ready
@@ -140,8 +138,8 @@ export function WebView({ tab }: { tab: Tab }) {
         webview.removeEventListener("did-finish-load", handleStopLoading);
         webview.removeEventListener("did-fail-load", handleStopLoading);
         
-        // Clean up webview
-        if (webview.getWebContentsId && isWebViewReady) {
+        // Only clean up if the tab is being removed, not just hidden
+        if (!tab.isActive && webview.getWebContentsId && isWebViewReady) {
           try {
             const webContentsId = webview.getWebContentsId();
             if (webContentsId) {
