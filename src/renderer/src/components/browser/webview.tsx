@@ -122,10 +122,14 @@ export function WebView({ tab }: { tab: Tab }) {
         webview.removeEventListener("did-fail-load", handleStopLoading);
         
         // Clean up webview
-        if (webview.getWebContentsId) {
-          const webContentsId = webview.getWebContentsId();
-          if (webContentsId) {
-            window.api.closeTab(webContentsId);
+        if (webview.getWebContentsId && isWebViewReady) {
+          try {
+            const webContentsId = webview.getWebContentsId();
+            if (webContentsId) {
+              window.api.closeTab(webContentsId);
+            }
+          } catch (error) {
+            console.log("Failed to get webContentsId during cleanup:", error);
           }
         }
       }
@@ -248,9 +252,15 @@ export function closeTab(
       if (tab.id === tabId) {
         // Close the webview
         const webview = tab.ref.current;
-        if (webview) {
-          const webContentsId = webview.getWebContentsId();
-          window.api.closeTab(webContentsId);
+        if (webview && webview.getWebContentsId) {
+          try {
+            const webContentsId = webview.getWebContentsId();
+            if (webContentsId) {
+              window.api.closeTab(webContentsId);
+            }
+          } catch (error) {
+            console.log("Failed to get webContentsId during tab close:", error);
+          }
         }
         // Don't include this tab in the result
         return acc;
