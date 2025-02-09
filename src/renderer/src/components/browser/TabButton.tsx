@@ -20,25 +20,39 @@ export function TabButton({ tab, setActiveTab, depth = 0 }: {
   const [isExpanded, setIsExpanded] = useState(depth === 0); // Top-level tab start expanded
 
   const setActive = (tab: Tab) => {
+    console.log("Setting tab active:", tab.id);
+    
     setTabs((prevTabs) => {
       const updateTabTree = (tabs: Tab[], targetId: string): Tab[] => {
         return tabs.map(t => {
-          // Process subtabs first
-          const updatedSubTabs = t.subTabs ? updateTabTree(t.subTabs, targetId) : [];
+          let newTab = { ...t };
           
+          // Set active state
           if (t.id === targetId) {
-            // This is the target tab - activate it
-            return { ...t, isActive: true, subTabs: updatedSubTabs };
+            newTab.isActive = true;
+            console.log("Activating tab:", t.id);
           } else {
-            // This is not the target tab - deactivate it
-            return { ...t, isActive: false, subTabs: updatedSubTabs };
+            newTab.isActive = false;
           }
+          
+          // Process subtabs if they exist
+          if (t.subTabs?.length > 0) {
+            newTab.subTabs = updateTabTree(t.subTabs, targetId);
+          }
+          
+          return newTab;
         });
       };
 
-      return updateTabTree(prevTabs, tab.id);
+      const updatedTabs = updateTabTree(prevTabs, tab.id);
+      console.log("Updated tabs:", updatedTabs);
+      return updatedTabs;
     });
-    setActiveTab(tab.id);
+    
+    // Ensure this runs after state update
+    setTimeout(() => {
+      setActiveTab(tab.id);
+    }, 0);
   }
 
   const close = (e: any, tab: Tab) => {

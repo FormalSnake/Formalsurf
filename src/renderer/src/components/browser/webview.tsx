@@ -156,11 +156,13 @@ export function WebView({ tab }: { tab: Tab }) {
   }, [ref, tab.isActive]);
 
   useEffect(() => {
-    if (tab.isActive && isWebViewReady && ref.current) {
-      // Small delay to ensure DOM is ready
-      setTimeout(() => {
+    console.log("Tab activation changed:", tab.id, tab.isActive);
+    if (tab.isActive && ref.current) {
+      // Force a reflow to ensure the webview is visible
+      ref.current.style.display = 'block';
+      if (isWebViewReady) {
         ipcHandle(ref);
-      }, 0);
+      }
     }
   }, [tab.isActive, isWebViewReady]);
 
