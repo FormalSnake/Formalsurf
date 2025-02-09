@@ -23,9 +23,20 @@ export function WebView({ tab }: { tab: Tab }) {
 
   // Reusable function to update the current tab's properties
   const updateCurrentTab = (updater: (tab: Tab) => Tab) => {
-    setTabs((prevTabs) =>
-      prevTabs.map((t) => (t.id === tab.id ? updater(t) : t))
-    );
+    setTabs((prevTabs) => {
+      const updateTabInTree = (tabs: Tab[], targetId: string): Tab[] => {
+        return tabs.map(t => {
+          if (t.id === targetId) {
+            return updater(t);
+          }
+          if (t.subTabs?.length > 0) {
+            return { ...t, subTabs: updateTabInTree(t.subTabs, targetId) };
+          }
+          return t;
+        });
+      };
+      return updateTabInTree(prevTabs, tab.id);
+    });
   };
 
   useEffect(() => {
