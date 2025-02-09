@@ -23,36 +23,39 @@ export function TabButton({ tab, setActiveTab, depth = 0 }: {
     console.log("Setting tab active:", tab.id);
     
     setTabs((prevTabs) => {
-      const updateTabTree = (tabs: Tab[], targetId: string): Tab[] => {
-        return tabs.map(t => {
-          let newTab = { ...t };
-          
-          // Set active state
-          if (t.id === targetId) {
-            newTab.isActive = true;
-            console.log("Activating tab:", t.id);
-          } else {
-            newTab.isActive = false;
-          }
-          
-          // Process subtabs if they exist
-          if (t.subTabs?.length > 0) {
-            newTab.subTabs = updateTabTree(t.subTabs, targetId);
-          }
-          
-          return newTab;
-        });
+      // First pass: deactivate all tabs
+      const deactivateAll = (tabs: Tab[]): Tab[] => {
+        return tabs.map(t => ({
+          ...t,
+          isActive: false,
+          subTabs: t.subTabs ? deactivateAll(t.subTabs) : t.subTabs
+        }));
       };
 
-      const updatedTabs = updateTabTree(prevTabs, tab.id);
-      console.log("Updated tabs:", updatedTabs);
-      return updatedTabs;
+      // Second pass: find and activate the target tab
+      const activateTarget = (tabs: Tab[], targetId: string): [Tab[], boolean] => {
+        return tabs.map((t): [Tab, boolean] => {
+          if (t.id === targetId) {
+            return [{ ...t, isActive: true }, true];
+          }
+          
+          if (t.subTabs?.length) {
+            const [updatedSubTabs, found] = activateTarget(t.subTabs, targetId);
+            return [{ ...t, subTabs: updatedSubTabs }, found];
+          }
+          
+          return [t, false];
+        }).reduce(([accTabs, found], [tab, wasFound]) => {
+          return [[...accTabs, tab], found || wasFound];
+        }, [[] as Tab[], false]);
+      };
+
+      const deactivatedTabs = deactivateAll(prevTabs);
+      const [finalTabs] = activateTarget(deactivatedTabs, tab.id);
+      return finalTabs;
     });
-    
-    // Ensure this runs after state update
-    setTimeout(() => {
-      setActiveTab(tab.id);
-    }, 0);
+
+    setActiveTab(tab.id);
   }
 
   const close = (e: any, tab: Tab) => {

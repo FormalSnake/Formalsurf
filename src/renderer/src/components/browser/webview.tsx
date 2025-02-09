@@ -166,7 +166,7 @@ export function WebView({ tab }: { tab: Tab }) {
   }, [tab.isActive, isWebViewReady]);
 
   return (
-    <div className={cn("w-full h-full bg-white absolute inset-0", !tab.isActive && "opacity-0 pointer-events-none")}>
+    <div className={cn("w-full h-full bg-white", !tab.isActive && "hidden")}>
       <AnimatePresence>
         {isLoading && (
           <motion.div
