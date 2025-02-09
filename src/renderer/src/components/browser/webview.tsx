@@ -228,38 +228,38 @@ export function closeTab(
   tabs: Tab[],
   setTabs: (updater: (prevTabs: Tab[]) => Tab[]) => void
 ) {
-  console.log("Closing tab with ID:", tabId);
+  const findAndCloseTab = (tabs: Tab[], tabId: string): Tab[] => {
+    return tabs.reduce((acc, tab) => {
+      if (tab.id === tabId) {
+        // Close the webview
+        const webview = tab.ref.current;
+        if (webview) {
+          const webContentsId = webview.getWebContentsId();
+          window.api.closeTab(webContentsId);
+        }
+        // Don't include this tab in the result
+        return acc;
+      }
 
-  const tabToClose = tabs.find((tab) => tab.id === tabId);
-  if (!tabToClose) {
-    console.error("Tab not found");
-    return;
-  }
+      // Recursively process subtabs
+      if (tab.subTabs?.length > 0) {
+        tab.subTabs = findAndCloseTab(tab.subTabs, tabId);
+      }
 
-  const webview = tabToClose.ref.current;
-  if (!webview) {
-    console.error("Webview not found");
-    return;
-  }
-
-  const webContentsId = webview.getWebContentsId();
-  console.log("Closing tab", webContentsId);
-  window.api.closeTab(webContentsId);
+      return [...acc, tab];
+    }, [] as Tab[]);
+  };
 
   setTabs((prevTabs) => {
-    console.log("Closing tab with ID:", tabId);
-    console.log("Current tabs:", prevTabs);
-    const updatedTabs = prevTabs.filter((tab) => tab.id !== tabId);
-    console.log("Updated tabs after closing:", updatedTabs);
+    const updatedTabs = findAndCloseTab(prevTabs, tabId);
 
-    if (updatedTabs.length === 0) {
-      return [];
-    }
-
-    const wasActiveTabClosed = prevTabs.find((tab) => tab.id === tabId)?.isActive;
-    if (wasActiveTabClosed) {
+    // If we closed the active tab, activate the first available tab
+    const wasActiveTabClosed = prevTabs.some(tab => tab.id === tabId &&
+      tab.isActive);
+    if (wasActiveTabClosed && updatedTabs.length > 0) {
       updatedTabs[0].isActive = true;
     }
+
     return updatedTabs;
   });
 }

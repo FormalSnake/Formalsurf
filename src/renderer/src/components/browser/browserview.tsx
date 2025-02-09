@@ -1,7 +1,7 @@
 import { Tab, tabsAtom } from "@renderer/atoms/browser";
 import { useAtom } from "jotai";
 import { WebView } from "./webview";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { throttle } from "lodash"; // For throttling the mousemove event
 
 export function BrowserView() {
@@ -37,7 +37,12 @@ export function BrowserView() {
   return (
     <div className="flex flex-row gap-x-2 w-full">
       {tabs.map((tab: Tab) => (
-        <WebView key={tab.id} tab={tab} />
+        <Fragment key={tab.id}>
+          <WebView key={tab.id} tab={tab} />
+          {tab.subTabs?.length > 0 && tab.subTabs.map((subTab) => (
+            <WebView key={subTab.id} tab={subTab} />
+          ))}
+        </Fragment>
       ))}
       {tabs.length === 0 && (
         <div className="flex flex-col items-center justify-center w-full h-full">
