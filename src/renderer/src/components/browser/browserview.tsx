@@ -38,27 +38,21 @@ export function BrowserView() {
     <div className="flex flex-row gap-x-2 w-full">
       {tabs.map((tab: Tab) => {
         const renderTabs = (tab: Tab): JSX.Element[] => {
-          const elements: JSX.Element[] = [];
+          const elements: JSX.Element[] = [
+            <WebView key={tab.id} tab={tab} />
+          ];
           
-          // Only render if this tab is active
-          if (tab.isActive) {
-            elements.push(<WebView key={tab.id} tab={tab} />);
-          }
-          
-          // Recursively render subtabs
+          // Recursively render all subtabs
           if (tab.subTabs?.length > 0) {
             tab.subTabs.forEach(subTab => {
-              if (subTab.isActive) {
-                elements.push(...renderTabs(subTab));
-              }
+              elements.push(...renderTabs(subTab));
             });
           }
           
           return elements;
         };
         
-        const allWebViews = renderTabs(tab);
-        return <Fragment key={tab.id}>{allWebViews}</Fragment>;
+        return <Fragment key={tab.id}>{renderTabs(tab)}</Fragment>;
       })}
       {tabs.length === 0 && (
         <div className="flex flex-col items-center justify-center w-full h-full">
