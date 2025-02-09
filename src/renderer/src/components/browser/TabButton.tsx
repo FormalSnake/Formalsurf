@@ -21,13 +21,13 @@ export function TabButton({ tab, setActiveTab, depth = 0 }: {
 
   const setActive = (tab: Tab) => {
     console.log("Setting tab active:", tab.id);
-    
+
     setTabs((prevTabs) => {
       const updateTabs = (tabs: Tab[]): Tab[] => {
         return tabs.map(t => {
           // Handle subtabs recursively
           const updatedSubTabs = t.subTabs ? updateTabs(t.subTabs) : [];
-          
+
           return {
             ...t,
             isActive: t.id === tab.id,
@@ -86,20 +86,20 @@ const TabComponent = ({ tab, setActive, close, depth, isExpanded, hasChildren, t
     <Button
       variant="ghost"
       className={cn(
-        "justify-start w-full select-none pl-2",
+        "justify-start w-full select-none pl-2 ",
         tab.isActive && "bg-accent/50"
       )}
-      style={{ paddingLeft: `${depth * 1.5}rem` }}
+      style={depth === 0 ? { paddingLeft: "1rem" } : { paddingLeft: `${depth * 1.5}rem` }}
       onClick={() => setActive(tab)}
       id={tab.id}
     >
       {hasChildren && (
         <button
           onClick={toggleExpand}
-          className="mr-1 p-1 hover:bg-accent/20 rounded"
+          className="hover:bg-accent/20 rounded"
         >
           <ChevronRight className={cn(
-            "h-3 w-3 transition-transform",
+            "h-4 w-4 transition-transform",
             isExpanded && "rotate-90"
           )} />
         </button>

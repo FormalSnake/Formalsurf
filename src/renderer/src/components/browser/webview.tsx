@@ -66,7 +66,7 @@ export function WebView({ tab }: { tab: Tab }) {
   useEffect(() => {
     const webview = ref.current;
     if (!webview) return;
-    
+
     // Only set src if it's different to avoid unnecessary reloads
     if (webview.src !== tab.url) {
       webview.src = tab.url;
@@ -139,7 +139,7 @@ export function WebView({ tab }: { tab: Tab }) {
         webview.removeEventListener("did-stop-loading", handleStopLoading);
         webview.removeEventListener("did-finish-load", handleStopLoading);
         webview.removeEventListener("did-fail-load", handleStopLoading);
-        
+
         // Only clean up if the tab is being removed, not just hidden
         if (!tab.isActive && webview.getWebContentsId && isWebViewReady) {
           try {
@@ -260,7 +260,9 @@ export function newTab(url: string, title: string, setTabs: any) {
     url: url,
     favicon: "",
     isActive: true,
-  };
+    readerMode: false,
+    subTabs: [],
+  } as Tab;
 
   setTabs((prevTabs: any[]) => {
     const updatedTabs = prevTabs.map((tab) => ({
