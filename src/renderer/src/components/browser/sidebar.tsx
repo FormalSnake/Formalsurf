@@ -29,15 +29,40 @@ export function Sidebar() {
 
   const setActiveTab = (id: string) => {
     console.log("Setting active tab to:", id);
-    const updatedTabs = tabs.map((tab) => ({
-      ...tab,
-      isActive: tab.id === id,
-    }));
+    
+    const updateTabsRecursively = (tabs: Tab[]): Tab[] => {
+      return tabs.map(tab => {
+        // Check if this tab or any of its subtabs should be active
+        const shouldBeActive = tab.id === id;
+        const updatedSubTabs = tab.subTabs ? updateTabsRecursively(tab.subTabs) : [];
+        const hasActiveSubTab = updatedSubTabs.some(subTab => subTab.isActive);
+
+        return {
+          ...tab,
+          isActive: shouldBeActive,
+          subTabs: updatedSubTabs
+        };
+      });
+    };
+
+    const updatedTabs = updateTabsRecursively(tabs);
     setTabs(updatedTabs);
 
-    const activeTab = updatedTabs.find((tab) => tab.isActive);
+    // Find the active tab or subtab recursively
+    const findActiveTab = (tabs: Tab[]): Tab | undefined => {
+      for (const tab of tabs) {
+        if (tab.id === id) return tab;
+        if (tab.subTabs) {
+          const activeSubTab = findActiveTab(tab.subTabs);
+          if (activeSubTab) return activeSubTab;
+        }
+      }
+      return undefined;
+    };
+
+    const activeTab = findActiveTab(updatedTabs);
     if (activeTab) {
-      setActiveTabRef(activeTab.ref); // Ensure `ref` is set correctly
+      setActiveTabRef(activeTab.ref);
     }
   };
 
