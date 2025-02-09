@@ -28,7 +28,7 @@ export function TabButton({ tab, setActiveTab, depth = 0 }: {
           subTabs: t.subTabs ? deactivateAllTabs(t.subTabs) : []
         }));
       };
-      
+
       const activateTab = (tabs: Tab[], targetId: string): Tab[] => {
         return tabs.map(t => {
           if (t.id === targetId) {
@@ -112,10 +112,7 @@ const TabComponent = ({ tab, setActive, close, depth, isExpanded, hasChildren, t
         src={tab.favicon}
         className="w-4 h-4 rounded-md"
         draggable={false}
-        onError={(e) => {
-          (e.target as HTMLImageElement).src = 'data:image/svg+xml;base64,...'
-          // Fallback icon
-        }}
+
       />
       <span className="ml-2 text-sm font-medium truncate
  max-w-[calc(100%-4rem)]">
