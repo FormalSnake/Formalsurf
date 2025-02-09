@@ -21,28 +21,22 @@ export function TabButton({ tab, setActiveTab, depth = 0 }: {
 
   const setActive = (tab: Tab) => {
     setTabs((prevTabs) => {
-      const deactivateAllTabs = (tabs: Tab[]): Tab[] => {
-        return tabs.map(t => ({
-          ...t,
-          isActive: false,
-          subTabs: t.subTabs ? deactivateAllTabs(t.subTabs) : []
-        }));
-      };
-
-      const activateTab = (tabs: Tab[], targetId: string): Tab[] => {
+      const updateTabTree = (tabs: Tab[], targetId: string): Tab[] => {
         return tabs.map(t => {
+          // Process subtabs first
+          const updatedSubTabs = t.subTabs ? updateTabTree(t.subTabs, targetId) : [];
+          
           if (t.id === targetId) {
-            return { ...t, isActive: true };
+            // This is the target tab - activate it
+            return { ...t, isActive: true, subTabs: updatedSubTabs };
+          } else {
+            // This is not the target tab - deactivate it
+            return { ...t, isActive: false, subTabs: updatedSubTabs };
           }
-          if (t.subTabs?.length) {
-            return { ...t, subTabs: activateTab(t.subTabs, targetId) };
-          }
-          return { ...t, isActive: false };
         });
       };
 
-      const allInactive = deactivateAllTabs(prevTabs);
-      return activateTab(allInactive, tab.id);
+      return updateTabTree(prevTabs, tab.id);
     });
     setActiveTab(tab.id);
   }
