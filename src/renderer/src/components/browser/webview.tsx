@@ -264,12 +264,17 @@ export function newTab(url: string, title: string, setTabs: any) {
     subTabs: [],
   } as Tab;
 
-  setTabs((prevTabs: any[]) => {
-    const updatedTabs = prevTabs.map((tab) => ({
-      ...tab,
-      isActive: false,
-    }));
-    return [...updatedTabs, newTab];
+  setTabs((prevTabs: Tab[]) => {
+    // Deactivate all tabs and their subtabs recursively
+    const deactivateAllTabs = (tabs: Tab[]): Tab[] => {
+      return tabs.map(tab => ({
+        ...tab,
+        isActive: false,
+        subTabs: tab.subTabs ? deactivateAllTabs(tab.subTabs) : []
+      }));
+    };
+
+    return [...deactivateAllTabs(prevTabs), newTab];
   });
 }
 
@@ -278,42 +283,79 @@ export function closeTab(
   tabs: Tab[],
   setTabs: (updater: (prevTabs: Tab[]) => Tab[]) => void
 ) {
-  const findAndCloseTab = (tabs: Tab[], tabId: string): Tab[] => {
-    return tabs.reduce((acc, tab) => {
-      if (tab.id === tabId) {
-        // Close the webview
-        const webview = tab.ref.current;
-        if (webview && webview.getWebContentsId) {
-          try {
-            const webContentsId = webview.getWebContentsId();
-            if (webContentsId) {
-              window.api.closeTab(webContentsId);
-            }
-          } catch (error) {
-            console.log("Failed to get webContentsId during tab close:", error);
-          }
-        }
-        // Don't include this tab in the result
-        return acc;
-      }
+  // Helper function to find the next tab to activate
+  const findNextTabToActivate = (tabs: Tab[], excludeId: string): Tab | undefined => {
+    // Flatten the tab hierarchy for simpler navigation
+    const flattenTabs = (tabs: Tab[]): Tab[] => {
+      return tabs.reduce((acc, tab) => {
+        return [...acc, tab, ...flattenTabs(tab.subTabs || [])];
+      }, [] as Tab[]);
+    };
 
-      // Recursively process subtabs
-      if (tab.subTabs?.length > 0) {
-        tab.subTabs = findAndCloseTab(tab.subTabs, tabId);
-      }
-
-      return [...acc, tab];
-    }, [] as Tab[]);
+    const flatTabs = flattenTabs(tabs);
+    const currentIndex = flatTabs.findIndex(t => t.id === excludeId);
+    
+    // Try to get the next tab, or the previous if there is no next
+    return flatTabs[currentIndex + 1] || flatTabs[currentIndex - 1];
   };
 
   setTabs((prevTabs) => {
-    const updatedTabs = findAndCloseTab(prevTabs, tabId);
+    // Helper function to remove tab and handle webview cleanup
+    const removeTab = (tabs: Tab[], targetId: string): [Tab[], boolean] => {
+      const result: Tab[] = [];
+      let removed = false;
+      let wasActive = false;
 
-    // If we closed the active tab, activate the first available tab
-    const wasActiveTabClosed = prevTabs.some(tab => tab.id === tabId &&
-      tab.isActive);
+      for (const tab of tabs) {
+        if (tab.id === targetId) {
+          // Clean up webview
+          if (tab.ref?.current) {
+            try {
+              const webContentsId = tab.ref.current.getWebContentsId();
+              if (webContentsId) {
+                window.api.closeTab(webContentsId);
+              }
+            } catch (error) {
+              console.log("Failed to cleanup webview:", error);
+            }
+          }
+          wasActive = tab.isActive;
+          removed = true;
+          continue;
+        }
+
+        // Handle subtabs
+        if (tab.subTabs?.length) {
+          const [updatedSubTabs, wasRemoved] = removeTab(tab.subTabs, targetId);
+          result.push({
+            ...tab,
+            subTabs: updatedSubTabs
+          });
+          if (wasRemoved) removed = true;
+          continue;
+        }
+
+        result.push(tab);
+      }
+
+      return [result, wasActive];
+    };
+
+    const [updatedTabs, wasActiveTabClosed] = removeTab(prevTabs, tabId);
+
+    // If we closed the active tab, activate the next available tab
     if (wasActiveTabClosed && updatedTabs.length > 0) {
-      updatedTabs[0].isActive = true;
+      const nextTab = findNextTabToActivate(prevTabs, tabId);
+      if (nextTab) {
+        return updatedTabs.map(tab => ({
+          ...tab,
+          isActive: tab.id === nextTab.id,
+          subTabs: tab.subTabs?.map(subTab => ({
+            ...subTab,
+            isActive: subTab.id === nextTab.id
+          }))
+        }));
+      }
     }
 
     return updatedTabs;
