@@ -493,14 +493,6 @@
   browser-action-list::part(action):hover {
     @apply bg-muted/40;
   }
-
-  browser-action-list::part(action)::before {
-    content: attr(title);
-  }
-
-  browser-action-list::part(action)::first-letter {
-    @apply text-sm text-foreground;
-  }
 }
 
 /* Enable 3D transformations and perspective */
@@ -518,5 +510,18 @@
   body {
     /* @apply bg-background text-foreground; */
     @apply text-foreground;
+  }
+}
+
+/*
+  ---break---
+*/
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
   }
 }
