@@ -483,16 +483,6 @@
     overflow-x: scroll;
     scrollbar-width: none;
   }
-
-  /* Modify size of action buttons. */
-  browser-action-list::part(action) {
-    aspect-ratio: 1;
-    font-size: 0;
-  }
-
-  browser-action-list::part(action):hover {
-    @apply bg-muted/40;
-  }
 }
 
 /* Enable 3D transformations and perspective */
