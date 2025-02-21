@@ -88,7 +88,6 @@
   color utility to any element that depends on these defaults.
 */
 @layer base {
-
   *,
   ::after,
   ::before,
@@ -242,6 +241,230 @@
     --ring: 30 3% 24%;
     /* flexoki-ui-3 */
     --radius: 0.5rem;
+  }
+
+  html[data-theme='catppuccin-mocha'],
+  html[data-theme='catppuccin-frappe'],
+  html[data-theme='catppuccin-macchiato'] {
+    --background: 220 23.076923191547394% 94.90196108818054%; /* base */
+    --foreground: 234 16.022099554538727% 35.49019694328308%; /* text */
+
+    --muted: 223 15.909090638160706% 82.74509906768799%; /* surface0 */
+    --muted-foreground: 233 12.796208262443542% 41.372549533843994%; /* subtext1 */
+
+    --popover: 220 23.076923191547394% 94.90196108818054%; /* base */
+    --popover-foreground: 234 16.022099554538727% 35.49019694328308%; /* text */
+
+    --card: 220 23.076923191547394% 94.90196108818054%; /* base */
+    --card-foreground: 234 16.022099554538727% 35.49019694328308%; /* text */
+
+    --border: 225 13.55932205915451% 76.86274647712708%; /* surface1 */
+    --input: 225 13.55932205915451% 76.86274647712708%; /* surface1 */
+
+    --primary: 220 91.4893627166748% 53.921568393707275%; /* accent - Blue */
+    --primary-foreground: 220 23.076923191547394% 94.90196108818054%; /* base */
+
+    --secondary: 223 15.909090638160706% 82.74509906768799%; /* surface0 */
+    --secondary-foreground: 234 16.022099554538727% 35.49019694328308%; /* text */
+
+    --accent: 223 15.909090638160706% 82.74509906768799%; /* surface0 */
+    --accent-foreground: 234 16.022099554538727% 35.49019694328308%; /* text */
+
+    --destructive: 347 86.66666746139526% 44.11764740943909%; /* red */
+    --destructive-foreground: 220 21.95121943950653% 91.96078181266785%; /* mantle */
+
+    --ring: 234 16.022099554538727% 35.49019694328308%; /* text */
+
+    --radius: 0.5rem;
+
+    --chart-1: 347 86.66666746139526% 44.11764740943909%; /* red */
+    --chart-2: 183 73.86363744735718% 34.50980484485626%; /* teal */
+    --chart-3: 220 91.4893627166748% 53.921568393707275%; /* blue */
+    --chart-4: 35 76.98412537574768% 49.41176474094391%; /* yellow */
+    --chart-5: 109 57.63546824455261% 39.803922176361084%; /* green */
+  }
+
+  html[data-theme='catppuccin-mocha'].dark {
+    --background: 240 21.052631735801697% 14.901961386203766%; /* base */
+    --foreground: 226 63.93442749977112% 88.03921341896057%; /* text */
+
+    --muted: 237 16.239316761493683% 22.94117659330368%; /* surface0 */
+    --muted-foreground: 227 35.29411852359772% 80.0000011920929%; /* subtext1 */
+
+    --popover: 240 21.052631735801697% 14.901961386203766%; /* base */
+    --popover-foreground: 226 63.93442749977112% 88.03921341896057%; /* text */
+
+    --card: 240 21.052631735801697% 14.901961386203766%; /* base */
+    --card-foreground: 226 63.93442749977112% 88.03921341896057%; /* text */
+
+    --border: 234 13.20754736661911% 31.176471710205078%; /* surface1 */
+    --input: 234 13.20754736661911% 31.176471710205078%; /* surface1 */
+
+    --primary: 217 91.86992049217224% 75.88235139846802%; /* accent - Blue */
+    --primary-foreground: 240 21.052631735801697% 14.901961386203766%; /* base */
+
+    --secondary: 237 16.239316761493683% 22.94117659330368%; /* surface0 */
+    --secondary-foreground: 226 63.93442749977112% 88.03921341896057%; /* text */
+
+    --accent: 237 16.239316761493683% 22.94117659330368%; /* surface0 */
+    --accent-foreground: 226 63.93442749977112% 88.03921341896057%; /* text */
+
+    --destructive: 343 81.25% 74.90196228027344%; /* red */
+    --destructive-foreground: 240 21.311475336551666% 11.96078434586525%; /* mantle */
+
+    --ring: 226 63.93442749977112% 88.03921341896057%; /* text */
+
+    --radius: 0.5rem;
+
+    --chart-1: 343 81.25% 74.90196228027344%; /* red */
+    --chart-2: 170 57.35294222831726% 73.33333492279053%; /* teal */
+    --chart-3: 217 91.86992049217224% 75.88235139846802%; /* blue */
+    --chart-4: 41 86.04651093482971% 83.13725590705872%; /* yellow */
+    --chart-5: 115 54.09836173057556% 76.07843279838562%; /* green */
+  }
+  html[data-theme='catppuccin-frappe'].dark {
+    --background: 229 18.644067645072937% 23.137255012989044%; /* base */
+    --foreground: 227 70.14925479888916% 86.86274290084839%; /* text */
+
+    --muted: 230 15.584415197372437% 30.19607961177826%; /* surface0 */
+    --muted-foreground: 227 43.689319491386414% 79.8039197921753%; /* subtext1 */
+
+    --popover: 229 18.644067645072937% 23.137255012989044%; /* base */
+    --popover-foreground: 227 70.14925479888916% 86.86274290084839%; /* text */
+
+    --card: 229 18.644067645072937% 23.137255012989044%; /* base */
+    --card-foreground: 227 70.14925479888916% 86.86274290084839%; /* text */
+
+    --border: 227 14.73684161901474% 37.254902720451355%; /* surface1 */
+    --input: 227 14.73684161901474% 37.254902720451355%; /* surface1 */
+
+    --primary: 222 74.24242496490479% 74.11764860153198%; /* accent - Blue */
+    --primary-foreground: 229 18.644067645072937% 23.137255012989044%; /* base */
+
+    --secondary: 230 15.584415197372437% 30.19607961177826%; /* surface0 */
+    --secondary-foreground: 227 70.14925479888916% 86.86274290084839%; /* text */
+
+    --accent: 230 15.584415197372437% 30.19607961177826%; /* surface0 */
+    --accent-foreground: 227 70.14925479888916% 86.86274290084839%; /* text */
+
+    --destructive: 359 67.78523325920105% 70.78431248664856%; /* red */
+    --destructive-foreground: 231 18.81188154220581% 19.80392187833786%; /* mantle */
+
+    --ring: 227 70.14925479888916% 86.86274290084839%; /* text */
+
+    --radius: 0.5rem;
+
+    --chart-1: 359 67.78523325920105% 70.78431248664856%; /* red */
+    --chart-2: 172 39.22652006149292% 64.50980305671692%; /* teal */
+    --chart-3: 222 74.24242496490479% 74.11764860153198%; /* blue */
+    --chart-4: 40 62.043797969818115% 73.13725352287292%; /* yellow */
+    --chart-5: 96 43.90243887901306% 67.84313917160034%; /* green */
+  }
+  html[data-theme='catppuccin-macchiato'].dark {
+    --background: 232 23.404255509376526% 18.431372940540314%; /* base */
+    --foreground: 227 68.2539701461792% 87.64705657958984%; /* text */
+
+    --muted: 230 18.796992301940918% 26.07843279838562%; /* surface0 */
+    --muted-foreground: 228 39.21568691730499% 80.0000011920929%; /* subtext1 */
+
+    --popover: 232 23.404255509376526% 18.431372940540314%; /* base */
+    --popover-foreground: 227 68.2539701461792% 87.64705657958984%; /* text */
+
+    --card: 232 23.404255509376526% 18.431372940540314%; /* base */
+    --card-foreground: 227 68.2539701461792% 87.64705657958984%; /* text */
+
+    --border: 231 15.606936812400818% 33.92156958580017%; /* surface1 */
+    --input: 231 15.606936812400818% 33.92156958580017%; /* surface1 */
+
+    --primary: 220 82.8125% 74.90196228027344%; /* accent - Blue */
+    --primary-foreground: 232 23.404255509376526% 18.431372940540314%; /* base */
+
+    --secondary: 230 18.796992301940918% 26.07843279838562%; /* surface0 */
+    --secondary-foreground: 227 68.2539701461792% 87.64705657958984%; /* text */
+
+    --accent: 230 18.796992301940918% 26.07843279838562%; /* surface0 */
+    --accent-foreground: 227 68.2539701461792% 87.64705657958984%; /* text */
+
+    --destructive: 351 73.9130437374115% 72.9411780834198%; /* red */
+    --destructive-foreground: 233 23.076923191547394% 15.294118225574493%; /* mantle */
+
+    --ring: 227 68.2539701461792% 87.64705657958984%; /* text */
+
+    --radius: 0.5rem;
+
+    --chart-1: 351 73.9130437374115% 72.9411780834198%; /* red */
+    --chart-2: 171 46.83544337749481% 69.01960968971252%; /* teal */
+    --chart-3: 220 82.8125% 74.90196228027344%; /* blue */
+    --chart-4: 40 69.91150379180908% 77.84313559532166%; /* yellow */
+    --chart-5: 105 48.25174808502197% 71.96078300476074%; /* green */
+  }
+  html[data-theme='tokyonight'] {
+    /* Background & surface */
+    --background: 221 21% 89%; /* a very light blue–gray (from #dce0e8) */
+    --foreground: 229 21% 31%; /* dark blue–gray text (from #3e445e) */
+    --card: var(--background);
+    --card-foreground: var(--foreground);
+    --popover: var(--background);
+    --popover-foreground: var(--foreground);
+
+    /* Primary/Accent */
+    --primary: 207 82% 66%; /* a bright blue (from #61afef) */
+    --primary-foreground: 0 0% 98%; /* nearly white text on blue */
+    --secondary: 187 47% 55%; /* a cool cyan (from #56b6c2) */
+    --secondary-foreground: 240 5.9% 10%; /* a deep, nearly black hue */
+    --accent: 286 60% 67%; /* a soft magenta (from #c678dd) */
+    --accent-foreground: 0 0% 98%; /* light text on accent */
+
+    /* Feedback */
+    --destructive: 351 57% 60%; /* a vivid red (from #d35d6e) */
+    --destructive-foreground: 0 0% 98%;
+
+    /* Helpers */
+    --border: 240 8% 80%; /* a light gray–blue border */
+    --input: var(--border);
+    --ring: 207 82% 80%; /* a lighter version of primary for focus */
+    --radius: 0.5rem;
+
+    /* Chart colors – arbitrary picks from the palette */
+    --chart-1: 351 57% 60%;
+    --chart-2: 87 27% 58%;
+    --chart-3: 35 66% 64%;
+    --chart-4: 286 60% 67%;
+    --chart-5: 23 100% 70%;
+  }
+  html[data-theme='tokyonight'].dark {
+    /* Background & surface */
+    --background: 235 19% 13%; /* deep navy (from #1a1b26, approx.) */
+    --foreground: 229 35% 75%; /* light, cool text (from #a9b1d6, approx.) */
+    --card: var(--background);
+    --card-foreground: var(--foreground);
+    --popover: var(--background);
+    --popover-foreground: var(--foreground);
+
+    /* Primary/Accent */
+    --primary: 221 89% 72%; /* a vivid blue (from #7aa2f7) */
+    --primary-foreground: 229 35% 75%;
+    --secondary: 202 100% 75%; /* a saturated cyan (from #7dcfff) */
+    --secondary-foreground: 0 0% 98%;
+    --accent: 261 86% 79%; /* a rich magenta (from #bb9af7) */
+    --accent-foreground: 0 0% 98%;
+
+    /* Feedback */
+    --destructive: 349 89% 72%; /* a bright red (from #f7768e) */
+    --destructive-foreground: 0 0% 98%;
+
+    /* Helpers */
+    --border: 235 20% 16%; /* a slightly lighter tone than the bg */
+    --input: var(--border);
+    --ring: 221 89% 85%; /* an even lighter blue for focus */
+    --radius: 0.5rem;
+
+    /* Chart colors – matching selections from the dark palette */
+    --chart-1: 349 89% 72%;
+    --chart-2: 89 51% 61%;
+    --chart-3: 35 66% 64%;
+    --chart-4: 261 86% 79%;
+    --chart-5: 23 100% 70%;
   }
 }
 

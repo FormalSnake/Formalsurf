@@ -1,111 +1,115 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from 'react'
 
-export type Theme = "dark" | "light" | "system";
-export type Colorscheme = "default" | "flexoki";
+export type Theme = 'dark' | 'light' | 'system'
+export type Colorscheme =
+  | 'default'
+  | 'flexoki'
+  | 'catppuccin-mocha'
+  | 'catppuccin-frappe'
+  | 'catppuccin-macchiato'
+  | 'tokyonight'
 
 type ThemeProviderProps = {
-  children: React.ReactNode;
-  defaultTheme?: Theme;
-  defaultColorScheme?: Colorscheme;
-  storageKey?: string;
-};
+  children: React.ReactNode
+  defaultTheme?: Theme
+  defaultColorScheme?: Colorscheme
+  storageKey?: string
+}
 
 type ThemeProviderState = {
-  theme: Theme;
-  setTheme: (theme: Theme) => void;
-  colorScheme: Colorscheme;
-  setColorScheme: (colorScheme: Colorscheme) => void;
-};
+  theme: Theme
+  setTheme: (theme: Theme) => void
+  colorScheme: Colorscheme
+  setColorScheme: (colorScheme: Colorscheme) => void
+}
 
 const initialState: ThemeProviderState = {
-  theme: "system",
+  theme: 'system',
   setTheme: () => null,
-  colorScheme: "default",
-  setColorScheme: () => null,
-};
+  colorScheme: 'default',
+  setColorScheme: () => null
+}
 
-const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
+const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
 
 export function ThemeProvider({
   children,
-  defaultTheme = "system",
-  defaultColorScheme = "default",
-  storageKey = "vite-ui-theme",
+  defaultTheme = 'system',
+  defaultColorScheme = 'default',
+  storageKey = 'vite-ui-theme',
   ...props
 }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(
     () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
-  );
+  )
   const [colorScheme, setColorScheme] = useState<Colorscheme>(
-    () => (localStorage.getItem("vite-ui-color-scheme") as Colorscheme) || defaultColorScheme
-  );
+    () => (localStorage.getItem('vite-ui-color-scheme') as Colorscheme) || defaultColorScheme
+  )
 
   useEffect(() => {
-    const root = window.document.documentElement;
+    const root = window.document.documentElement
 
     const applyTheme = (theme: Theme) => {
-      root.classList.remove("light", "dark");
+      root.classList.remove('light', 'dark')
 
-      if (theme === "system") {
-        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-          .matches
-          ? "dark"
-          : "light";
+      if (theme === 'system') {
+        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light'
 
-        root.classList.add(systemTheme);
+        root.classList.add(systemTheme)
       } else {
-        root.classList.add(theme);
+        root.classList.add(theme)
       }
-    };
+    }
 
-    applyTheme(theme);
+    applyTheme(theme)
 
     const applyColorScheme = (colorScheme: Colorscheme) => {
-      root.setAttribute("data-theme", colorScheme);
-    };
+      root.setAttribute('data-theme', colorScheme)
+    }
 
-    applyColorScheme(colorScheme);
+    applyColorScheme(colorScheme)
 
     // Listen for system theme changes if the theme is set to "system"
-    if (theme === "system") {
-      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    if (theme === 'system') {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
       const handleSystemThemeChange = (e: MediaQueryListEvent) => {
-        applyTheme("system");
-      };
+        applyTheme('system')
+      }
 
-      mediaQuery.addEventListener("change", handleSystemThemeChange);
+      mediaQuery.addEventListener('change', handleSystemThemeChange)
 
       return () => {
-        mediaQuery.removeEventListener("change", handleSystemThemeChange);
-      };
+        mediaQuery.removeEventListener('change', handleSystemThemeChange)
+      }
     }
-  }, [theme, colorScheme]);
+  }, [theme, colorScheme])
 
   const value = {
     theme,
     setTheme: (theme: Theme) => {
-      localStorage.setItem(storageKey, theme);
-      setTheme(theme);
+      localStorage.setItem(storageKey, theme)
+      setTheme(theme)
     },
     colorScheme,
     setColorScheme: (colorScheme: Colorscheme) => {
-      localStorage.setItem("vite-ui-color-scheme", colorScheme);
-      setColorScheme(colorScheme);
-    },
-  };
+      localStorage.setItem('vite-ui-color-scheme', colorScheme)
+      setColorScheme(colorScheme)
+    }
+  }
 
   return (
     <ThemeProviderContext.Provider {...props} value={value}>
       {children}
     </ThemeProviderContext.Provider>
-  );
+  )
 }
 
 export const useTheme = () => {
-  const context = useContext(ThemeProviderContext);
+  const context = useContext(ThemeProviderContext)
 
-  if (context === undefined)
-    throw new Error("useTheme must be used within a ThemeProvider");
+  if (context === undefined) throw new Error('useTheme must be used within a ThemeProvider')
 
-  return context;
-};
+  return context
+}

@@ -1,4 +1,14 @@
-import { app, shell, BrowserWindow, ipcMain, webContents, session, Session, Menu, protocol } from 'electron'
+import {
+  app,
+  shell,
+  BrowserWindow,
+  ipcMain,
+  webContents,
+  session,
+  Session,
+  Menu,
+  protocol
+} from 'electron'
 import path, { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -7,28 +17,19 @@ import os from 'os'
 // import { installExtension as installExtensionDev, REACT_DEVELOPER_TOOLS } from "electron-extension-installer";
 import { buildChromeContextMenu } from 'electron-chrome-context-menu'
 import { ElectronChromeExtensions } from 'electron-chrome-extensions'
-import { installChromeWebStore, installExtension, updateExtensions } from 'electron-chrome-web-store'
+import {
+  installChromeWebStore,
+  installExtension,
+  updateExtensions
+} from 'electron-chrome-web-store'
 import { template } from './menubar'
 import Store from 'electron-store'
 
 const store = new Store()
 
-let mainWindow;
+let mainWindow
 let sharedSession
 let extensions
-
-protocol.registerSchemesAsPrivileged([
-  {
-    scheme: 'surf',
-    privileges: {
-      standard: true,
-      secure: true,
-      allowServiceWorkers: true,
-      supportFetchAPI: true,
-      corsEnabled: true,
-    },
-  },
-]);
 
 async function createWindow(): Promise<void> {
   // Create the browser window.
@@ -45,12 +46,12 @@ async function createWindow(): Promise<void> {
       preload: join(__dirname, '../preload/index.js'),
       webviewTag: true,
       nodeIntegration: true,
-      contextIsolation: true,
+      contextIsolation: true
     }
   })
 
   // Set up menu
-  // @ts-expect-error
+  // @ts-expect-error template doesn't have the right types
   const menu = Menu.buildFromTemplate(template)
   Menu.setApplicationMenu(menu)
 
@@ -69,22 +70,22 @@ async function createWindow(): Promise<void> {
   // Main window handlers
   mainWindow.webContents.on('did-attach-webview', (_, contents) => {
     contents.setWindowOpenHandler((details) => {
-      console.log("details", details)
-      console.log("Opening URL (window):", details.url);
+      console.log('details', details)
+      console.log('Opening URL (window):', details.url)
 
       // Allow new windows only if the disposition is 'new-window'
       if (details.disposition === 'new-window') {
-        console.log("New window opening:", details.url);
-        return { action: 'allow' }; // Allow the new window to open
+        console.log('New window opening:', details.url)
+        return { action: 'allow' } // Allow the new window to open
       } else {
-        console.log("Denying window opening:", details.url);
+        console.log('Denying window opening:', details.url)
         // You can optionally send the URL to the main process or handle it as needed
-        mainWindow.webContents.send('open-url', details.url);
+        mainWindow.webContents.send('open-url', details.url)
         // Deny other types of window openings (e.g., target="_blank")
-        return { action: 'deny' };
+        return { action: 'deny' }
       }
-    });
-  });
+    })
+  })
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
@@ -124,12 +125,12 @@ async function createWindow(): Promise<void> {
 
   ipcMain.handle('get-version', async (_event) => {
     const version = app.getVersion()
-    const platform = os.platform();
+    const platform = os.platform()
 
     // Get the architecture (e.g., 'arm64' for ARM64)
-    const architecture = process.arch;
+    const architecture = process.arch
 
-    const systemInfo = `${version} ${platform} ${architecture}`;
+    const systemInfo = `${version} ${platform} ${architecture}`
 
     return systemInfo
   })
@@ -137,7 +138,7 @@ async function createWindow(): Promise<void> {
   // A 'change-setting' event receiver that does store.set and store.get using a provided value with the event.
   ipcMain.handle('change-setting', async (event, key, value) => {
     store.set(key, value)
-    console.log("settings key", key, value)
+    console.log('settings key', key, value)
     // Notify all windows about the setting change
     BrowserWindow.getAllWindows().forEach((window) => {
       window.webContents.send('setting-changed', key, value)
@@ -169,7 +170,10 @@ app.whenReady().then(async () => {
 
   sharedSession = session.fromPartition('persist:webview')
 
-  const modulePathExtensions = path.join(app.getAppPath(), 'node_modules/electron-chrome-extensions')
+  const modulePathExtensions = path.join(
+    app.getAppPath(),
+    'node_modules/electron-chrome-extensions'
+  )
 
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
@@ -181,14 +185,14 @@ app.whenReady().then(async () => {
   // app handlers
   app.on('open-url', (event, url) => {
     event.preventDefault()
-    console.log("Handling URL:", url)
+    console.log('Handling URL:', url)
 
     const existingWindow = BrowserWindow.getAllWindows()[0]
     if (existingWindow) {
-      console.log("Existing window found, sending URL to it")
+      console.log('Existing window found, sending URL to it')
       existingWindow.webContents.send('open-url', url)
     } else {
-      console.log("No existing window found, creating new window")
+      console.log('No existing window found, creating new window')
       // If no window exists, create one and wait for it to be ready
       createWindow().then(() => {
         const window = BrowserWindow.getAllWindows()[0]
@@ -202,7 +206,7 @@ app.whenReady().then(async () => {
   // Extensions
 
   extensions = new ElectronChromeExtensions({
-    license: "GPL-3.0",
+    license: 'GPL-3.0',
     session: sharedSession,
     modulePath: modulePathExtensions,
     createTab(details) {
@@ -217,19 +221,21 @@ app.whenReady().then(async () => {
     createWindow(details) {
       const window = new BrowserWindow()
       return window
-    },
+    }
   })
 
   const modulePathWebstore = path.join(app.getAppPath(), 'node_modules/electron-chrome-web-store')
 
-  await installChromeWebStore({ session: sharedSession, modulePath: modulePathWebstore }).catch((e) => console.error(e));
+  await installChromeWebStore({ session: sharedSession, modulePath: modulePathWebstore }).catch(
+    (e) => console.error(e)
+  )
 
   // Check and install updates for all loaded extensions
   await updateExtensions()
 
   createWindow()
 
-  app.on('activate', function() {
+  app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
@@ -241,7 +247,7 @@ app.on('web-contents-created', (event, webContents) => {
     const existingWindow = BrowserWindow.getAllWindows()[0]
 
     extensions.addTab(webContents, existingWindow)
-    console.log("Tab", webContents.id)
+    console.log('Tab', webContents.id)
 
     webContents.setVisualZoomLevelLimits(1, 4)
 
@@ -252,6 +258,7 @@ app.on('web-contents-created', (event, webContents) => {
     })
 
     webContents.on('context-menu', (_e, params) => {
+      console.log('context menu')
       const menu = buildChromeContextMenu({
         params,
         webContents,
@@ -269,7 +276,7 @@ app.on('web-contents-created', (event, webContents) => {
 const newUserAgent = app.userAgentFallback
   .replace(
     /Chrome\/[\d.]+/,
-    'Chrome/130.0.0.0' // Example: Update to a recent Chrome version
+    'Chrome/132.0.6834.196' // Example: Update to a recent Chrome version
   )
   .replace(/Electron\/[\d.]+/, '')
   .replace(/formalsurf\/[\d.]+/, '')

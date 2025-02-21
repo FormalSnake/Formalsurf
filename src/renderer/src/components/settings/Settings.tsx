@@ -1,36 +1,32 @@
-import { Button } from "@renderer/components/ui/button"
+import { Button } from '@renderer/components/ui/button'
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogTitle,
-} from "@renderer/components/ui/dialog"
-import { Input } from "@renderer/components/ui/input"
-import { Label } from "@renderer/components/ui/label"
-import { atom, useAtom } from "jotai"
-import { ModeToggle } from "../mode-toggle"
-import { useEffect, useState } from "react"
+  DialogTitle
+} from '@renderer/components/ui/dialog'
+import { Input } from '@renderer/components/ui/input'
+import { Label } from '@renderer/components/ui/label'
+import { atom, useAtom } from 'jotai'
+import { ModeToggle } from '../mode-toggle'
+import { useEffect, useState } from 'react'
 import {
   Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
-  CommandList,
-} from "@renderer/components/ui/command"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@renderer/components/ui/popover"
-import { Check, ChevronsUpDown } from "lucide-react"
-import { cn } from "@renderer/lib/utils"
-import { SchemeSelect } from "../scheme-select"
+  CommandList
+} from '@renderer/components/ui/command'
+import { Popover, PopoverContent, PopoverTrigger } from '@renderer/components/ui/popover'
+import { Check, ChevronsUpDown } from 'lucide-react'
+import { cn } from '@renderer/lib/utils'
+import { SchemeSelect } from '../scheme-select'
 
 export const settingsOpenAtom = atom(false)
 export const activeModelAtom = atom<Model | null>(null)
-export const ollamaUrlAtom = atom<string | null>(null)
+export const ollamaUrlAtom = atom<string | null>('http://localhost:11434')
 
 interface Model {
   name: string
@@ -44,17 +40,25 @@ export function SettingsDialog() {
   const [activeModel, setActiveModel] = useAtom(activeModelAtom)
   const [modelOpen, setModelOpen] = useState(false)
 
+  // Ensure ollamaUrl is always a string
+  const safeOllamaUrl = ollamaUrl || ''
+
   useEffect(() => {
     window.api.getSettings('ollamaUrl').then((value) => {
-      setOllamaUrl(value)
+      setOllamaUrl(value || 'http://localhost:11434')
     })
     window.api.getSettings('activeModel').then((value) => {
       if (value) setActiveModel(value)
     })
   }, [])
 
-  const handleChangeOllamaUrl = (value: string) => {
-    // Normalize URL by ensuring it ends with a slash
+  const handleUrlChange = (value: string) => {
+    // Simply update the local state without normalization
+    setOllamaUrl(value)
+  }
+
+  const handleUrlBlur = (value: string) => {
+    // Normalize URL when input loses focus
     const normalizedValue = value.trim().replace(/\/?$/, '/')
     window.api.changeSetting('ollamaUrl', normalizedValue).then((savedValue) => {
       setOllamaUrl(savedValue)
@@ -62,31 +66,29 @@ export function SettingsDialog() {
   }
 
   useEffect(() => {
-    if (ollamaUrl) {
-      // Properly construct API URL using URL constructor
-      const apiUrl = new URL('api/tags', ollamaUrl).href
+    if (safeOllamaUrl) {
+      try {
+        // Ensure the URL is valid before fetching
+        const apiUrl = new URL('/api/tags', safeOllamaUrl).href
 
-      fetch(apiUrl)
-        .then(res => {
-          if (!res.ok) throw new Error('Failed to fetch models')
-          return res.json()
-        })
-        .then((data) => {
-          setModels(data.models || [])
-        })
-        .catch((error) => {
-          console.error('Error fetching models:', error)
-          setModels([])
-        })
+        fetch(apiUrl)
+          .then((res) => {
+            if (!res.ok) throw new Error('Failed to fetch models')
+            return res.json()
+          })
+          .then((data) => {
+            setModels(data.models || [])
+          })
+          .catch((error) => {
+            console.error('Error fetching models:', error)
+            setModels([])
+          })
+      } catch (error) {
+        console.error('Invalid URL:', error)
+        setModels([])
+      }
     }
-  }, [ollamaUrl])
-
-  useEffect(() => {
-    if (activeModel) {
-      // Remove unnecessary state update in .then() callback
-      window.api.changeSetting('activeModel', activeModel)
-    }
-  }, [activeModel])
+  }, [safeOllamaUrl])
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -114,7 +116,13 @@ export function SettingsDialog() {
             <Label htmlFor="ollama-url" className="text-right">
               Ollama URL
             </Label>
-            <Input id="ollama-url" value={ollamaUrl} className="col-span-3" onChange={(e) => setOllamaUrl(e.target.value)} />
+            <Input
+              id="ollama-url"
+              value={safeOllamaUrl}
+              className="col-span-3"
+              onChange={(e) => handleUrlChange(e.target.value)}
+              onBlur={(e) => handleUrlBlur(e.target.value)}
+            />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="active-model" className="text-right">
@@ -150,8 +158,8 @@ export function SettingsDialog() {
                           {model.name}
                           <Check
                             className={cn(
-                              "ml-auto",
-                              model.model === activeModel?.model ? "opacity-100" : "opacity-0"
+                              'ml-auto',
+                              model.model === activeModel?.model ? 'opacity-100' : 'opacity-0'
                             )}
                           />
                         </CommandItem>
