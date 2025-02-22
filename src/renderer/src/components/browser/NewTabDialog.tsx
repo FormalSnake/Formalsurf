@@ -22,7 +22,7 @@ export function CommandMenu() {
 
     console.log(`Fetching results for: ${input}`);
 
-    fetch(`https://corsproxy.io/?https://api.project-jam.is-a.dev/api/v0/autosearch/google?q=${encodeURIComponent(input)}&src=google`)
+    fetch(`https://api.project-jam.is-a.dev/api/v0/autosearch/google?q=${encodeURIComponent(input)}&src=google`)
       .then((res) => {
         console.log("API response received", res);
         if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
