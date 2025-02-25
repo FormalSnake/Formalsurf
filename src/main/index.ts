@@ -35,7 +35,7 @@ async function createWindow(): Promise<void> {
     height: 670,
     show: false,
     titleBarStyle: 'hiddenInset',
-    trafficLightPosition: { x: 12, y: 15 },
+    trafficLightPosition: { x: 12, y: 16 },
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {

@@ -81,26 +81,27 @@ export function Sidebar() {
     }
   }, [tabs])
 
-  const actionButtons = [
-    <Button key="refresh" variant="ghost" size="icon" onClick={handleReload}>
-      <RefreshCw className="h-4 w-4" />
-    </Button>,
-    <Button key="newtab" variant="ghost" size="icon" onClick={() => setTabDialogOpen(true)}>
-      <Plus className="h-4 w-4" />
-    </Button>,
-    <Button key="back" variant="ghost" size="icon" onClick={handleGoBack}>
-      <ArrowLeft className="h-4 w-4" />
-    </Button>,
-    <Button key="forward" variant="ghost" size="icon" onClick={handleGoForward}>
-      <ArrowRight className="h-4 w-4" />
-    </Button>,
-  ];
-
-  console.log('color', color)
-
   return (
-    <div className="flex flex-row w-full h-[50px] items-center justify-center" style={{ backgroundColor: color }}>
-      <TabList tabs={tabs} setActiveTab={setActiveTab} />
+    <div className="flex flex-row w-full h-[50px] items-center pl-20 pr-1" style={{ backgroundColor: color }}>
+      <div className="justify-self-start">
+        <Button key="refresh" variant="ghost" size="icon" onClick={handleReload}>
+          <RefreshCw className="h-4 w-4" />
+        </Button>
+        <Button key="back" variant="ghost" size="icon" onClick={handleGoBack}>
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <Button key="forward" variant="ghost" size="icon" onClick={handleGoForward}>
+          <ArrowRight className="h-4 w-4" />
+        </Button>
+      </div>
+      <div className="justify-self-center mx-auto">
+        <TabList tabs={tabs} setActiveTab={setActiveTab} />
+      </div>
+      <div className="justify-self-end">
+        <Button key="newtab" variant="ghost" size="icon" onClick={() => setTabDialogOpen(true)}>
+          <Plus className="h-4 w-4" />
+        </Button>
+      </div>
     </div>
   );
 }

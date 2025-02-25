@@ -213,7 +213,7 @@ export function WebView({ tab }: { tab: Tab }) {
             id={tab.id}
             className={cn('w-full h-full', tab.readerMode && 'hidden')}
             webpreferences="autoplayPolicy=document-user-activation-required,defaultFontSize=16,contextIsolation=true,nodeIntegration=false,sandbox=true,webSecurity=true,nativeWindowOpen=true"
-            allowpopups
+            allowpopups="true"
             partition="persist:webview"
             style={{ pointerEvents: 'unset' }}
           />

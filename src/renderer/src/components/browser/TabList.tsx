@@ -27,7 +27,7 @@ function TabList({ tabs, setActiveTab }: { tabs: Tab[], setActiveTab: (id: strin
   }, [])
 
   return (
-    <div className="flex flex-row p-2 space-x-2 container items-center justify-center w-full h-full " ref={container}>
+    <div className="flex flex-row items-center space-x-1" ref={container}>
       {slottedItems.map(({ slotId, itemId, item }) => (
         <div className="" key={slotId} data-swapy-slot={slotId}>
           {

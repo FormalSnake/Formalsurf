@@ -36,7 +36,7 @@ export function TabButton({ tab, setActiveTab, itemId }: { tab: Tab; setActiveTa
   return (
     <Button
       variant="ghost"
-      className={cn('justify-start select-none pl-2 item w-[178px] transition-all duration-100 ease-linear', tab.isActive && 'bg-accent/50 w-[478px]')}
+      className={cn('justify-start select-none pl-2 item w-24 transition-all duration-100 ease-linear', tab.isActive && 'bg-accent/50 w-full max-w-[478px] flex-grow')}
       onClick={() => setActive(tab)}
       id={tab.id}
       key={itemId} data-swapy-item={itemId}
