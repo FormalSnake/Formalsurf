@@ -37,9 +37,6 @@ export function WebView({ tab }: { tab: Tab }) {
           if (t.id === targetId) {
             return updater(t)
           }
-          if (t.subTabs?.length > 0) {
-            return { ...t, subTabs: updateTabInTree(t.subTabs, targetId) }
-          }
           return t
         })
       }
@@ -261,16 +258,13 @@ export function newTab(url: string, title: string, setTabs: any) {
     favicon: '',
     isActive: true,
     readerMode: false,
-    subTabs: []
   } as Tab
 
   setTabs((prevTabs: Tab[]) => {
-    // Deactivate all tabs and their subtabs recursively
     const deactivateAllTabs = (tabs: Tab[]): Tab[] => {
       return tabs.map((tab) => ({
         ...tab,
         isActive: false,
-        subTabs: tab.subTabs ? deactivateAllTabs(tab.subTabs) : []
       }))
     }
 
@@ -285,18 +279,11 @@ export function closeTab(
 ) {
   // Helper function to find the next tab to activate
   const findNextTabToActivate = (tabs: Tab[], excludeId: string): Tab | undefined => {
-    // Flatten the tab hierarchy for simpler navigation
-    const flattenTabs = (tabs: Tab[]): Tab[] => {
-      return tabs.reduce((acc, tab) => {
-        return [...acc, tab, ...flattenTabs(tab.subTabs || [])]
-      }, [] as Tab[])
-    }
 
-    const flatTabs = flattenTabs(tabs)
-    const currentIndex = flatTabs.findIndex((t) => t.id === excludeId)
+    const currentIndex = tabs.findIndex((t) => t.id === excludeId)
 
     // Try to get the next tab, or the previous if there is no next
-    return flatTabs[currentIndex + 1] || flatTabs[currentIndex - 1]
+    return tabs[currentIndex + 1] || tabs[currentIndex - 1]
   }
 
   setTabs((prevTabs) => {
@@ -324,17 +311,6 @@ export function closeTab(
           continue
         }
 
-        // Handle subtabs
-        if (tab.subTabs?.length) {
-          const [updatedSubTabs, wasRemoved] = removeTab(tab.subTabs, targetId)
-          result.push({
-            ...tab,
-            subTabs: updatedSubTabs
-          })
-          if (wasRemoved) removed = true
-          continue
-        }
-
         result.push(tab)
       }
 
@@ -350,10 +326,6 @@ export function closeTab(
         return updatedTabs.map((tab) => ({
           ...tab,
           isActive: tab.id === nextTab.id,
-          subTabs: tab.subTabs?.map((subTab) => ({
-            ...subTab,
-            isActive: subTab.id === nextTab.id
-          }))
         }))
       }
     }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { activeTabRefAtom, tabsAtom } from "@renderer/atoms/browser"
+import { activeTabRefAtom, Tab, tabsAtom } from "@renderer/atoms/browser"
 import { atom, useAtom } from "jotai"
 import { Button } from "@renderer/components/ui/button"
 import { ArrowLeft, ArrowRight, Plus, RefreshCw } from "lucide-react"
@@ -29,18 +29,14 @@ export function Sidebar() {
 
   const setActiveTab = (id: string) => {
     console.log("Setting active tab to:", id);
-    
+
     const updateTabsRecursively = (tabs: Tab[]): Tab[] => {
       return tabs.map(tab => {
-        // Check if this tab or any of its subtabs should be active
         const shouldBeActive = tab.id === id;
-        const updatedSubTabs = tab.subTabs ? updateTabsRecursively(tab.subTabs) : [];
-        const hasActiveSubTab = updatedSubTabs.some(subTab => subTab.isActive);
 
         return {
           ...tab,
           isActive: shouldBeActive,
-          subTabs: updatedSubTabs
         };
       });
     };
@@ -52,10 +48,6 @@ export function Sidebar() {
     const findActiveTab = (tabs: Tab[]): Tab | undefined => {
       for (const tab of tabs) {
         if (tab.id === id) return tab;
-        if (tab.subTabs) {
-          const activeSubTab = findActiveTab(tab.subTabs);
-          if (activeSubTab) return activeSubTab;
-        }
       }
       return undefined;
     };

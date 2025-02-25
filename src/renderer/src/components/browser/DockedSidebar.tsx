@@ -6,6 +6,7 @@ import { TabButton } from "./TabButton"
 import { Tab } from "@renderer/atoms/browser"
 import { AnimatedGroup } from "../ui/animated-group"
 import { motion } from "framer-motion"
+import TabList from "./TabList"
 
 interface DockedSidebarProps {
   isVisible: boolean
@@ -45,11 +46,7 @@ export function DockedSidebar({
       <div className="px-2">
         <browser-action-list partition="persist:webview" id="actions"></browser-action-list>
       </div>
-      <AnimatedGroup className="flex flex-col p-2 space-y-2">
-        {tabs.map((tab) => (
-          <TabButton key={tab.id} tab={tab} setActiveTab={setActiveTab} />
-        ))}
-      </AnimatedGroup>
+      <TabList tabs={tabs} setActiveTab={setActiveTab} />
     </motion.div>
   )
 }

@@ -4,6 +4,7 @@ import { PanelLeftClose } from "lucide-react"
 import { JSX } from "react"
 import { TabButton } from "./TabButton"
 import { motion } from "framer-motion" // Import Framer Motion
+import TabList from "./TabList"
 
 interface FloatingSidebarProps {
   isVisible: boolean
@@ -44,11 +45,10 @@ export function FloatingSidebar({
           </Button>
           {actionButtons}
         </div>
-        <div className="flex flex-col p-2 space-y-2">
-          {tabs.map((tab) => (
-            <TabButton key={tab.id} tab={tab} setActiveTab={setActiveTab} />
-          ))}
+        <div className="px-2">
+          <browser-action-list partition="persist:webview" id="actions"></browser-action-list>
         </div>
+        <TabList tabs={tabs} setActiveTab={setActiveTab} />
       </div>
     </motion.div>
   )

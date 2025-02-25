@@ -4,16 +4,8 @@ import { cn } from '@renderer/lib/utils'
 import { X } from 'lucide-react'
 import { closeTab } from './webview'
 import { useAtom } from 'jotai'
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuTrigger
-} from '@renderer/components/ui/context-menu'
-import { useEffect, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
 
-export function TabButton({ tab, setActiveTab }: { tab: Tab; setActiveTab: (id: string) => void }) {
+export function TabButton({ tab, setActiveTab, itemId }: { tab: Tab; setActiveTab: (id: string) => void; itemId: any }) {
   const [tabs, setTabs] = useAtom(tabsAtom)
 
   const setActive = (tab: Tab) => {
@@ -22,8 +14,6 @@ export function TabButton({ tab, setActiveTab }: { tab: Tab; setActiveTab: (id: 
     setTabs((prevTabs) => {
       const updateTabs = (tabs: Tab[]): Tab[] => {
         return tabs.map((t) => {
-          // Handle subtabs recursively
-
           return {
             ...t,
             isActive: t.id === tab.id
@@ -44,19 +34,12 @@ export function TabButton({ tab, setActiveTab }: { tab: Tab; setActiveTab: (id: 
   }
 
   return (
-    <div className="flex flex-col">
-      <TabComponent key={tab.id} tab={tab} setActive={setActive} close={close} />
-    </div>
-  )
-}
-
-const TabComponent = ({ tab, setActive, close }) => {
-  return (
     <Button
       variant="ghost"
-      className={cn('justify-start w-full select-none pl-2 ', tab.isActive && 'bg-accent/50')}
+      className={cn('justify-start w-full select-none pl-2 item', tab.isActive && 'bg-accent/50')}
       onClick={() => setActive(tab)}
       id={tab.id}
+      key={itemId} data-swapy-item={itemId}
     >
       <img src={tab.favicon} className="w-4 h-4 rounded-md" draggable={false} />
       <span
@@ -65,7 +48,7 @@ const TabComponent = ({ tab, setActive, close }) => {
       >
         {tab.title}
       </span>
-      <div className="ml-auto p-1 hover:bg-accent/20 rounded" onClick={(e) => close(e, tab)}>
+      <div className="ml-auto p-1 hover:bg-accent/20 rounded" onClick={(e) => close(e, tab)} data-swapy-no-drag>
         <X className="h-4 w-4" />
       </div>
     </Button>

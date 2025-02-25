@@ -8,6 +8,7 @@ export interface Tab {
   favicon: string
   isActive: boolean
   readerMode: boolean
+  ref?: any
 }
 
 export const tabsAtom = atom<Tab[]>([
