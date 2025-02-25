@@ -84,6 +84,9 @@ export function ThemeProvider({
         mediaQuery.removeEventListener('change', handleSystemThemeChange)
       }
     }
+
+    return () => {
+    }
   }, [theme, colorScheme])
 
   const value = {

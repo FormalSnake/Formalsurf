@@ -293,6 +293,7 @@ export function closeTab(
       const result: Tab[] = []
       let removed = false
       let wasActive = false
+      removed = removed
 
       for (const tab of tabs) {
         if (tab.id === targetId) {
