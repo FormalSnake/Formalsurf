@@ -82,8 +82,8 @@ export function Sidebar() {
   }, [tabs])
 
   return (
-    <div className="flex flex-row w-full h-[50px] items-center pl-20 pr-1" style={{ backgroundColor: color }}>
-      <div className="justify-self-start">
+    <div className="flex flex-row w-full h-[50px] items-center pl-20 pr-1 drag" style={{ backgroundColor: color }}>
+      <div className="justify-self-start no-drag">
         <Button key="refresh" variant="ghost" size="icon" onClick={handleReload}>
           <RefreshCw className="h-4 w-4" />
         </Button>
@@ -97,7 +97,7 @@ export function Sidebar() {
       <div className="justify-self-center mx-auto">
         <TabList tabs={tabs} setActiveTab={setActiveTab} />
       </div>
-      <div className="justify-self-end">
+      <div className="justify-self-end no-drag">
         <Button key="newtab" variant="ghost" size="icon" onClick={() => setTabDialogOpen(true)}>
           <Plus className="h-4 w-4" />
         </Button>
