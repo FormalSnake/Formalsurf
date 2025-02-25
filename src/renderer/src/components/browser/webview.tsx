@@ -11,7 +11,7 @@ export function WebView({ tab }: { tab: Tab }) {
   const [_activeTabRef, setActiveTabRef] = useAtom(activeTabRefAtom)
   const ref = useRef<any>(null)
   const [isWebViewReady, setIsWebViewReady] = useState(false)
-  const [webviewTargetUrl, setWebviewTargetUrl] = useState('')
+  // const [webviewTargetUrl, setWebviewTargetUrl] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [readerContent, setReaderContent] = useState('')
 
@@ -75,6 +75,21 @@ export function WebView({ tab }: { tab: Tab }) {
         ipcHandle(ref) // Call ipcHandle if the tab is active
       }
       handleTitleUpdate()
+      webview.executeJavaScript(`
+    (function() {
+      const style = window.getComputedStyle(document.body);
+      const bgColor = style.getPropertyValue('background-color');
+      // Return both values so you can decide which one to use
+      return { bgColor };
+    })()
+  `).then(({ bgColor, bg }) => {
+        console.log('Computed background-color:', bgColor);
+        // For example, if background-color is transparent, you might use the background shorthand
+        const effectiveBackground = (bgColor === 'rgba(0, 0, 0, 0)' || bgColor === 'transparent') ? bg : bgColor;
+        console.log('Effective background:', effectiveBackground);
+
+        updateCurrentTab((t) => ({ ...t, color: effectiveBackground }));
+      });
     }
 
     const handleTitleUpdate = () => {
@@ -87,14 +102,12 @@ export function WebView({ tab }: { tab: Tab }) {
       console.log('Favicon updated:', event.favicons[0])
     }
 
-    const handleTargetUrlUpdate = (event: any) => {
-      setWebviewTargetUrl(event.url)
-      console.log('Target URL updated:', event.url)
-    }
-
     const handleFullNavigation = (event: any) => {
       if (event.isMainFrame) {
         console.log('Navigated to:', event.url)
+        // get the background color of the tab's HTML element
+        // const tabColor = window.getComputedStyle(ref.current).backgroundColor
+        // console.log('Tab color:', tabColor)
         updateCurrentTab((t) => ({ ...t, url: event.url }))
       }
     }
@@ -116,7 +129,6 @@ export function WebView({ tab }: { tab: Tab }) {
     webview.addEventListener('dom-ready', handleDomReady)
     webview.addEventListener('page-title-updated', handleTitleUpdate)
     webview.addEventListener('page-favicon-updated', handleFaviconUpdate)
-    webview.addEventListener('update-target-url', handleTargetUrlUpdate)
     webview.addEventListener('did-navigate', handleFullNavigation)
     webview.addEventListener('did-navigate-in-page', handleInPageNavigation)
     webview.addEventListener('did-start-loading', handleStartLoading)
@@ -129,7 +141,6 @@ export function WebView({ tab }: { tab: Tab }) {
         webview.removeEventListener('dom-ready', handleDomReady)
         webview.removeEventListener('page-title-updated', handleTitleUpdate)
         webview.removeEventListener('page-favicon-updated', handleFaviconUpdate)
-        webview.removeEventListener('update-target-url', handleTargetUrlUpdate)
         webview.removeEventListener('did-navigate', handleFullNavigation)
         webview.removeEventListener('did-navigate-in-page', handleInPageNavigation)
         webview.removeEventListener('did-start-loading', handleStartLoading)
@@ -193,17 +204,21 @@ export function WebView({ tab }: { tab: Tab }) {
       </AnimatePresence>
 
       {/* The standard webview */}
-      <webview
-        ref={ref}
-        key={tab.id}
-        src={tab.url}
-        id={tab.id}
-        className={cn('w-full h-full', tab.readerMode && 'hidden')}
-        webpreferences="autoplayPolicy=document-user-activation-required,defaultFontSize=16,contextIsolation=true,nodeIntegration=false,sandbox=true,webSecurity=true,nativeWindowOpen=true"
-        allowpopups
-        partition="persist:webview"
-        style={{ pointerEvents: 'unset' }}
-      />
+      {
+        tab.url !== "" && (
+          <webview
+            ref={ref}
+            key={tab.id}
+            src={tab.url}
+            id={tab.id}
+            className={cn('w-full h-full', tab.readerMode && 'hidden')}
+            webpreferences="autoplayPolicy=document-user-activation-required,defaultFontSize=16,contextIsolation=true,nodeIntegration=false,sandbox=true,webSecurity=true,nativeWindowOpen=true"
+            allowpopups
+            partition="persist:webview"
+            style={{ pointerEvents: 'unset' }}
+          />
+        )
+      }
 
       {/* Reader mode view */}
       {tab.readerMode && (
@@ -214,20 +229,20 @@ export function WebView({ tab }: { tab: Tab }) {
         </div>
       )}
 
-      <AnimatePresence>
-        {webviewTargetUrl && (
-          <motion.div
-            initial={{ scale: 0.5, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.5, opacity: 0 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-            className="text-xs m-1 h-fit w-fit max-w-[500px] z-50 p-1 px-2 truncate bg-popover border-border border fixed bottom-4 right-4 rounded-lg pointer-events-none"
-            layout
-          >
-            {webviewTargetUrl}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* <AnimatePresence> */}
+      {/*   {webviewTargetUrl && ( */}
+      {/*     <motion.div */}
+      {/*       initial={{ scale: 0.5, opacity: 0 }} */}
+      {/*       animate={{ scale: 1, opacity: 1 }} */}
+      {/*       exit={{ scale: 0.5, opacity: 0 }} */}
+      {/*       transition={{ type: 'spring', stiffness: 300, damping: 20 }} */}
+      {/*       className="text-xs m-1 h-fit w-fit max-w-[500px] z-50 p-1 px-2 truncate bg-popover border-border border fixed bottom-4 right-4 rounded-lg pointer-events-none" */}
+      {/*       layout */}
+      {/*     > */}
+      {/*       {webviewTargetUrl} */}
+      {/*     </motion.div> */}
+      {/*   )} */}
+      {/* </AnimatePresence> */}
     </div>
   )
 }

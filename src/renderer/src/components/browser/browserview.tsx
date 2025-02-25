@@ -35,7 +35,7 @@ export function BrowserView() {
   }, [tabs])
 
   return (
-    <div className="flex flex-row gap-x-2 w-full">
+    <div className="flex w-full h-full">
       {tabs.map((tab: Tab) => (
         <WebView key={tab.id} tab={tab} />
       ))}

@@ -63,7 +63,7 @@ export function CommandMenu() {
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
       <CommandInput placeholder="Type a command or search..." value={input} onValueChange={setInput} />
-      <CommandList>
+      <CommandList className="h-[300px]">
         <CommandEmpty>No results found.</CommandEmpty>
         {searchResults.length > 0 && input.length > 0 ? (
           <CommandGroup heading="Suggestions">

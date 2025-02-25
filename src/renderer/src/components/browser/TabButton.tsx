@@ -1,7 +1,7 @@
 import { Tab, tabsAtom } from '@renderer/atoms/browser'
 import { Button } from '../ui/button'
 import { cn } from '@renderer/lib/utils'
-import { X } from 'lucide-react'
+import { Globe, X } from 'lucide-react'
 import { closeTab } from './webview'
 import { useAtom } from 'jotai'
 
@@ -36,12 +36,18 @@ export function TabButton({ tab, setActiveTab, itemId }: { tab: Tab; setActiveTa
   return (
     <Button
       variant="ghost"
-      className={cn('justify-start w-full select-none pl-2 item', tab.isActive && 'bg-accent/50')}
+      className={cn('justify-start select-none pl-2 item w-[178px] transition-all duration-100 ease-linear', tab.isActive && 'bg-accent/50 w-[478px]')}
       onClick={() => setActive(tab)}
       id={tab.id}
       key={itemId} data-swapy-item={itemId}
     >
-      <img src={tab.favicon} className="w-4 h-4 rounded-md" draggable={false} />
+      {
+        tab.favicon !== "" ? (
+          <img src={tab.favicon} className="w-4 h-4 rounded-md" draggable={false} />
+        ) : (
+          <Globe className="w-4 h-4 rounded-md" />
+        )
+      }
       <span
         className="ml-2 text-sm font-medium truncate
  max-w-[calc(100%-4rem)]"

@@ -9,6 +9,7 @@ export interface Tab {
   isActive: boolean
   readerMode: boolean
   ref?: any
+  color?: string
 }
 
 export const tabsAtom = atom<Tab[]>([
@@ -22,20 +23,20 @@ export const tabsAtom = atom<Tab[]>([
   },
   {
     id: uuid4(),
+    url: 'https://chromewebstore.google.com/',
+    title: 'Chrome Web Store',
+    favicon: 'https://chromewebstore.google.com/favicon.ico',
+    isActive: false,
+    readerMode: false
+  },
+  {
+    id: uuid4(),
     url: 'https://www.formalsnake.dev/blog/07-nix/',
     title: 'formalsnake.dev',
     favicon: 'https://www.formalsnake.dev/favicon.ico',
     isActive: true,
     readerMode: false
   },
-  {
-    id: uuid4(),
-    url: 'https://chromewebstore.google.com/',
-    title: 'Chrome Web Store',
-    favicon: 'https://chromewebstore.google.com/favicon.ico',
-    isActive: false,
-    readerMode: false
-  }
 ])
 
 export const activeTabRefAtom = atom<any>(null)

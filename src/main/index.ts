@@ -108,18 +108,16 @@ async function createWindow(): Promise<void> {
     }
   })
 
-  ipcMain.handle('get-active-tab', async (_event, webContentsId) => {
+  ipcMain.handle('get-active-tab', (_event, webContentsId) => {
     console.log('get-active-tab', webContentsId)
     return extensions.selectTab(webContents.fromId(webContentsId) as any)
   })
 
-  ipcMain.handle('close-tab', async (_event, webContentsId) => {
+  ipcMain.handle('close-tab', (_event, webContentsId) => {
     console.log('close-tab', webContentsId)
-    // unload the tab from electron (not extensions)
-    webContents.fromId(webContentsId)?.removeAllListeners()
   })
 
-  ipcMain.handle('get-version', async (_event) => {
+  ipcMain.handle('get-version', (_event) => {
     const version = app.getVersion()
     const platform = os.platform()
 
@@ -224,12 +222,12 @@ app.whenReady().then(async () => {
 
   const modulePathWebstore = path.join(app.getAppPath(), 'node_modules/electron-chrome-web-store')
 
-  await installChromeWebStore({ session: sharedSession, modulePath: modulePathWebstore }).catch(
+  installChromeWebStore({ session: sharedSession, modulePath: modulePathWebstore }).catch(
     (e) => console.error(e)
   )
 
   // Check and install updates for all loaded extensions
-  await updateExtensions()
+  updateExtensions()
 
   createWindow()
 

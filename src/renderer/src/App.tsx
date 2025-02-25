@@ -80,7 +80,7 @@ function App(): JSX.Element {
   }, [tabs, setTabs, setNewTabDialogOpen, isSidebarVisible, setIsSidebarVisible, activeTabRef, settingsOpen, setSettingsOpen])
 
   return (
-    <main className="min-h-screen antialiased flex">
+    <main className="min-h-screen antialiased flex flex-col h-screen">
       {/* <a href="/settings.html">Settings</a> */}
       <CommandMenu />
       <Sidebar />

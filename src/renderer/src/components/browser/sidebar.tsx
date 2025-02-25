@@ -4,28 +4,16 @@ import { atom, useAtom } from "jotai"
 import { Button } from "@renderer/components/ui/button"
 import { ArrowLeft, ArrowRight, Plus, RefreshCw } from "lucide-react"
 import { goBackTab, goForwardTab, reloadTab } from "./webview"
-import { DockedSidebar } from "./DockedSidebar"
-import { FloatingSidebar } from "./FloatingSidebar"
 import { openAtom } from "./NewTabDialog"
+import TabList from "./TabList"
 
 export const sidebarVisibleAtom = atom(true)
 
 export function Sidebar() {
   const [tabs, setTabs] = useAtom(tabsAtom);
-  const [isSidebarVisible, setIsSidebarVisible] = useAtom(sidebarVisibleAtom);
-  const [isHoveringEdge, setIsHoveringEdge] = useState(false);
   const [activeTabRef, setActiveTabRef] = useAtom(activeTabRefAtom);
   const [_tabDialogOpen, setTabDialogOpen] = useAtom(openAtom);
-
-  const ipcHandle = (show: boolean): void => window.api.toggleTrafficLights(show);
-
-  useEffect(() => {
-    ipcHandle(isSidebarVisible || isHoveringEdge);
-  }, [isSidebarVisible, isHoveringEdge]);
-
-  const toggleSidebar = () => {
-    setIsSidebarVisible(!isSidebarVisible);
-  };
+  const [color, setColor] = useState<any>('')
 
   const setActiveTab = (id: string) => {
     console.log("Setting active tab to:", id);
@@ -85,6 +73,14 @@ export function Sidebar() {
     }
   };
 
+  useEffect(() => {
+    // set color to the color of the active tab
+    const activeTab = tabs.find((tab) => tab.isActive)
+    if (activeTab) {
+      setColor(activeTab.color)
+    }
+  }, [tabs])
+
   const actionButtons = [
     <Button key="refresh" variant="ghost" size="icon" onClick={handleReload}>
       <RefreshCw className="h-4 w-4" />
@@ -100,30 +96,11 @@ export function Sidebar() {
     </Button>,
   ];
 
+  console.log('color', color)
+
   return (
-    <>
-      <div
-        className="fixed left-0 top-0 h-full w-2 z-50"
-        onMouseEnter={() => setIsHoveringEdge(true)}
-        onMouseLeave={() => setIsHoveringEdge(false)}
-      />
-
-      <FloatingSidebar
-        isVisible={isHoveringEdge && !isSidebarVisible}
-        tabs={tabs}
-        actionButtons={actionButtons}
-        setActiveTab={setActiveTab}
-        toggleSidebar={toggleSidebar}
-        setIsHoveringEdge={setIsHoveringEdge}
-      />
-
-      <DockedSidebar
-        isVisible={isSidebarVisible}
-        tabs={tabs}
-        actionButtons={actionButtons}
-        setActiveTab={setActiveTab}
-        toggleSidebar={toggleSidebar}
-      />
-    </>
+    <div className="flex flex-row w-full h-[50px] items-center justify-center" style={{ backgroundColor: color }}>
+      <TabList tabs={tabs} setActiveTab={setActiveTab} />
+    </div>
   );
 }

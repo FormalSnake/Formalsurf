@@ -14,12 +14,7 @@ function TabList({ tabs, setActiveTab }: { tabs: Tab[], setActiveTab: (id: strin
   useEffect(() => {
     swapy.current = createSwapy(container.current!, {
       manualSwap: true,
-      animation: 'spring',
       autoScrollOnDrag: true,
-      // swapMode: 'drop',
-      // enabled: true,
-      // dragAxis: 'x',
-      // dragOnHold: true
     })
 
     swapy.current.onSwap((event) => {
@@ -32,9 +27,9 @@ function TabList({ tabs, setActiveTab }: { tabs: Tab[], setActiveTab: (id: strin
   }, [])
 
   return (
-    <div className="flex flex-col p-2 space-y-2 container" ref={container}>
+    <div className="flex flex-row p-2 space-x-2 container items-center justify-center w-full h-full " ref={container}>
       {slottedItems.map(({ slotId, itemId, item }) => (
-        <div className="flex flex-col slot" key={slotId} data-swapy-slot={slotId}>
+        <div className="" key={slotId} data-swapy-slot={slotId}>
           {
             item && <TabButton key={item.id} tab={item} setActiveTab={setActiveTab} itemId={itemId} />
           }

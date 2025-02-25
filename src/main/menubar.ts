@@ -235,9 +235,9 @@ export const template = [
     submenu: [
       {
         label: 'Learn More',
-        click: async () => {
+        click: () => {
           const { shell } = require('electron')
-          await shell.openExternal('https://surf.formalsnake.dev/')
+          shell.openExternal('https://surf.formalsnake.dev/')
         }
       }
     ]
