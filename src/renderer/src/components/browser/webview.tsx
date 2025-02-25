@@ -7,9 +7,9 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { extractReadableContent } from '@renderer/lib/readability'
 
 export function WebView({ tab }: { tab: Tab }) {
-  const [tabs, setTabs] = useAtom(tabsAtom)
-  const [activeTabRef, setActiveTabRef] = useAtom(activeTabRefAtom)
-  const ref = useRef<HTMLWebViewElement>(null)
+  const [_tabs, setTabs] = useAtom(tabsAtom)
+  const [_activeTabRef, setActiveTabRef] = useAtom(activeTabRefAtom)
+  const ref = useRef<any>(null)
   const [isWebViewReady, setIsWebViewReady] = useState(false)
   const [webviewTargetUrl, setWebviewTargetUrl] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -200,7 +200,7 @@ export function WebView({ tab }: { tab: Tab }) {
         id={tab.id}
         className={cn('w-full h-full', tab.readerMode && 'hidden')}
         webpreferences="autoplayPolicy=document-user-activation-required,defaultFontSize=16,contextIsolation=true,nodeIntegration=false,sandbox=true,webSecurity=true,nativeWindowOpen=true"
-        allowpopups="true"
+        allowpopups
         partition="persist:webview"
         style={{ pointerEvents: 'unset' }}
       />
@@ -274,6 +274,7 @@ export function newTab(url: string, title: string, setTabs: any) {
 
 export function closeTab(
   tabId: string,
+  // @ts-expect-error
   tabs: Tab[],
   setTabs: (updater: (prevTabs: Tab[]) => Tab[]) => void
 ) {
@@ -346,9 +347,10 @@ export const handleToggleDevTools = (activeTabRef: any) => {
 
 // Updated toggleReadingMode that correctly updates state.
 export const toggleReadingMode = (
-  tab: Tab,
-  setTabs: (updater: (prevTabs: Tab[]) => Tab[]) => Tab[]
+  tab: Tab | undefined,
+  setTabs: any
 ) => {
+  if (!tab) return
   setTabs((prevTabs) =>
     prevTabs.map((t) => (t.id === tab.id ? { ...t, readerMode: !t.readerMode } : t))
   )

@@ -23,46 +23,46 @@ function App(): JSX.Element {
 
     // hotkeys
     // @ts-expect-error
-    window.api.handle('new-tab', (event, data) => function(event, data) {
+    window.api.handle('new-tab', (event: any, data: any) => function(event: any, data: any) {
       setNewTabDialogOpen(true)
     })
     // @ts-expect-error
-    window.api.handle('close-active-tab', (event, data) => function(event, data) {
+    window.api.handle('close-active-tab', (event: any, data: any) => function(event: any, data: any) {
       const activeTab = tabs.find((tab) => tab.isActive)
       if (activeTab) {
         closeTab(activeTab.id, tabs, setTabs)
       }
     })
     // @ts-expect-error
-    window.api.handle('toggle-sidebar', (event, data) => function(event, data) {
+    window.api.handle('toggle-sidebar', (event: any, data: any) => function(event: any, data: any) {
       setIsSidebarVisible(!isSidebarVisible)
     })
     // @ts-expect-error
-    window.api.handle('remove-tab', (event, data) => function(event, data) {
+    window.api.handle('remove-tab', (event: any, data: any) => function(event: any, data: any) {
       const activeTab = tabs.find((tab) => tab.isActive)
       if (activeTab) {
         closeTab(activeTab.id, tabs, setTabs)
       }
     })
     // @ts-expect-error
-    window.api.handle('reload', (event, data) => function(event, data) {
+    window.api.handle('reload', (event: any, data: any) => function(event: any, data: any) {
       if (activeTabRef) {
         reloadTab(activeTabRef)
       }
     })
     // @ts-expect-error
-    window.api.handle('toggle-devtools', (event, data) => function(event, data) {
+    window.api.handle('toggle-devtools', (event: any, data: any) => function(event: any, data: any) {
       if (activeTabRef) {
         console.log("Handling toggle devtools")
         handleToggleDevTools(activeTabRef)
       }
     })
     // @ts-expect-error
-    window.api.handle('show-settings', (event, data) => function(event, data) {
+    window.api.handle('show-settings', (event: any, data: any) => function(event: any, data: any) {
       setSettingsOpen(!settingsOpen)
     })
     // @ts-expect-error
-    window.api.handle('toggle-reading-mode', (event, data) => function(event, data) {
+    window.api.handle('toggle-reading-mode', (event: any, data: any) => function(event: any, data: any) {
       toggleReadingMode(tabs.find((tab) => tab.isActive), setTabs)
     })
 

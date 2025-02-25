@@ -1,5 +1,5 @@
 'use client';
-import { ReactNode } from 'react';
+import { JSX, ReactNode } from 'react';
 import { motion, Variants } from 'motion/react';
 import React from 'react';
 
@@ -100,8 +100,8 @@ const presetVariants: Record<
 };
 
 const addDefaultVariants = (variants: Variants) => ({
-    hidden: { ...defaultItemVariants.hidden, ...variants.hidden },
-    visible: { ...defaultItemVariants.visible, ...variants.visible },
+  hidden: { ...defaultItemVariants.hidden, ...variants.hidden },
+  visible: { ...defaultItemVariants.visible, ...variants.visible },
 });
 
 function AnimatedGroup({

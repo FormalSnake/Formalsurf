@@ -2,7 +2,6 @@ import { Button } from "@renderer/components/ui/button"
 import { cn } from "@renderer/lib/utils"
 import { PanelLeftClose } from "lucide-react"
 import { JSX } from "react"
-import { TabButton } from "./TabButton"
 import { motion } from "framer-motion" // Import Framer Motion
 import TabList from "./TabList"
 
@@ -46,6 +45,7 @@ export function FloatingSidebar({
           {actionButtons}
         </div>
         <div className="px-2">
+          {/* @ts-expect-error */}
           <browser-action-list partition="persist:webview" id="actions"></browser-action-list>
         </div>
         <TabList tabs={tabs} setActiveTab={setActiveTab} />

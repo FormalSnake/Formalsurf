@@ -15,7 +15,7 @@ export function Sidebar() {
   const [isSidebarVisible, setIsSidebarVisible] = useAtom(sidebarVisibleAtom);
   const [isHoveringEdge, setIsHoveringEdge] = useState(false);
   const [activeTabRef, setActiveTabRef] = useAtom(activeTabRefAtom);
-  const [tabDialogOpen, setTabDialogOpen] = useAtom(openAtom);
+  const [_tabDialogOpen, setTabDialogOpen] = useAtom(openAtom);
 
   const ipcHandle = (show: boolean): void => window.api.toggleTrafficLights(show);
 

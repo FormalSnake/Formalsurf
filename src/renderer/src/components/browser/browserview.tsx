@@ -1,7 +1,7 @@
 import { Tab, tabsAtom } from '@renderer/atoms/browser'
 import { useAtom } from 'jotai'
 import { WebView } from './webview'
-import { Fragment, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { throttle } from 'lodash' // For throttling the mousemove event
 
 export function BrowserView() {
