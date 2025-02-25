@@ -14,7 +14,7 @@ export const template = [
           {
             label: 'Settings',
             accelerator: 'CmdOrCtrl+,',
-            click: (menuItem, browserWindow) => {
+            click: (_menuItem: any, browserWindow: { webContents: { send: (arg0: string) => void; }; }) => {
               if (browserWindow) {
                 browserWindow.webContents.send('show-settings')
               }
@@ -39,7 +39,7 @@ export const template = [
       {
         label: 'New Tab',
         accelerator: 'CmdOrCtrl+T',
-        click: (menuItem, browserWindow) => {
+        click: (_menuItem: any, browserWindow: { webContents: { send: (arg0: string) => void; }; }) => {
           if (browserWindow) {
             browserWindow.webContents.send('new-tab')
           }
@@ -48,7 +48,7 @@ export const template = [
       {
         label: 'Close Tab',
         accelerator: 'CmdOrCtrl+W',
-        click: (menuItem, browserWindow) => {
+        click: (_menuItem: any, browserWindow: { setClosable: (arg0: boolean) => void; webContents: { send: (arg0: string) => void; }; isDestroyed: () => any; }) => {
           if (browserWindow) {
             // Prevent the window from closing on Linux
             if (process.platform === 'linux') {
@@ -69,7 +69,7 @@ export const template = [
       {
         label: 'Open URL bar',
         accelerator: 'CmdOrCtrl+L',
-        click: (menuItem, browserWindow) => {
+        click: (_menuItem: any, browserWindow: { webContents: { send: (arg0: string) => void; }; }) => {
           if (browserWindow) {
             browserWindow.webContents.send('open-url-bar')
           }
@@ -77,7 +77,7 @@ export const template = [
       },
       {
         label: 'Set as Default Browser',
-        click: async (menuItem, browserWindow) => {
+        click: async (_menuItem: any, browserWindow: Electron.BaseWindow) => {
           const protocols = ['http', 'https', 'file', 'pdf', 'html', 'htm']
           let success = true
 
@@ -128,7 +128,7 @@ export const template = [
       {
         label: 'Find',
         accelerator: 'CmdOrCtrl+F',
-        click: (menuItem, browserWindow) => {
+        click: (_menuItem: any, browserWindow: { webContents: { send: (arg0: string) => void; }; }) => {
           if (browserWindow) {
             browserWindow.webContents.send('find')
           }
@@ -137,7 +137,7 @@ export const template = [
       {
         label: 'Reading Mode',
         accelerator: 'CmdOrCtrl+Alt+Shift+R',
-        click: (menuItem, browserWindow) => {
+        click: (_menuItem: any, browserWindow: { webContents: { send: (arg0: string) => void; }; }) => {
           if (browserWindow) {
             browserWindow.webContents.send('toggle-reading-mode')
           }
@@ -146,7 +146,7 @@ export const template = [
       {
         label: 'History',
         accelerator: 'CmdOrCtrl+Y',
-        click: (menuItem, browserWindow) => {
+        click: (_menuItem: any, browserWindow: { webContents: { send: (arg0: string) => void; }; }) => {
           if (browserWindow) {
             browserWindow.webContents.send('toggle-history')
           }
@@ -162,7 +162,7 @@ export const template = [
       {
         label: 'Reload',
         accelerator: 'CmdOrCtrl+R',
-        click: (menuItem, browserWindow) => {
+        click: (_menuItem: any, browserWindow: { webContents: { send: (arg0: string) => void; }; }) => {
           if (browserWindow) {
             browserWindow.webContents.send('reload')
           }
@@ -172,7 +172,7 @@ export const template = [
       {
         label: 'Toggle DevTools (Renderer)',
         accelerator: 'Alt+Command+I',
-        click: (menuItem, browserWindow) => {
+        click: (_menuItem: any, browserWindow: { webContents: { send: (arg0: string) => void; }; }) => {
           if (browserWindow) {
             browserWindow.webContents.send('toggle-devtools')
           }
@@ -192,7 +192,7 @@ export const template = [
       {
         label: 'Toggle sidebar',
         accelerator: 'CmdOrCtrl+shift+b',
-        click: (menuItem, browserWindow) => {
+        click: (_menuItem: any, browserWindow: { webContents: { send: (arg0: string) => void; }; }) => {
           if (browserWindow) {
             browserWindow.webContents.send('toggle-sidebar')
           }
@@ -210,7 +210,7 @@ export const template = [
       {
         label: 'Next Tab',
         accelerator: 'Control+Tab',
-        click: (menuItem, browserWindow) => {
+        click: (_menuItem: any, browserWindow: { webContents: { send: (arg0: string) => void; }; }) => {
           if (browserWindow) {
             browserWindow.webContents.send('next-tab')
           }
@@ -219,7 +219,7 @@ export const template = [
       {
         label: 'Previous Tab',
         accelerator: 'Control+Shift+Tab',
-        click: (menuItem, browserWindow) => {
+        click: (_menuItem: any, browserWindow: { webContents: { send: (arg0: string) => void; }; }) => {
           if (browserWindow) {
             browserWindow.webContents.send('previous-tab')
           }

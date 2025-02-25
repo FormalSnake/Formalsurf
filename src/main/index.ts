@@ -5,9 +5,7 @@ import {
   ipcMain,
   webContents,
   session,
-  Session,
   Menu,
-  protocol
 } from 'electron'
 import path, { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
@@ -19,17 +17,16 @@ import { buildChromeContextMenu } from 'electron-chrome-context-menu'
 import { ElectronChromeExtensions } from 'electron-chrome-extensions'
 import {
   installChromeWebStore,
-  installExtension,
   updateExtensions
 } from 'electron-chrome-web-store'
 import { template } from './menubar'
 import Store from 'electron-store'
 
-const store = new Store()
+const store: any = new Store()
 
-let mainWindow
-let sharedSession
-let extensions
+let mainWindow: BrowserWindow
+let sharedSession: Electron.Session
+let extensions: ElectronChromeExtensions
 
 async function createWindow(): Promise<void> {
   // Create the browser window.
@@ -56,7 +53,7 @@ async function createWindow(): Promise<void> {
 
   // Set up permission handling
   mainWindow.webContents.session.setPermissionRequestHandler(
-    (webContents, permission, callback) => {
+    (_webContents, permission, callback) => {
       const allowedPermissions = ['media']
       if (allowedPermissions.includes(permission)) {
         callback(true)
@@ -135,7 +132,7 @@ async function createWindow(): Promise<void> {
   })
 
   // A 'change-setting' event receiver that does store.set and store.get using a provided value with the event.
-  ipcMain.handle('change-setting', async (event, key, value) => {
+  ipcMain.handle('change-setting', async (_event, key, value) => {
     store.set(key, value)
     console.log('settings key', key, value)
     // Notify all windows about the setting change
@@ -146,7 +143,7 @@ async function createWindow(): Promise<void> {
   })
 
   // A 'get-setting' event receiver that does store.get using a provided value with the event.
-  ipcMain.handle('get-setting', async (event, key) => {
+  ipcMain.handle('get-setting', async (_event, key) => {
     console.log('get-setting', key)
     return store.get(key)
   })
@@ -208,6 +205,7 @@ app.whenReady().then(async () => {
     license: 'GPL-3.0',
     session: sharedSession,
     modulePath: modulePathExtensions,
+    // @ts-expect-error
     createTab(details) {
       // use the existing open-url function to open the new tab
       const window = BrowserWindow.getAllWindows()[0]
@@ -217,7 +215,8 @@ app.whenReady().then(async () => {
       // return the webContents and the window
       return [window.webContents, window]
     },
-    createWindow(details) {
+    // @ts-expect-error
+    createWindow(_details) {
       const window = new BrowserWindow()
       return window
     }
@@ -234,14 +233,14 @@ app.whenReady().then(async () => {
 
   createWindow()
 
-  app.on('activate', function () {
+  app.on('activate', function() {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 })
 
-app.on('web-contents-created', (event, webContents) => {
+app.on('web-contents-created', (_event, webContents) => {
   if (webContents.getType() == 'webview') {
     const existingWindow = BrowserWindow.getAllWindows()[0]
 
@@ -251,7 +250,8 @@ app.on('web-contents-created', (event, webContents) => {
     webContents.setVisualZoomLevelLimits(1, 4)
 
     // Handle new window events (e.g., links with target="_blank")
-    webContents.on('new-window', (event, url) => {
+    // @ts-expect-error
+    webContents.on('new-window', (event: { preventDefault: () => void }, url: any) => {
       event.preventDefault() // Prevent the default behavior
       existingWindow.webContents.send('open-url', url) // Send the URL to the renderer process
     })
