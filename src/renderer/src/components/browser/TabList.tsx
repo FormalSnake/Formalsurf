@@ -15,6 +15,8 @@ function TabList({ tabs, setActiveTab }: { tabs: Tab[], setActiveTab: (id: strin
     swapy.current = createSwapy(container.current!, {
       manualSwap: true,
       autoScrollOnDrag: true,
+      dragOnHold: true,
+      animation: "spring"
     })
 
     swapy.current.onSwap((event) => {

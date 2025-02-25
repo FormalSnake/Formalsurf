@@ -80,6 +80,10 @@ export function WebView({ tab }: { tab: Tab }) {
       const style = window.getComputedStyle(document.body);
       const bgColor = style.getPropertyValue('background-color');
       // Return both values so you can decide which one to use
+// If the meta theme-color is set, use that
+if (document.querySelector('meta[name="theme-color"]')) {
+  return { bgColor: document.querySelector('meta[name="theme-color"]').content };
+}
       return { bgColor };
     })()
   `).then(({ bgColor, bg }) => {
