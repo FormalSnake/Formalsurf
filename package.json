@@ -1,7 +1,7 @@
 {
   "name": "formalsurf",
   "version": "0.0.1",
-  "description": "A web browser",
+  "description": "A simple and minimalist browser made in electron and react",
   "main": "./out/main/index.js",
   "author": "example.com",
   "homepage": "https://electron-vite.org",
