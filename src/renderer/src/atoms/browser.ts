@@ -31,7 +31,7 @@ export const tabsAtom = atom<Tab[]>([
   },
   {
     id: uuid4(),
-    url: 'https://www.formalsnake.dev/blog/07-nix/',
+    url: 'https://www.formalsnake.dev/',
     title: 'formalsnake.dev',
     favicon: 'https://www.formalsnake.dev/favicon.ico',
     isActive: true,

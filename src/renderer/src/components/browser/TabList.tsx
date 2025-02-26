@@ -15,8 +15,9 @@ function TabList({ tabs, setActiveTab }: { tabs: Tab[], setActiveTab: (id: strin
     swapy.current = createSwapy(container.current!, {
       manualSwap: true,
       autoScrollOnDrag: true,
-      dragOnHold: true,
-      animation: "spring"
+      // dragOnHold: true,
+      animation: "spring",
+      dragAxis: 'x'
     })
 
     swapy.current.onSwap((event) => {
@@ -29,7 +30,7 @@ function TabList({ tabs, setActiveTab }: { tabs: Tab[], setActiveTab: (id: strin
   }, [])
 
   return (
-    <div className="flex flex-row items-center space-x-1 no-drag" ref={container}>
+    <div className="flex flex-row items-center space-x-1 no-drag no-scrollbar overflow-x-scroll" ref={container}>
       {slottedItems.map(({ slotId, itemId, item }) => (
         <div className="" key={slotId} data-swapy-slot={slotId}>
           {
