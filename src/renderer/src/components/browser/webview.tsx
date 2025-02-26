@@ -252,6 +252,7 @@ if (document.querySelector('meta[name="theme-color"]')) {
 }
 
 export function reloadTab(activeTabRef: any) {
+  console.log("Reloading tab with ref:", activeTabRef);
   if (activeTabRef.current) {
     activeTabRef.current?.reload()
   }
