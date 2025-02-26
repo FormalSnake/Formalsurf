@@ -71,6 +71,7 @@ export function WebView({ tab }: { tab: Tab }) {
     }
 
     const handleDomReady = () => {
+      console.log("dom ready")
       setIsWebViewReady(true) // Mark webview as ready
       if (tab.isActive) {
         ipcHandle(ref) // Call ipcHandle if the tab is active

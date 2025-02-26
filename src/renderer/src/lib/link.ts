@@ -21,5 +21,31 @@ export function isUrl(input: string): boolean {
 }
 
 export function formatUrl(input: string): string {
-  return input.includes('://') ? input : `https://${input}`;
+  // If URL already has a protocol, return it as is
+  if (input.includes('://')) {
+    return input;
+  }
+
+  let url = '';
+
+  // Check if input contains a subdomain that isn't www
+  const parts = input.split('.');
+  if (parts.length > 2 && parts[0] !== 'www') {
+    // It's a subdomain but not www, just add https://
+    url = `https://${input}`;
+  } else if (!input.startsWith('www.')) {
+    // For normal domains without www, add https://www.
+    url = `https://www.${input}`;
+  } else {
+    // If it already has www. prefix, just add https://
+    url = `https://${input}`;
+  }
+
+  // Add trailing slash only if the URL doesn't already have a path
+  // This is a simplified check - you might want more robust path detection
+  if (!url.split('/').slice(3).join('/')) {
+    url += '/';
+  }
+
+  return url;
 }
