@@ -49,9 +49,9 @@ export function Sidebar() {
   };
 
   const handleReload = () => {
-    console.log("Reloading tab with ref:", activeTabRef);
     if (activeTabRef) {
       reloadTab(activeTabRef);
+      console.log("Reloading")
     } else {
       console.error("No active tab reference found.");
     }
@@ -91,7 +91,8 @@ export function Sidebar() {
       className="flex flex-row w-full h-[50px] items-center pl-20 pr-1.5 drag bg-background overflow-hidden"
       style={{ backgroundColor: color, color: isDark ? '#fff' : '#000' }}
     >
-      <div className="justify-self-start no-drag flex flex-row">
+      {/* Left button group */}
+      <div className="flex-none flex flex-row no-drag">
         <Button key="refresh" variant="ghost" size="icon" onClick={handleReload}>
           <RefreshCw className="h-4 w-4" />
         </Button>
@@ -102,10 +103,20 @@ export function Sidebar() {
           <ArrowRight className="h-4 w-4" />
         </Button>
       </div>
-      <div className="justify-self-center mx-auto overflow-x-scroll no-scrollbar">
-        <TabList tabs={tabs} setActiveTab={setActiveTab} />
+
+      {/* Calculate offset to compensate for asymmetric padding */}
+      <div className="flex-grow flex items-center relative">
+        {/* This outer container has the offset */}
+        <div className="absolute inset-0 flex justify-center items-center" style={{ marginLeft: "-140px" }}>
+          {/* The TabList container */}
+          <div className="overflow-x-scroll no-scrollbar">
+            <TabList tabs={tabs} setActiveTab={setActiveTab} />
+          </div>
+        </div>
       </div>
-      <div className="justify-self-end no-drag">
+
+      {/* Right button group */}
+      <div className="flex-none no-drag">
         <Button key="newtab" variant="ghost" size="icon" onClick={() => setTabDialogOpen(true)}>
           <Plus className="h-4 w-4" />
         </Button>

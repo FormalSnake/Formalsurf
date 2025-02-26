@@ -588,10 +588,6 @@
   }
 }
 
-html {
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont;
-}
-
 @layer base {
   * {
     @apply border-border;

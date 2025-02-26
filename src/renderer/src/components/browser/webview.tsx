@@ -67,6 +67,7 @@ export function WebView({ tab }: { tab: Tab }) {
     // Only set src if it's different to avoid unnecessary reloads
     if (webview.src !== tab.url) {
       webview.src = tab.url
+      return
     }
 
     const handleDomReady = () => {
@@ -119,6 +120,7 @@ if (document.querySelector('meta[name="theme-color"]')) {
     const handleInPageNavigation = (event: any) => {
       if (event.isMainFrame) {
         console.log('In-page navigation to:', event.url)
+        updateCurrentTab((t) => ({ ...t, url: event.url }))
       }
     }
 
