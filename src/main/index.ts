@@ -260,9 +260,14 @@ app.on('web-contents-created', (_event, webContents) => {
         params,
         webContents,
         extensionMenuItems: extensions.getContextMenuItems(webContents, params),
-        openLink: (url, _disposition) => {
+        openLink: (url, disposition) => {
+          if (disposition === 'new-window') {
+            const window = new BrowserWindow()
+            window.loadURL(url)
+            return window
+          }
           existingWindow.webContents.send('open-url', url)
-        }
+        },
       })
 
       menu.popup()

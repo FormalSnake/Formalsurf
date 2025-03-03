@@ -1,7 +1,8 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 // @ts-expect-error
-import { injectBrowserAction } from 'electron-chrome-extensions/dist/browser-action'
+// import { injectBrowserAction } from 'electron-chrome-extensions/dist/browser-action'
+import { injectBrowserAction } from 'electron-chrome-extensions/browser-action'
 
 // Custom APIs for renderer
 const api = {

@@ -52,7 +52,7 @@ export function CommandMenu() {
       newTab(formattedUrl, item, setTabs);
     } else {
       // If the input is not a URL, treat it as a search query
-      const createURL = (query: string) => `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+      const createURL = (query: string) => `https://unduck.link?q=${encodeURIComponent(query)}`;
       newTab(createURL(item), item, setTabs);
     }
 
@@ -62,7 +62,7 @@ export function CommandMenu() {
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
-      <CommandInput placeholder="Type a command or search..." value={input} onValueChange={setInput} />
+      <CommandInput placeholder="Search... (bangs are supported)" value={input} onValueChange={setInput} />
       <CommandList className="h-[300px]">
         <CommandEmpty>No results found.</CommandEmpty>
         {searchResults.length > 0 && input.length > 0 ? (

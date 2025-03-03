@@ -2,11 +2,16 @@ import { useEffect, useState } from "react"
 import { activeTabRefAtom, Tab, tabsAtom } from "@renderer/atoms/browser"
 import { atom, useAtom } from "jotai"
 import { Button } from "@renderer/components/ui/button"
-import { ArrowLeft, ArrowRight, Plus, RefreshCw } from "lucide-react"
+import { ArrowLeft, ArrowRight, LucideBlocks, Plus, PuzzleIcon, RefreshCw } from "lucide-react"
 import { goBackTab, goForwardTab, reloadTab } from "./webview"
 import { openAtom } from "./NewTabDialog"
 import TabList from "./TabList"
 import { lightOrDark } from "@renderer/lib/color"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@renderer/components/ui/popover"
 
 export const sidebarVisibleAtom = atom(true)
 
@@ -105,7 +110,7 @@ export function Sidebar() {
       </div>
 
       {/* Calculate offset to compensate for asymmetric padding */}
-      <div className="flex-grow flex items-center relative">
+      <div className="flex-grow flex items-center relative ">
         {/* This outer container has the offset */}
         <div className="absolute inset-0 flex justify-center items-center" style={{ marginLeft: "-140px" }}>
           {/* The TabList container */}
@@ -116,10 +121,22 @@ export function Sidebar() {
       </div>
 
       {/* Right button group */}
-      <div className="flex-none no-drag">
+      <div className="flex-none flex flex-row no-drag">
         <Button key="newtab" variant="ghost" size="icon" onClick={() => setTabDialogOpen(true)}>
           <Plus className="h-4 w-4" />
         </Button>
+        {/* <browser-action-list partition="persist:webview" id="actions"></browser-action-list> */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button key="open" variant="ghost" size="icon">
+              <LucideBlocks className="h-4 w-4" />
+            </Button>
+          </PopoverTrigger>
+          {/* <PopoverContent>Place content for the popover here.</PopoverContent> */}
+          <PopoverContent className="p-1 w-fit">
+            <browser-action-list partition="persist:webview" id="actions"></browser-action-list>
+          </PopoverContent>
+        </Popover>
       </div>
     </div>
   );
