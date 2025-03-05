@@ -278,7 +278,7 @@ app.on('web-contents-created', (_event, webContents) => {
 const newUserAgent = app.userAgentFallback
   .replace(
     /Chrome\/[\d.]+/,
-    'Chrome/132.0.6834.196' // Example: Update to a recent Chrome version
+    'Chrome/134.0.6998.44' // Example: Update to a recent Chrome version
   )
   .replace(/Electron\/[\d.]+/, '')
   .replace(/formalsurf\/[\d.]+/, '')
